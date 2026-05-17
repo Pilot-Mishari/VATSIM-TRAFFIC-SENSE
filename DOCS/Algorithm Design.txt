@@ -1,0 +1,468 @@
+# SectorSense — Algorithm Design Phase
+
+# 1. Traffic Classification Algorithm
+
+## Purpose
+
+Convert raw traffic data into a standardized traffic activity level.
+
+This allows airports to be categorized consistently regardless of airport size.
+
+---
+
+## Inputs
+
+```txt
+Arrivals
+Departures
+Overflights
+```
+
+---
+
+## Process
+
+Each operation type receives a workload weight.
+
+Example MVP weighting:
+
+```txt
+Arrival = 3
+Departure = 2
+Overflight = 1
+```
+
+Traffic score formula:
+
+```txt
+traffic_score =
+(arrivals × 3) +
+(departures × 2) +
+(overflights × 1)
+```
+
+---
+
+## Output
+
+Traffic score is classified into:
+
+```txt
+LOW
+MEDIUM
+HIGH
+VERY_HIGH
+```
+
+Thresholds should initially be manually defined, then later adjusted using historical observations.
+
+---
+
+# 2. Workload Calculation Algorithm
+
+## Purpose
+
+Estimate controller workload intensity at an airport.
+
+Unlike traffic classification, workload focuses on operational complexity rather than aircraft count alone.
+
+---
+
+## Inputs
+
+```txt
+Traffic score
+Controllers online
+ATC position types
+Airport popularity
+```
+
+---
+
+## Process
+
+Workload increases when:
+
+* traffic rises,
+* fewer controllers are online,
+* higher-level positions are active,
+* events are active.
+
+Example logic:
+
+```txt
+workload =
+traffic_score /
+active_controller_count
+```
+
+Future versions may include:
+
+* runway complexity,
+* multiple frequency operations,
+* event multipliers,
+* airport complexity.
+
+---
+
+## Output
+
+```txt
+LOW_WORKLOAD
+MODERATE_WORKLOAD
+HIGH_WORKLOAD
+EXTREME_WORKLOAD
+```
+
+---
+
+# 3. Historical Trend Algorithm
+
+## Purpose
+
+Identify recurring traffic behavior patterns.
+
+Used for:
+
+* busiest timings,
+* traffic growth analysis,
+* prediction support.
+
+---
+
+## Inputs
+
+```txt
+Historical traffic snapshots
+Timestamps
+Airport ICAO
+```
+
+---
+
+## Process
+
+Snapshots are grouped by:
+
+* airport,
+* weekday,
+* hour,
+* event status.
+
+Example:
+
+```txt
+Average EDDF traffic:
+Fridays 1800z–1900z
+```
+
+The algorithm calculates:
+
+* average traffic,
+* peak traffic periods,
+* trend direction,
+* traffic stability.
+
+---
+
+## Output
+
+```txt
+Busiest hours
+Traffic trends
+Average activity levels
+Recurring peak periods
+```
+
+---
+
+# 4. Prediction Algorithm
+
+## Purpose
+
+Estimate future airport activity levels.
+
+Predictions should be conservative and probability-based.
+
+---
+
+## Inputs
+
+```txt
+Current traffic
+Historical traffic
+Time of day
+Day of week
+Current ATC coverage
+Events
+Airport popularity
+```
+
+---
+
+## Process
+
+The system compares:
+
+* current conditions,
+* historical behavior,
+* active events,
+* ATC coverage.
+
+Prediction logic should prioritize historical observations over assumptions.
+
+Example:
+
+```txt
+Current traffic:
+Higher than normal
+
+Historical Friday trend:
+Traffic increases after 1800z
+
+Prediction:
+Traffic likely increasing
+```
+
+---
+
+## Output
+
+```txt
+LOW
+MEDIUM
+HIGH
+VERY_HIGH
+```
+
+Optional future outputs:
+
+* confidence level,
+* estimated traffic range.
+
+---
+
+# 5. ATC Influence Algorithm
+
+## Purpose
+
+Estimate how ATC availability affects traffic growth.
+
+This algorithm measures correlation, not causation.
+
+---
+
+## Inputs
+
+```txt
+ATC session start time
+Traffic before ATC
+Traffic after ATC
+Historical airport activity
+```
+
+---
+
+## Process
+
+The system compares:
+
+* traffic before controller login,
+* traffic after controller login,
+* historical traffic averages during similar periods.
+
+Example:
+
+```txt
+1800z:
+Traffic = 22
+
+APP online
+
+1900z:
+Traffic = 37
+
+Increase:
+68%
+```
+
+The system later validates:
+
+* sample size,
+* consistency,
+* historical repetition.
+
+---
+
+## Output
+
+```txt
+Estimated traffic increase %
+Observed ATC influence
+Confidence level
+```
+
+---
+
+# 6. Controller Activity Timeline Algorithm
+
+## Purpose
+
+Analyze controller behavior patterns.
+
+Used for:
+
+* predicted ATC availability,
+* activity timelines,
+* staffing consistency analysis.
+
+---
+
+## Inputs
+
+```txt
+Controller sessions
+Session durations
+Airport ICAO
+Position type
+Timestamps
+```
+
+---
+
+## Process
+
+The system analyzes:
+
+* common login times,
+* average session durations,
+* recurring staffing periods,
+* staffing frequency.
+
+Example:
+
+```txt
+EDDF_APP commonly online:
+1700z–2200z Fridays
+```
+
+---
+
+## Output
+
+```txt
+Likely controller availability
+Average staffing duration
+Most active staffing periods
+```
+
+---
+
+# 7. Recommendation Algorithm
+
+## Purpose
+
+Provide operational recommendations to:
+
+* controllers,
+* pilots,
+* event planners.
+
+---
+
+## Inputs
+
+```txt
+Traffic trend
+Predicted traffic
+Current ATC coverage
+Historical activity
+Nearby airport activity
+```
+
+---
+
+## Process
+
+The system evaluates:
+
+* airport workload,
+* growth trends,
+* current staffing,
+* nearby alternatives.
+
+Example:
+
+```txt
+Traffic increasing rapidly
+Only tower online
+
+Recommendation:
+Open approach
+```
+
+Pilot recommendations may include:
+
+```txt
+Nearby airport with active coverage:
+EDDM
+```
+
+---
+
+## Output
+
+```txt
+Staffing recommendations
+Airport suggestions
+Operational alerts
+Traffic advisories
+```
+
+---
+
+# Core System Processing Flow
+
+```txt
+Input
+→ Processing
+→ Scoring
+→ Historical Comparison
+→ Prediction
+→ Recommendation
+→ Dashboard Output
+```
+
+---
+
+# Important Design Principles
+
+## Observation-Based Analytics
+
+The system should prioritize:
+
+* historical observations,
+* statistical trends,
+* and recurring patterns
+
+over hardcoded assumptions whenever sufficient data exists.
+
+---
+
+## Conservative Predictions
+
+Predictions should avoid exact aircraft forecasting during early development stages.
+
+Instead, the system should focus on:
+
+* trend direction,
+* probability estimation,
+* and confidence levels.
+
+---
+
+## Correlation vs Causation
+
+ATC influence analytics should measure observed correlations only.
+
+The system should avoid claiming direct causation unless supported by extensive historical evidence.

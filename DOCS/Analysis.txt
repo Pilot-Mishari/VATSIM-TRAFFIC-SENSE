@@ -1,0 +1,82 @@
+1. Functional requirements
+  Core
+    Fetch VATSIM data every 15 minutes
+    Store historical traffic snapshots
+    Analyze airport traffic density
+    Track controller session durations
+    Detect traffic trends
+    Generate staffing recommendations
+  
+  Pilot 
+    Show current online controllers
+    Show upcoming events
+    Predict likely ATC availability
+    Suggest nearby airports with similar coverage
+    Show busiest operating periods
+
+  Controller
+    Display current traffic
+    Forecast traffic for next 3 hours
+    Show busiest periods today
+    Show historical trends
+    Recommend staffing level
+
+2. Non Funct- requirementsFast loading
+Fast loading dashboard
+Responsive desktop/mobile UI
+Scalable backend architecture
+Reliable historical storage
+Accurate prediction estimation
+Stable uptime
+
+3. Inputs
+VATSIM aircraft data
+Controller online data
+Event data
+Airport metadata
+Historical snapshots
+
+4. Output
+Traffic score
+Predicted workload
+Staffing recommendations
+Trend graphs
+Heatmaps
+
+5. Processing
+Fetch data
+Parse aircraft
+Classify operations
+Calculate workload
+Generate prediction
+Render visualization
+
+6. Data requirements
+traffic_snapshots
+controller_sessions
+controller_session timings
+events
+airports
+sector_statistics
+
+7. Limitations
+VATSIM API Requests 
+large datasets
+prediction accuracy
+
+8. Risks
+Insufficient historical data during early stages
+Correlation mistaken for causation
+Prediction bias caused by hardcoded assumptions
+Airport popularity skewing generalized predictions
+
+9. ATC station availability may influence traffic density
+Status: Hypothesis requiring historical validation
+It is believed that ATC availability influences pilot traffic decisions. However, the level of influence varies depending on:
+airport popularity,
+region,
+ATC position type,
+time of day,
+and historical activity patterns.
+
+The system should prioritize observed historical correlations over hardcoded assumptions whenever sufficient data exists.

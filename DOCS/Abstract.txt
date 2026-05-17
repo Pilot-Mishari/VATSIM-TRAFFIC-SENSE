@@ -1,0 +1,480 @@
+# SectorSense — Project Abstraction & Assumptions
+
+## Project Overview
+
+SectorSense is a web platform designed to analyze, monitor, and predict VATSIM traffic and controller workload.
+
+The platform aims to help:
+
+* Controllers
+* vACC/FIR staff
+* Event coordinators
+* Mentors
+* Pilots
+
+make better operational decisions using live and historical traffic analysis.
+
+---
+
+# Problem Statement
+
+VATSIM controllers and staff currently rely heavily on:
+
+* manual observation,
+* experience,
+* Discord coordination,
+* and guesswork
+
+when determining:
+
+* staffing requirements,
+* sector openings,
+* event preparation,
+* and workload distribution.
+
+There is currently no centralized system that:
+
+* analyzes live and historical traffic,
+* predicts controller workload,
+* or provides intelligent staffing recommendations.
+
+---
+
+# Project Goal
+
+Develop a scalable platform that:
+
+* monitors live VATSIM traffic,
+* analyzes traffic patterns,
+* predicts future workload,
+* and recommends staffing levels for airports and FIRs.
+
+---
+
+# Target Users
+
+## Primary Users
+
+* VATSIM controllers
+* FIR/vACC staff
+* Event coordinators
+* Mentors/trainers
+
+## Secondary Users
+
+* Pilots
+* Aviation enthusiasts
+* Content creators/streamers
+
+---
+
+# Inputs
+
+The system will use:
+
+* Live VATSIM API data
+* Controller online data
+* Flight plans
+* Event schedules
+* Historical traffic snapshots
+
+---
+
+# Outputs
+
+The system will generate:
+
+* Traffic intensity scores
+* Staffing recommendations
+* Activity heatmaps
+* Airport/FIR statistics
+* Trend graphs
+* Workload predictions
+
+---
+
+# Core Abstractions
+
+## Traffic Units
+
+Aircraft are abstracted into workload units.
+
+Example weighting:
+
+```txt
+Arrival = 3 points
+Departure = 2 points
+Overflight = 1 point
+```
+
+Reason:
+Different aircraft operations create different controller workloads.
+
+---
+
+## Sector Load
+
+Sector workload is represented as:
+
+```txt
+sector_load = total traffic score within area
+```
+
+---
+
+## Staffing State
+
+Staffing recommendations are abstracted into levels:
+
+```txt
+LOW
+MEDIUM
+HIGH
+VERY_HIGH
+```
+
+---
+
+# Main System Components
+
+## 1. Data Collector
+
+Responsible for:
+
+* Fetching VATSIM data periodically
+* Storing traffic snapshots
+* Tracking controller sessions
+* Recording event activity
+
+---
+
+## 2. Traffic Analyzer
+
+Responsible for:
+
+* Calculating traffic density
+* Processing workload scores
+* Detecting traffic trends
+* Evaluating airport/FIR activity
+
+---
+
+## 3. Prediction Engine
+
+Responsible for:
+
+* Estimating future workload
+* Forecasting traffic increases/decreases
+* Using historical patterns
+* Incorporating event influence
+
+---
+
+## 4. Recommendation Engine
+
+Responsible for:
+
+* Suggesting staffing levels
+* Detecting overloaded sectors
+* Recommending additional ATC positions
+
+---
+
+## 5. Visualization Layer
+
+Responsible for:
+
+* Interactive maps
+* Traffic heatmaps
+* Trend charts
+* Airport/FIR dashboards
+
+---
+
+# Constraints
+
+## Technical Constraints
+
+* VATSIM API rate limits
+* Real-time processing requirements
+* Large historical datasets over time
+* Map rendering performance
+
+---
+
+## Time Constraints
+
+* MVP functional within first 3 days
+* Long-term scalable architecture required
+
+---
+
+# Confirmed Assumptions
+
+## 1. VATSIM data is publicly accessible and reliable
+
+Status: Confirmed
+
+The VATSIM data feed is stable enough for:
+
+* live tracking,
+* analytics,
+* workload estimation,
+* and historical analysis.
+
+---
+
+## 2. Traffic patterns repeat over time
+
+Status: Confirmed
+
+Examples include:
+
+* weekend peaks,
+* regional traffic trends,
+* recurring event activity,
+* and time-based traffic behavior.
+
+This allows future prediction using historical datasets.
+
+---
+
+## 3. Aircraft count correlates with controller workload
+
+Status: Confirmed
+
+Higher aircraft count generally results in:
+
+* more radio communication,
+* increased sequencing,
+* more coordination,
+* and higher controller workload.
+
+However, different aircraft operations should be weighted differently.
+
+Example:
+
+```txt
+1 arrival > 1 overflight
+```
+
+because arrivals generate more workload.
+
+---
+
+## 4. Event schedules significantly affect traffic density
+
+Status: Confirmed
+
+Events are major traffic multipliers on VATSIM.
+
+Examples:
+
+* Cross the Pond
+* Friday Night Ops
+* Regional FIR events
+
+Event activity should heavily influence prediction scoring.
+
+---
+
+## 5. ATC station availability increases traffic density
+
+Status: Confirmed
+
+Pilots actively choose destinations/routes based on ATC coverage.
+
+Example behavior:
+
+```txt
+No ATC at airport:
+Lower traffic
+
+Approach online:
+Traffic rises
+
+Full staffing:
+Traffic rises significantly
+```
+
+This creates a traffic feedback loop:
+
+```txt
+ATC online -> more pilots join -> more traffic
+```
+
+---
+
+# Estimated ATC Influence Levels
+
+## Delivery (DEL)
+
+Low increase
+
+Mainly affects:
+
+* realism-focused pilots
+* airline operation pilots
+
+---
+
+## Ground (GND)
+
+Low increase
+
+Improves airport operations but has lower global visibility.
+
+---
+
+## Tower (TWR)
+
+Low increase
+
+Important for arrivals/departures and airport activity.
+
+---
+
+## Approach (APP)
+
+Moderate increase
+
+Very influential because:
+
+* pilots prefer controlled arrivals,
+* sequencing improves realism,
+* airports feel active.
+
+---
+
+## Center (CTR)
+
+Moderate to high increase
+
+Strong influence for:
+
+* overflights,
+* long-haul routes,
+* FIR-wide visibility.
+
+---
+
+## 6. Long-duration ATC sessions increase traffic density
+
+Status: Likely true
+
+Pilots gain confidence when a station has remained online for a long period.
+
+Reasons include:
+
+* higher staffing stability,
+* reduced risk of losing ATC mid-flight,
+* increased confidence for long-haul operations.
+
+Example:
+
+```txt
+APP online for 10 minutes:
+small influence
+
+APP online for 4 hours:
+much larger influence
+```
+
+---
+
+# Controller Stability Score
+
+Potential future metric based on:
+
+* session duration,
+* staffing consistency,
+* disconnect frequency,
+* historical uptime.
+
+This metric may influence future traffic prediction models.
+
+---
+
+# Updated Traffic Model
+
+The system models traffic density using:
+
+```txt
+Traffic Density =
+Live Aircraft +
+Historical Trends +
+Events +
+ATC Presence +
+ATC Stability +
+Airport Popularity
+```
+
+---
+
+# MVP Scope
+
+The first version should include:
+
+* Live traffic monitoring
+* Airport activity scoring
+* Staffing recommendations
+* Historical traffic tracking
+* Interactive map visualization
+
+Advanced predictive systems can be implemented later.
+
+---
+
+# Recommended Architecture
+
+## Frontend
+
+* React
+* TypeScript
+* Tailwind CSS
+* Leaflet.js
+
+---
+
+## Backend
+
+Recommended:
+
+* Node.js + Express
+  or
+* Bun + Hono
+
+---
+
+## Database
+
+Recommended:
+
+* PostgreSQL
+
+Reason:
+Traffic analytics and time-series data are better suited for relational databases.
+
+---
+
+# Suggested Future Features
+
+* FIR heatmaps
+* Historical replay mode
+* Event impact prediction
+* AI-assisted staffing recommendations
+* Controller workload monitoring
+* Sector split recommendations
+* Historical analytics dashboard
+* Airport popularity tracking
+
+---
+
+# Success Criteria
+
+The project succeeds if users can:
+
+* quickly determine staffing requirements,
+* identify upcoming busy periods,
+* monitor traffic trends,
+* and improve operational planning.
