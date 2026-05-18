@@ -1,0 +1,456 @@
+# SectorSense — Data Structure Design
+
+# Purpose
+
+This phase defines:
+
+* how data is represented,
+* relationships between system entities,
+* storage behavior,
+* indexing strategies,
+* retention policies,
+* and scalability considerations.
+
+The goal is to ensure the platform remains:
+
+* scalable,
+* maintainable,
+* performant,
+* and analytically reliable.
+
+---
+
+# 1. Core Entity Relationships
+
+## Airport Entity
+
+An airport acts as the central object within the system.
+
+Each airport may contain:
+
+* traffic snapshots,
+* controller sessions,
+* prediction records,
+* event records,
+* activity analytics.
+
+Relationship structure:
+
+```txt
+Airport
+ ├── Traffic Snapshots
+ ├── Controller Sessions
+ ├── Predictions
+ ├── Events
+ └── Historical Analytics
+```
+
+---
+
+# 2. Data Lifecycle Design
+
+## Traffic Snapshots
+
+Traffic snapshots are created periodically.
+
+Recommended interval:
+
+```txt
+Every 15 minutes
+```
+
+Each snapshot stores:
+
+* current aircraft counts,
+* ATC coverage,
+* traffic score,
+* operational state.
+
+---
+
+## Prediction Records
+
+Prediction records are recalculated whenever:
+
+* new snapshots are created,
+* events begin/end,
+* ATC coverage changes.
+
+---
+
+## Controller Sessions
+
+Controller sessions:
+
+* begin when a controller logs online,
+* update while online,
+* close when the controller disconnects.
+
+---
+
+## Historical Data Retention
+
+Recommended retention policy:
+
+```txt
+Raw 15-minute snapshots:
+1 year
+
+Hourly summaries:
+Permanent
+```
+
+This reduces database growth while preserving long-term analytics.
+
+---
+
+# 3. Database Normalization Strategy
+
+## Airport Referencing
+
+Airport metadata should only exist once.
+
+Example:
+
+```txt
+airports.id
+```
+
+Other tables should reference:
+
+```txt
+airport_id
+```
+
+instead of duplicating airport metadata repeatedly.
+
+---
+
+## Repeated Data Reduction
+
+The system should avoid repeatedly storing:
+
+* airport names,
+* FIR names,
+* country names,
+* static metadata.
+
+This improves:
+
+* storage efficiency,
+* update consistency,
+* query performance.
+
+---
+
+# 4. Indexing Strategy
+
+Indexes are required for fast historical analysis.
+
+Recommended indexes:
+
+```txt
+traffic_snapshots.timestamp
+traffic_snapshots.airport_id
+controller_sessions.airport_id
+controller_sessions.position_type
+predictions.airport_id
+```
+
+---
+
+# 5. Data Retention Strategy
+
+The platform is expected to generate large datasets over time.
+
+The system should support:
+
+* raw snapshot archiving,
+* summarized analytics,
+* future compression strategies.
+
+---
+
+## Recommended Retention Rules
+
+```txt
+Raw snapshots:
+1 year
+
+Hourly summaries:
+Permanent
+
+Daily analytics:
+Permanent
+```
+
+---
+
+# 6. Derived Data Design
+
+Certain values should not be permanently stored.
+
+Instead, they should be dynamically calculated.
+
+---
+
+## Derived Data Examples
+
+```txt
+Traffic score
+Workload level
+Prediction confidence
+Trend direction
+```
+
+These values are derived from:
+
+* traffic snapshots,
+* controller sessions,
+* historical trends,
+* prediction algorithms.
+
+---
+
+# 7. Cache Strategy
+
+Some calculations may become computationally expensive.
+
+Future cache candidates include:
+
+* busiest airports,
+* airport rankings,
+* traffic predictions,
+* dashboard summaries,
+* historical trend analytics.
+
+Potential future technologies:
+
+```txt
+Redis
+Memory caching
+```
+
+---
+
+# 8. Data Integrity Rules
+
+## Airport Rules
+
+```txt
+ICAO codes must be unique
+Airport IDs must be unique
+```
+
+---
+
+## Traffic Rules
+
+```txt
+Aircraft counts cannot be negative
+Traffic scores cannot be negative
+Timestamps are required
+```
+
+---
+
+## Controller Rules
+
+```txt
+Controller callsigns required
+Session start times required
+Session end must occur after session start
+```
+
+---
+
+# 9. Snapshot System Design
+
+## Definition
+
+A snapshot is a saved state of airport activity at a specific timestamp.
+
+Example:
+
+```txt
+Timestamp: 2026-05-15 18:00 UTC
+
+EDDF:
+Arrivals: 24
+Departures: 17
+Overflights: 52
+Controllers Online:
+- EDDF_GND
+- EDDF_TWR
+- EDDF_APP
+
+Traffic Score: 143
+```
+
+Snapshots form the historical foundation of:
+
+* analytics,
+* predictions,
+* trend analysis,
+* and workload estimation.
+
+---
+
+# 10. ATC Influence Tracking Design
+
+The system should support future analysis of:
+
+* traffic growth after ATC openings,
+* staffing impact,
+* airport-specific controller influence.
+
+Potential future structure:
+
+```txt
+ATC Influence Record
+ ├── airport_id
+ ├── position_type
+ ├── session_start
+ ├── traffic_before
+ ├── traffic_after
+ ├── percentage_change
+ ├── observation_window
+ └── confidence_level
+```
+
+---
+
+# 11. Percentage-Based Traffic Growth Design
+
+Traffic influence should be measured primarily using percentage changes rather than fixed aircraft increases.
+
+Example:
+
+```txt
+Traffic before APP:
+22 aircraft
+
+Traffic after APP:
+37 aircraft
+
+Increase:
+68%
+```
+
+This allows scaling across:
+
+* large airports,
+* medium airports,
+* and low-traffic airports.
+
+---
+
+# 12. Small Sample Size Considerations
+
+Percentage increases alone may become misleading at very low traffic counts.
+
+Example:
+
+```txt
+1 aircraft → 3 aircraft
+= 200% increase
+```
+
+but operationally insignificant.
+
+Future systems should support:
+
+* minimum traffic thresholds,
+* confidence weighting,
+* sample size validation.
+
+---
+
+# 13. Observation-Based Design Philosophy
+
+The platform should prioritize:
+
+* historical observations,
+* recurring trends,
+* statistical analysis,
+* and measured correlations
+
+instead of relying heavily on hardcoded assumptions.
+
+---
+
+# 14. Correlation Handling
+
+ATC influence analytics should measure:
+
+```txt
+Observed correlations
+```
+
+rather than:
+
+```txt
+Guaranteed causation
+```
+
+unless supported by extensive historical evidence.
+
+---
+
+# 15. Scalability Planning
+
+The data structure must support:
+
+* global airport coverage,
+* multi-year historical datasets,
+* increasing traffic volume,
+* advanced future analytics,
+* machine learning integration,
+* and AI-assisted analysis.
+
+---
+
+# 16. Future Expansion Support
+
+The architecture should support future systems such as:
+
+* advanced analytics,
+* sector-based analysis,
+* vACC operational reporting,
+* airport popularity tracking,
+* ATC attraction analytics,
+* AI-assisted forecasting,
+* and historical replay systems.
+
+---
+
+# 17. Recommended Repository Structure
+
+```txt
+/apps
+  /web
+  /api
+
+/services
+  /collector
+
+/packages
+  /shared
+```
+
+---
+
+# 18. Long-Term Design Goal
+
+The long-term objective is to transform SectorSense into:
+
+```txt
+An observational analytics and operational intelligence platform for VATSIM.
+```
+
+The platform should focus on:
+
+* traffic behavior analysis,
+* airport activity intelligence,
+* staffing analytics,
+* and operational forecasting.

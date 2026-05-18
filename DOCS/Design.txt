@@ -1,0 +1,160 @@
+1. System architecture
+VATSIM API
+     ↓
+Collector Service
+     ↓
+PostgreSQL Database
+     ↓
+Backend API
+     ↓
+Frontend Dashboard
+
+2. Architecture Components
+    A. Storing Service
+        fetch VATSIM data,
+        parse traffic,
+        taffic information,
+        track controller sessions.
+        interval 15 minutes
+    B. SQL Database
+        traffic history,
+    airport statistics,
+    controller sessions,
+    event data,
+    prediction data.
+    C. backend
+        Process data to frontend
+            Node.js
+            Express
+            TypeScript
+    D. Frontend
+        airport analytics,
+        traffic predictions,
+        high traffic prediction timeline,
+        controller coverage,
+        controller activity timeline,
+        historical trends,
+        top-down airports recommendations
+
+3. Database Design
+    Airports:   
+        id
+        icao
+        name
+        country
+        fir
+        popularity_score
+
+    Traffic Data:
+        id
+        airport_icao
+        timestamp
+        arrivals
+        departures
+        overflights
+        total_aircraft
+        traffic_score
+
+    Controller Sessions:
+        id
+        callsign
+        position_type
+        airport_icao
+        start_time
+        end_time
+        duration_minutes
+
+    Active controllers:
+        id
+        callsign
+        position
+        airport_icao
+        online_since
+
+    Airport predictions:
+        id
+        airport_icao
+        prediction_time
+        predicted_traffic
+        confidence_level
+        predicted_staffing
+
+4. Frontend Design
+
+Airpots Design
+    workload estimate,
+    expected traffic increase,
+    recommended staffing,
+    traffic trend analysis.
+
+Pilot View
+    current ATC coverage,
+    expected future coverage,
+    nearby active airports,
+    upcoming events.
+
+5. Prediction System MVP
+    trend-based,
+    conservative,
+    observation-driven
+
+    Prediction Input
+        Current traffic
+        Historical traffic
+        Time of day
+        Day of week
+        Current ATC coverage
+        Events
+        Airport popularity
+
+    Prediction Output
+        LOW
+        MEDIUM
+        HIGH
+        VERY_HIGH
+
+6. Historical Analytics
+    busiest hour analysis,
+    trend graphs,
+    airport activity patterns,
+    ATC influence analysis,
+    prediction improvements.
+
+7. Scalability
+    global airports,
+    years of historical data,
+    increasing traffic volume,
+    future machine learning models.
+    Possibly add AI engines such as GEMINI or GPT
+
+8. Expansion Design
+    advanced analytics,
+    machine learning,
+    sector-based analysis,
+    vACC reporting,
+    ATC attraction analytics.
+
+9. Proposed MVP order
+    Phase 1
+        Database setup
+        Collector service
+        VATSIM parsing
+        Data will be collected and stored, not open to public use for several weeks
+
+    Phase 2
+        Backend API
+        Airport analytics logic
+        Prediction calculations
+
+    Phase 3
+        Frontend dashboard
+        Graphs/charts
+        UI polish
+        Service will be considered to roll out to public use
+
+    Phase 4
+        Historical analytics
+        Prediction refinement
+        Optimization
+
+        

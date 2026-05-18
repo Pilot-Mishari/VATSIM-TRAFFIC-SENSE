@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "moduleResolution": "NodeNext",
+    "module": "NodeNext",
+    "types": ["node"],
+    "strict": true,
+    "forceConsistentCasingInFileNames": true
+  },
+  "include": ["prisma.config.ts"]
+}
