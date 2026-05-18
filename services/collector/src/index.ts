@@ -1,12 +1,12 @@
 import './db';
-import cron from 'node-cron';
 import { fetchVatsimData } from './vatsim';
 
 console.log('SectorSense Collector started');
 
-fetchVatsimData();
-
-cron.schedule('*/15 * * * *', () => {
-  console.log('Fetching VATSIM data...');
-  fetchVatsimData();
+fetchVatsimData().then(() => {
+  console.log('Collection complete');
+  process.exit(0);
+}).catch((error) => {
+  console.error('Collection failed:', error);
+  process.exit(1);
 });
