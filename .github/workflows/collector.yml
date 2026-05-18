@@ -1,0 +1,39 @@
+name: SectorSense Collector
+
+on:
+  schedule:
+    - cron: '*/25 * * * *'
+  workflow_dispatch:
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: latest
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Generate Prisma client
+        working-directory: services/collector
+        run: npx prisma generate
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
+      - name: Run collector
+        working-directory: services/collector
+        run: npx ts-node src/index.ts
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
