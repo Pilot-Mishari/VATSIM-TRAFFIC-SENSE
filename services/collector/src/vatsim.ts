@@ -16,10 +16,9 @@ function getAirportIcao(callsign: string): string {
   return callsign.split('_')[0];
 }
 
-function calculateTrafficScore(arrivals: number, departures: number, overflights: number): number {
-  return (arrivals * 3) + (departures * 2) + (overflights * 1);
+function calculateTrafficScore(arrivals: number, departures: number): number {
+  return (arrivals * 3) + (departures * 2);
 }
-
 export async function fetchVatsimData() {
   try {
     const response = await axios.get(VATSIM_API_URL);
@@ -62,7 +61,7 @@ export async function fetchVatsimData() {
         create: { icao },
       });
 
-      const trafficScore = calculateTrafficScore(traffic.arrivals, traffic.departures, traffic.overflights);
+      const trafficScore = calculateTrafficScore(traffic.arrivals, traffic.departures);
 
       await prisma.trafficSnapshot.create({
         data: {
