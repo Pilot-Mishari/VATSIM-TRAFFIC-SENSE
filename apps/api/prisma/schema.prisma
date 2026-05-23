@@ -1,0 +1,40 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Airport {
+  id                Int                 @id @default(autoincrement())
+  icao              String              @unique
+  name              String?
+  country           String?
+  fir               String?
+  ControllerSession ControllerSession[]
+  TrafficSnapshot   TrafficSnapshot[]
+}
+
+model ControllerSession {
+  id           Int       @id @default(autoincrement())
+  callsign     String
+  positionType String
+  airportId    Int
+  startTime    DateTime
+  endTime      DateTime?
+  Airport      Airport   @relation(fields: [airportId], references: [id])
+}
+
+model TrafficSnapshot {
+  id            Int      @id @default(autoincrement())
+  airportId     Int
+  timestamp     DateTime @default(now())
+  arrivals      Int
+  departures    Int
+  overflights   Int
+  totalAircraft Int
+  trafficScore  Int
+  Airport       Airport  @relation(fields: [airportId], references: [id])
+}
