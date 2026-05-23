@@ -1,0 +1,11 @@
+{
+  "$schema": "https://railway.app/railway.schema.json",
+  "build": {
+    "builder": "NIXPACKS",
+    "buildCommand": "npm i -g pnpm && pnpm install && cd apps/api && pnpm build"
+  },
+  "deploy": {
+    "startCommand": "node apps/api/dist/index.js",
+    "healthcheckPath": "/health"
+  }
+}
