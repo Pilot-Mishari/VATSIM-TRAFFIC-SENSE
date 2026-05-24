@@ -1,0 +1,5 @@
+node_modules
+apps/web
+services/collector
+packages/shared
+.git
