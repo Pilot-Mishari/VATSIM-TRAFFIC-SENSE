@@ -1,8 +1,6 @@
 .git
 .gitignore
-node_modules
-apps/web/node_modules
-apps/web/.vite
+apps/web
 services/collector
-packages/shared
 *.md
+.env

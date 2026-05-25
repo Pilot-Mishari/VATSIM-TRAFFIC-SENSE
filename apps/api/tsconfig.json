@@ -5,7 +5,8 @@
     "rootDir": "./src",
     "moduleResolution": "node",
     "module": "CommonJS",
-    "types": ["node"]
+    "types": ["node"],
+    "ignoreDeprecations": "6.0"
   },
   "include": ["src"]
 }
