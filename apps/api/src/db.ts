@@ -11,6 +11,10 @@ if (url.startsWith('DATABASE_URL=')) {
   url = url.replace('DATABASE_URL=', '');
 }
 
+// Set NODE_PATH to help resolve prisma runtime utils
+process.env.NODE_PATH = resolve(__dirname, '../../../node_modules');
+require('module').Module._initPaths();
+
 const adapter = new PrismaPg({ connectionString: url });
 const prisma = new PrismaClient({ adapter });
 
