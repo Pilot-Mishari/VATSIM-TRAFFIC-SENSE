@@ -39,16 +39,21 @@ export async function fetchVatsimData() {
 
     console.log(`Processing ${icaoCodes.length} airports...`);
 
-    // Upsert all airports in one transaction
-    await prisma.$transaction(
-      icaoCodes.map(icao =>
-        prisma.airport.upsert({
-          where: { icao },
-          update: {},
-          create: { icao },
-        })
-      )
-    );
+    // Upsert all airports in batches to avoid transaction timeout
+    const BATCH_SIZE = 50;
+    for (let i = 0; i < icaoCodes.length; i += BATCH_SIZE) {
+      const batch = icaoCodes.slice(i, i + BATCH_SIZE);
+      await prisma.$transaction(
+        batch.map(icao =>
+          prisma.airport.upsert({
+            where: { icao },
+            update: {},
+            create: { icao },
+          })
+        ),
+        { timeout: 30000 }
+      );
+    }
 
     // Fetch all airport IDs in one query
     const airports = await prisma.airport.findMany({
