@@ -3,10 +3,10 @@
   "compilerOptions": {
     "outDir": "./dist",
     "rootDir": "./src",
-    "moduleResolution": "NodeNext",
-    "module": "NodeNext",
-    "types": ["node"]
+    "moduleResolution": "node",
+    "module": "CommonJS",
+    "types": ["node"],
+    "ignoreDeprecations": "6.0"
   },
-  "include": ["src"],
-  "exclude": ["prisma.config.ts"]
+  "include": ["src"]
 }

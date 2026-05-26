@@ -1,12 +1,19 @@
 import './db';
 import { fetchVatsimData } from './vatsim';
 
-console.log('SectorSense Collector started');
+const INTERVAL_MS = 10 * 60 * 1000; // 10 minutes
 
-fetchVatsimData().then(() => {
-  console.log('Collection complete');
-  process.exit(0);
-}).catch((error) => {
-  console.error('Collection failed:', error);
-  process.exit(1);
-});
+async function run() {
+  console.log('SectorSense Collector started');
+  
+  // Run immediately on startup
+  await fetchVatsimData();
+  
+  // Then run every 10 minutes
+  setInterval(async () => {
+    console.log('Fetching VATSIM data...');
+    await fetchVatsimData();
+  }, INTERVAL_MS);
+}
+
+run();
