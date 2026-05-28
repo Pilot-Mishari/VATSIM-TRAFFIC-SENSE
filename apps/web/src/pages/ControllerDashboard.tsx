@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 
-const API = 'https://sectorsenseapi-production.up.railway.app'
-const [liveControllers, setLiveControllers] = useState<any[]>([])
+const API = 'http://localhost:3000'
 
 interface Snapshot {
   id: number
@@ -41,8 +40,7 @@ export default function ControllerDashboard({ onBack }: { onBack: () => void }) 
       fetch(`${API}/airport/${icao}`).then(r => r.json()),
       fetch(`${API}/analytics/today/${icao}`).then(r => r.json()),
       fetch(`${API}/analytics/trend/${icao}`).then(r => r.json()),
-      fetch(`${API}/controllers/live/${icao}`).then(r => r.json()),
-    ]).then(([a, today, trend, ctrl]) => {
+    ]).then(([a, today, trend]) => {
       if (a.error) {
         setError('AIRPORT NOT FOUND')
         setAirport(null)
@@ -51,8 +49,6 @@ export default function ControllerDashboard({ onBack }: { onBack: () => void }) 
         setTodaySnapshots(Array.isArray(today) ? today : [])
         setTrendSnapshots(Array.isArray(trend) ? trend : [])
       }
-      // Fetch live controllers
-      setLiveControllers(Array.isArray(ctrl) ? ctrl : [])
       setLoading(false)
     }).catch(() => {
       setError('FAILED TO LOAD DATA')
@@ -61,7 +57,7 @@ export default function ControllerDashboard({ onBack }: { onBack: () => void }) 
   }, [icao])
 
   function trafficLevel(score: number) {
-    if (score >= 150) return { label: 'VERY HIGH', color: '#ff4d4d' }
+    if (score >= 150) return { label: 'EXTREME', color: '#ff4d4d' }
     if (score >= 80) return { label: 'HIGH', color: '#ff9500' }
     if (score >= 30) return { label: 'MEDIUM', color: '#3b9eff' }
     return { label: 'LOW', color: '#4dff91' }
@@ -304,34 +300,10 @@ export default function ControllerDashboard({ onBack }: { onBack: () => void }) 
 
                 {/* Recommended Staffing */}
                 <div style={styles.card}>
-                    <div style={styles.label}>RECOMMENDED STAFFING</div>
-                    <div style={{ marginTop: 8, display: 'flex', flexDirection: 'column', gap: 8 }}>
-                      {staffingRecommendation(currentSnap.trafficScore).split(' + ').map((position: string) => {
-                        const isOnline = liveControllers.some((c: any) => 
-                          c.callsign.endsWith(`_${position}`)
-                        )
-                        return (
-                          <div key={position} style={{
-                            fontSize: 12,
-                            fontWeight: 700,
-                            color: isOnline ? '#4dff91' : '#ff9500',
-                            letterSpacing: 1,
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: 8,
-                          }}>
-                            <span style={{
-                              width: 8, height: 8,
-                              borderRadius: '50%',
-                              background: isOnline ? '#4dff91' : '#ff9500',
-                              display: 'inline-block',
-                              boxShadow: isOnline ? '0 0 6px #4dff91' : 'none',
-                            }} />
-                            {position} {isOnline ? '— ONLINE' : '— OFFLINE'}
-                          </div>
-                        )
-                      })}
-                    </div>
+                  <div style={styles.label}>RECOMMENDED STAFFING</div>
+                  <div style={{ fontSize: 13, fontWeight: 700, color: '#ff9500', marginTop: 8, lineHeight: 1.8 }}>
+                    {staffingRecommendation(currentSnap.trafficScore)}
+                  </div>
                 </div>
               </div>
 

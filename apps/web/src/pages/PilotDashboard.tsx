@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 
-const API = 'https://sectorsenseapi-production.up.railway.app'
-const [liveControllers, setLiveControllers] = useState<any[]>([])
+const API = 'http://localhost:3000'
 
 interface Snapshot {
   id: number
@@ -62,8 +61,7 @@ export default function PilotDashboard({ onBack }: { onBack: () => void }) {
       fetch(`${API}/airport/${searchIcao}`).then(r => r.json()),
       fetch(`${API}/analytics/trend/${searchIcao}`).then(r => r.json()),
       fetch(`${API}/analytics/today/${searchIcao}`).then(r => r.json()),
-      fetch(`${API}/controllers/live/${searchIcao}`).then(r => r.json()),
-    ]).then(([a, trend, today, ctrl]) => {
+    ]).then(([a, trend, today]) => {
       if (a.error) {
         setSearchError('AIRPORT NOT FOUND')
         setSearchAirport(null)
@@ -72,18 +70,15 @@ export default function PilotDashboard({ onBack }: { onBack: () => void }) {
         setSearchTrend(Array.isArray(trend) ? trend : [])
         setSearchToday(Array.isArray(today) ? today : [])
       }
-      // Fetch live controllers
-      setLiveControllers(Array.isArray(ctrl) ? ctrl : [])
       setSearchLoading(false)
     }).catch(() => {
       setSearchError('FAILED TO LOAD')
       setSearchLoading(false)
     })
-    
   }, [searchIcao])
 
   function trafficLevel(score: number) {
-    if (score >= 150) return { label: 'VERY HIGH', color: '#ff4d4d' }
+    if (score >= 150) return { label: 'EXTREME', color: '#ff4d4d' }
     if (score >= 80) return { label: 'HIGH', color: '#ff9500' }
     if (score >= 30) return { label: 'MEDIUM', color: '#3b9eff' }
     return { label: 'LOW', color: '#4dff91' }
@@ -384,28 +379,6 @@ export default function PilotDashboard({ onBack }: { onBack: () => void }) {
                         <div style={{ fontSize: 20, fontWeight: 700, color: '#ff9500' }}>{searchSnap.departures}</div>
                       </div>
                     </div>
-
-                    {/* Live ATC */}
-                    {searchSnap && !searchLoading && (
-                      <div style={card}>
-                        <div style={label}>LIVE ATC ONLINE</div>
-                        {liveControllers.length === 0 ? (
-                          <div style={{ fontSize: 11, color: '#4a7aaa' }}>NO ATC ONLINE</div>
-                        ) : (
-                          liveControllers.map((c: any, i: number) => (
-                            <div key={i} style={{
-                              display: 'flex', justifyContent: 'space-between',
-                              padding: '8px 0',
-                              borderBottom: '1px solid rgba(59,158,255,0.06)',
-                              fontSize: 12,
-                            }}>
-                              <span style={{ fontWeight: 700, letterSpacing: 1, color: '#4dff91' }}>{c.callsign}</span>
-                              <span style={{ color: '#4a7aaa', fontSize: 10 }}>{c.frequency}</span>
-                            </div>
-                          ))
-                        )}
-                      </div>
-                    )}
 
                     {searchTrendData && (
                       <div style={{ background: 'rgba(59,158,255,0.05)', borderRadius: 8, padding: 12 }}>
