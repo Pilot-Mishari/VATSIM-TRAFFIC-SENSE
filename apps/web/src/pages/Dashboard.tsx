@@ -80,7 +80,7 @@ export default function Dashboard({ onNavigate }: { onNavigate: (page: string) =
     : topAirports
 
   function trafficLevel(score: number) {
-    if (score >= 150) return { label: 'EXTREME', color: '#ff4d4d' }
+    if (score >= 150) return { label: 'VERY HIGH', color: '#ff4d4d' }
     if (score >= 80) return { label: 'HIGH', color: '#ff9500' }
     if (score >= 30) return { label: 'MEDIUM', color: '#3b9eff' }
     return { label: 'LOW', color: '#4dff91' }
