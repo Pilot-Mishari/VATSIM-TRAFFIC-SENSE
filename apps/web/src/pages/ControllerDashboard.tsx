@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 
 const API = 'https://sectorsenseapi-production.up.railway.app'
-const [liveControllers, setLiveControllers] = useState<any[]>([])
 
 interface Snapshot {
   id: number
@@ -19,6 +18,7 @@ interface Airport {
 }
 
 export default function ControllerDashboard({ onBack }: { onBack: () => void }) {
+  const [liveControllers, setLiveControllers] = useState<any[]>([])
   const [icaoInput, setIcaoInput] = useState('')
   const [icao, setIcao] = useState('')
   const [airport, setAirport] = useState<Airport | null>(null)
