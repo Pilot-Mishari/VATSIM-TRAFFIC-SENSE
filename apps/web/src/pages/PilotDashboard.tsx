@@ -399,7 +399,10 @@ export default function PilotDashboard({ onBack }: { onBack: () => void }) {
                               borderBottom: '1px solid rgba(59,158,255,0.06)',
                               fontSize: 12,
                             }}>
-                              <span style={{ fontWeight: 700, letterSpacing: 1, color: '#4dff91' }}>{c.callsign}</span>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                                <span style={{ fontWeight: 700, letterSpacing: 1, color: '#4dff91' }}>{c.callsign}</span>
+                                <span style={{ fontSize: 10, fontWeight: 700, color: '#4dff91' }}>ONLINE</span>
+                              </div>
                               <span style={{ color: '#4a7aaa', fontSize: 10 }}>{c.frequency}</span>
                             </div>
                           ))
