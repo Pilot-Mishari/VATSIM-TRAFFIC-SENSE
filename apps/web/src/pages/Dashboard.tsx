@@ -123,12 +123,14 @@ export default function Dashboard({ onNavigate }: { onNavigate: (page: string) =
               style={{ fontSize: 12, letterSpacing: 2, color: '#ffffff', textDecoration: 'none' }}>
               ABOUT
             </a>
-            <a href="#" onClick={e => e.preventDefault()}
+            <a href="https://github.com/Pilot-Mishari/VATSIM-TRAFFIC-SENSE" target="_blank" rel="noopener noreferrer"
               style={{ fontSize: 12, letterSpacing: 2, color: '#4dff91', textDecoration: 'none' }}>
               GITHUB
             </a>
             <a href="#" onClick={e => e.preventDefault()}
-              style={{ fontSize: 12, letterSpacing: 2, color: '#ff9500', textDecoration: 'none' }}>
+              style={{ fontSize: 12, letterSpacing: 2, color: '#ff9500', textDecoration: 'none' }}
+              onMouseEnter={e => { e.currentTarget.style.textDecoration = 'line-through' }}
+              onMouseLeave={e => { e.currentTarget.style.textDecoration = 'none' }}>
               DISCORD
             </a>
           </div>
