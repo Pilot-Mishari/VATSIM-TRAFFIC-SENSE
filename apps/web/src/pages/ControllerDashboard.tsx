@@ -1,3 +1,5 @@
+/* eslint-disable */
+/* stylelint-disable */
 import { useEffect, useState } from 'react'
 
 const API = 'https://sectorsenseapi-production.up.railway.app'
@@ -26,6 +28,7 @@ export default function ControllerDashboard({ onBack }: { onBack: () => void }) 
   const [trendSnapshots, setTrendSnapshots] = useState<Snapshot[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [prediction, setPrediction] = useState<any>(null)
 
   function handleSearch() {
     if (icaoInput.length !== 4) return
@@ -42,7 +45,8 @@ export default function ControllerDashboard({ onBack }: { onBack: () => void }) 
       fetch(`${API}/analytics/today/${icao}`).then(r => r.json()),
       fetch(`${API}/analytics/trend/${icao}`).then(r => r.json()),
       fetch(`${API}/controllers/live/${icao}`).then(r => r.json()),
-    ]).then(([a, today, trend, ctrl]) => {
+      fetch(`${API}/analytics/predict/${icao}`).then(r => r.json()),
+    ]).then(([a, today, trend, ctrl, predictionData]) => {
       if (a.error) {
         setError('AIRPORT NOT FOUND')
         setAirport(null)
@@ -51,6 +55,7 @@ export default function ControllerDashboard({ onBack }: { onBack: () => void }) 
         setTodaySnapshots(Array.isArray(today) ? today : [])
         setTrendSnapshots(Array.isArray(trend) ? trend : [])
       }
+      setPrediction(predictionData)
       // Fetch live controllers
       setLiveControllers(Array.isArray(ctrl) ? ctrl : [])
       setLoading(false)
@@ -74,18 +79,10 @@ export default function ControllerDashboard({ onBack }: { onBack: () => void }) 
     return 'TWR'
   }
 
-  function predictNextHours(snapshots: Snapshot[]) {
-    if (snapshots.length < 2) return null
-    const recent = snapshots.slice(-4)
-    const avg = recent.reduce((s, x) => s + x.trafficScore, 0) / recent.length
-    const oldest = recent[0].trafficScore
-    const newest = recent[recent.length - 1].trafficScore
-    const trend = newest - oldest
-    return {
-      predicted: Math.max(0, Math.round(avg + trend)),
-      direction: trend > 5 ? 'INCREASING' : trend < -5 ? 'DECREASING' : 'STABLE',
-      color: trend > 5 ? '#ff9500' : trend < -5 ? '#4dff91' : '#3b9eff',
-    }
+  function isControllerOnline(controller: any, position: string) {
+    const callsign = String(controller?.callsign ?? '').toUpperCase()
+    const token = position.toUpperCase()
+    return callsign.endsWith(`_${token}`) || callsign === token || callsign.split(/[_\s-]/).includes(token)
   }
 
   function busiestHourToday(snapshots: Snapshot[]) {
@@ -108,7 +105,6 @@ export default function ControllerDashboard({ onBack }: { onBack: () => void }) 
 
   const currentSnap = airport?.TrafficSnapshot[0]
   const currentLevel = currentSnap ? trafficLevel(currentSnap.trafficScore) : null
-  const prediction = predictNextHours(trendSnapshots)
   const busiest = busiestHourToday(todaySnapshots)
   const suggestedTime = suggestedHighTrafficTime(trendSnapshots)
 
@@ -164,7 +160,7 @@ export default function ControllerDashboard({ onBack }: { onBack: () => void }) 
             boxShadow: '0 0 12px rgba(59,158,255,0.4)',
           }}>✈</div>
           <div>
-            <div style={{ fontSize: 16, fontWeight: 700, letterSpacing: 2 }}>SECTORSENSE</div>
+            <div style={{ fontSize: 16, fontWeight: 700, letterSpacing: 2 }}>VATSENSE</div>
             <div style={{ fontSize: 10, color: '#4a7aaa', letterSpacing: 3 }}>CONTROLLER DASHBOARD</div>
           </div>
         </div>
@@ -307,9 +303,7 @@ export default function ControllerDashboard({ onBack }: { onBack: () => void }) 
                     <div style={styles.label}>RECOMMENDED STAFFING</div>
                     <div style={{ marginTop: 8, display: 'flex', flexDirection: 'column', gap: 8 }}>
                       {staffingRecommendation(currentSnap.trafficScore).split(' + ').map((position: string) => {
-                        const isOnline = liveControllers.some((c: any) => 
-                          c.callsign.endsWith(`_${position}`)
-                        )
+                        const isOnline = liveControllers.some((controller: any) => isControllerOnline(controller, position))
                         return (
                           <div key={position} style={{
                             fontSize: 12,
@@ -338,20 +332,36 @@ export default function ControllerDashboard({ onBack }: { onBack: () => void }) 
               {/* Second Row */}
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, marginBottom: 16 }}>
 
-                {/* 3 Hour Prediction */}
-                <div style={styles.card}>
-                  <div style={styles.label}>TRAFFIC IN NEXT 3 HOURS</div>
-                  {prediction ? (
-                    <>
-                      <div style={{ fontSize: 28, fontWeight: 700, color: prediction.color }}>{prediction.predicted}</div>
-                      <div style={{ fontSize: 11, color: prediction.color, marginTop: 4, letterSpacing: 1 }}>
-                        TREND: {prediction.direction}
-                      </div>
-                    </>
-                  ) : (
-                    <div style={{ fontSize: 12, color: '#4a7aaa', marginTop: 8 }}>INSUFFICIENT DATA</div>
-                  )}
-                </div>
+              {/* 3 Hour Prediction */}
+              <div style={styles.card}>
+                <div style={styles.label}>TRAFFIC PREDICTION — NEXT 3 HOURS</div>
+                {prediction && prediction.predictions ? (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginTop: 8 }}>
+                    {prediction.predictions.map((p: any) => {
+                      const color = p.level === 'VERY HIGH' ? '#ff4d4d' : p.level === 'HIGH' ? '#ff9500' : p.level === 'MEDIUM' ? '#3b9eff' : '#4dff91'
+                      return (
+                        <div key={p.hour} style={{
+                          display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                          padding: '8px 12px',
+                          background: 'rgba(59,158,255,0.04)',
+                          borderRadius: 6,
+                          border: '1px solid rgba(59,158,255,0.1)',
+                        }}>
+                          <span style={{ fontSize: 11, color: '#4a7aaa' }}>+{p.hour}H ({p.time})</span>
+                          <span style={{ fontWeight: 700, color }}>{p.predicted}</span>
+                          <span style={{ fontSize: 10, color, letterSpacing: 1 }}>{p.level}</span>
+                          <span style={{ fontSize: 9, color: '#4a7aaa' }}>{p.confidence} CONF</span>
+                        </div>
+                      )
+                    })}
+                    <div style={{ fontSize: 10, color: '#4a7aaa', marginTop: 4 }}>
+                      TREND: <span style={{ color: prediction.trend === 'INCREASING' ? '#ff9500' : prediction.trend === 'DECREASING' ? '#4dff91' : '#3b9eff' }}>{prediction.trend}</span>
+                    </div>
+                  </div>
+  ) : (
+    <div style={{ fontSize: 12, color: '#4a7aaa', marginTop: 8 }}>LOADING...</div>
+  )}
+</div>
 
                 {/* Busiest Hour Today */}
                 <div style={styles.card}>

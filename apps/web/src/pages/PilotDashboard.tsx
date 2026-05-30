@@ -174,7 +174,7 @@ export default function PilotDashboard({ onBack }: { onBack: () => void }) {
             boxShadow: '0 0 12px rgba(59,158,255,0.4)',
           }}>✈</div>
           <div>
-            <div style={{ fontSize: 16, fontWeight: 700, letterSpacing: 2 }}>SECTORSENSE</div>
+            <div style={{ fontSize: 16, fontWeight: 700, letterSpacing: 2 }}>VATSENSE</div>
             <div style={{ fontSize: 10, color: '#4a7aaa', letterSpacing: 3 }}>PILOT DASHBOARD</div>
           </div>
         </div>
@@ -399,7 +399,10 @@ export default function PilotDashboard({ onBack }: { onBack: () => void }) {
                               borderBottom: '1px solid rgba(59,158,255,0.06)',
                               fontSize: 12,
                             }}>
-                              <span style={{ fontWeight: 700, letterSpacing: 1, color: '#4dff91' }}>{c.callsign}</span>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                                <span style={{ fontWeight: 700, letterSpacing: 1, color: '#4dff91' }}>{c.callsign}</span>
+                                <span style={{ fontSize: 10, fontWeight: 700, color: '#4dff91' }}>ONLINE</span>
+                              </div>
                               <span style={{ color: '#4a7aaa', fontSize: 10 }}>{c.frequency}</span>
                             </div>
                           ))

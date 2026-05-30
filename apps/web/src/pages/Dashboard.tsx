@@ -97,29 +97,44 @@ export default function Dashboard({ onNavigate }: { onNavigate: (page: string) =
       <div style={{
         borderBottom: '1px solid rgba(59,158,255,0.2)',
         padding: '16px 32px',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
         background: 'rgba(13,15,26,0.95)',
         position: 'sticky',
         top: 0,
         zIndex: 10,
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <div style={{
-            width: 36, height: 36,
-            background: 'linear-gradient(135deg, #1a6fff, #0a3fa0)',
-            borderRadius: 8,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: 18,
-            boxShadow: '0 0 12px rgba(59,158,255,0.4)',
-          }}>✈</div>
-          <div>
-            <div style={{ fontSize: 16, fontWeight: 700, letterSpacing: 2 }}>SECTORSENSE</div>
-            <div style={{ fontSize: 10, color: '#4a7aaa', letterSpacing: 3 }}>VATSIM TRAFFIC ANALYTICS</div>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <div style={{
+              width: 36, height: 36,
+              background: 'linear-gradient(135deg, #1a6fff, #0a3fa0)',
+              borderRadius: 8,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontSize: 18,
+              boxShadow: '0 0 12px rgba(59,158,255,0.4)',
+            }}>✈</div>
+            <div>
+              <div style={{ fontSize: 16, fontWeight: 700, letterSpacing: 2 }}>VATSENSE</div>
+              <div style={{ fontSize: 10, color: '#4a7aaa', letterSpacing: 3 }}>VATSIM TRAFFIC ANALYTICS</div>
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
+            <a href="#" onClick={e => { e.preventDefault(); onNavigate('about') }}
+              style={{ fontSize: 12, letterSpacing: 2, color: '#ffffff', textDecoration: 'none' }}>
+              ABOUT
+            </a>
+            <a href="#" onClick={e => e.preventDefault()}
+              style={{ fontSize: 12, letterSpacing: 2, color: '#4dff91', textDecoration: 'none' }}>
+              GITHUB
+            </a>
+            <a href="#" onClick={e => e.preventDefault()}
+              style={{ fontSize: 12, letterSpacing: 2, color: '#ff9500', textDecoration: 'none' }}>
+              DISCORD
+            </a>
           </div>
         </div>
-        <div style={{ fontSize: 11, color: '#4a7aaa', letterSpacing: 1 }}>
+
+        <div style={{ marginTop: 12, fontSize: 11, color: '#4a7aaa', letterSpacing: 1 }}>
           {summary?.latestTimestamp
             ? `LAST UPDATE: ${new Date(summary.latestTimestamp).toUTCString().toUpperCase()}`
             : 'LOADING...'}
@@ -130,12 +145,13 @@ export default function Dashboard({ onNavigate }: { onNavigate: (page: string) =
 
         {/* Summary + Buttons */}
         {summary && (
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: '1fr 1fr 1fr',
-            gap: 16,
-            marginBottom: 32,
-          }}>
+          <>
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: '1fr 1fr 1fr',
+              gap: 16,
+              marginBottom: 32,
+            }}>
             <div style={{
               background: 'rgba(255,255,255,0.03)',
               border: '1px solid rgba(59,158,255,0.2)',
@@ -148,30 +164,33 @@ export default function Dashboard({ onNavigate }: { onNavigate: (page: string) =
             </div>
 
             {[
-              { label: 'CONTROLLER DASHBOARD'},
-              { label: 'PILOT DASHBOARD' },
+              { label: 'CONTROLLER DASHBOARD', color: '#4dff91', size: 22 },
+              { label: 'PILOT DASHBOARD', color: '#ff9500', size: 22 },
             ].map(btn => (
-              <button key={btn.label} 
+              <button key={btn.label}
                 onClick={() => onNavigate(btn.label === 'CONTROLLER DASHBOARD' ? 'controller' : 'pilot')}
                 style={{
-                background: 'rgba(59,158,255,0.08)',
-                border: '1px solid rgba(59,158,255,0.3)',
-                borderRadius: 10,
-                padding: '20px 24px',
-                color: '#3b9eff',
-                fontSize: 12,
-                letterSpacing: 2,
-                cursor: 'pointer',
-                transition: 'all 0.2s',
-                textAlign: 'left',
-                width: '100%',
-              }}
+                  background: 'rgba(59,158,255,0.06)',
+                  border: `1px solid ${btn.color}30`,
+                  borderRadius: 10,
+                  padding: '20px 24px',
+                  color: btn.color,
+                  fontSize: btn.size,
+                  letterSpacing: 1.5,
+                  fontWeight: 800,
+                  cursor: 'pointer',
+                  transition: 'all 0.15s',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: '100%',
+                }}
                 onMouseEnter={e => {
-                  e.currentTarget.style.background = 'rgba(59,158,255,0.18)'
-                  e.currentTarget.style.boxShadow = '0 0 12px rgba(59,158,255,0.3)'
+                  e.currentTarget.style.background = 'rgba(59,158,255,0.16)'
+                  e.currentTarget.style.boxShadow = `0 0 14px ${btn.color}30`
                 }}
                 onMouseLeave={e => {
-                  e.currentTarget.style.background = 'rgba(59,158,255,0.08)'
+                  e.currentTarget.style.background = 'rgba(59,158,255,0.06)'
                   e.currentTarget.style.boxShadow = 'none'
                 }}
               >
@@ -179,6 +198,7 @@ export default function Dashboard({ onNavigate }: { onNavigate: (page: string) =
               </button>
             ))}
           </div>
+          </>
         )}
 
         {/* Top Airports Table */}

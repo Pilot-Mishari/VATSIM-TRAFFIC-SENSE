@@ -1,15 +1,29 @@
 import { useState, useEffect } from 'react'
 
+function getCookie(name: string) {
+  return document.cookie
+    .split('; ')
+    .find(cookie => cookie.startsWith(`${name}=`))
+    ?.split('=')[1]
+}
+
+function setCookie(name: string, value: string, days = 365) {
+  const maxAge = days * 24 * 60 * 60
+  document.cookie = `${name}=${value}; path=/; max-age=${maxAge}; SameSite=Lax`
+}
+
 export default function WelcomeModal() {
   const [visible, setVisible] = useState(false)
+  const cookieName = 'vatsense_welcome'
 
   useEffect(() => {
-    const seen = localStorage.getItem('sectorsense_welcome')
-    if (!seen) setVisible(true)
+    if (!getCookie(cookieName)) {
+      setVisible(true)
+    }
   }, [])
 
   function dismiss() {
-    localStorage.setItem('sectorsense_welcome', 'true')
+    setCookie(cookieName, 'true', 365)
     setVisible(false)
   }
 
@@ -45,13 +59,13 @@ export default function WelcomeModal() {
             boxShadow: '0 0 12px rgba(59,158,255,0.4)',
           }}>✈</div>
           <div>
-            <div style={{ fontSize: 16, fontWeight: 700, letterSpacing: 2 }}>WELCOME TO SECTORSENSE</div>
+            <div style={{ fontSize: 16, fontWeight: 700, letterSpacing: 2, color: '#e0e6f0' }}>WELCOME TO VATSENSE</div>
             <div style={{ fontSize: 10, color: '#4a7aaa', letterSpacing: 3 }}>VATSIM TRAFFIC ANALYTICS</div>
           </div>
         </div>
 
         <div style={{ fontSize: 12, color: '#a0b8d0', lineHeight: 2, marginBottom: 32 }}>
-          <div style={{ marginBottom: 16, color: '#e0e6f0', letterSpacing: 1 }}>HOW TO USE SECTORSENSE</div>
+          <div style={{ marginBottom: 16, color: '#e0e6f0', letterSpacing: 1 }}>SEEMS LIKE YOUR FIRST TIME, HERE IS HOW TO USE VATSENSE</div>
           
           <div style={{ marginBottom: 12 }}>
             <span style={{ color: '#3b9eff' }}>MAIN DASHBOARD</span>
@@ -71,8 +85,8 @@ export default function WelcomeModal() {
             View busiest airports, live events, ATC coverage, and search specific destinations for traffic insights.
           </div>
 
-          <div style={{ marginBottom: 0, fontSize: 10, color: '#4a7aaa', marginTop: 16 }}>
-            DATA IS COLLECTED FROM VATSIM EVERY 10 MINUTES. PREDICTIONS IMPROVE AS MORE HISTORICAL DATA IS COLLECTED.
+            <div style={{ marginBottom: 0, fontSize: 10, color: '#4a7aaa', marginTop: 16 }}>
+            DATA IS COLLECTED FROM VATSIM EVERY 10 MINUTES. THIS IS STILL A WORK IN PROGRESS. PREDICTIONS ARE NOT ACCURATE.
           </div>
         </div>
 

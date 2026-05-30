@@ -140,4 +140,155 @@ router.get('/trend/:icao', async (req: Request, res: Response) => {
   }
 });
 
+
+// Historical hourly averages for an airport
+router.get('/hourly-average/:icao', async (req: Request, res: Response) => {
+  try {
+    const { icao } = req.params;
+
+    const airport = await prisma.airport.findUnique({
+      where: { icao: icao.toUpperCase() },
+    });
+
+    if (!airport) return res.status(404).json({ error: 'Airport not found' });
+
+    const snapshots = await prisma.trafficSnapshot.findMany({
+      where: { airportId: airport.id },
+      orderBy: { timestamp: 'asc' },
+    });
+
+    // Group by day of week + hour
+    const groups: Record<string, number[]> = {};
+
+    for (const snap of snapshots) {
+      const date = new Date(snap.timestamp);
+      const dow = date.getUTCDay(); // 0=Sun, 6=Sat
+      const hour = date.getUTCHours();
+      const key = `${dow}-${hour}`;
+      if (!groups[key]) groups[key] = [];
+      groups[key].push(snap.trafficScore);
+    }
+
+    // Calculate averages and peak per slot
+    const averages: Record<string, { avg: number; peak: number; samples: number }> = {};
+    for (const [key, scores] of Object.entries(groups)) {
+      averages[key] = {
+        avg: Math.round(scores.reduce((a, b) => a + b, 0) / scores.length),
+        peak: Math.max(...scores),
+        samples: scores.length,
+      };
+    }
+
+    res.json(averages);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to fetch hourly averages' });
+  }
+});
+
+// Full prediction for next 3 hours
+router.get('/predict/:icao', async (req: Request, res: Response) => {
+  try {
+    const { icao } = req.params;
+
+    const airport = await prisma.airport.findUnique({
+      where: { icao: icao.toUpperCase() },
+    });
+
+    if (!airport) return res.status(404).json({ error: 'Airport not found' });
+
+    // Pull a reasonable amount of history and recent snapshots
+    const allSnapshots = await prisma.trafficSnapshot.findMany({
+      where: { airportId: airport.id },
+      orderBy: { timestamp: 'asc' },
+    });
+
+    const recentSnapshots = allSnapshots.slice(-12); // last ~2 hours (12 * 10min)
+
+    if (recentSnapshots.length < 2) {
+      return res.json({ prediction: 'INSUFFICIENT_DATA', hours: [] });
+    }
+
+    // Helper: compute historical scores for a given future slot (dow-hour)
+    function historicalForSlot(dow: number, hour: number) {
+      return allSnapshots
+        .filter(s => {
+          const d = new Date(s.timestamp);
+          return d.getUTCDay() === dow && d.getUTCHours() === hour;
+        })
+        .map(s => s.trafficScore);
+    }
+
+    // Trend: use linear projection from recent snapshots
+    const recent = recentSnapshots.map(s => ({
+      t: new Date(s.timestamp).getTime() / 1000,
+      v: s.trafficScore,
+    }));
+
+    // Simple slope (v per second) via two-point first/last
+    const slope = (recent[recent.length - 1].v - recent[0].v) / (recent[recent.length - 1].t - recent[0].t);
+    const slopePerHour = slope * 3600; // per hour
+
+    const now = new Date();
+    const predictions: any[] = [];
+
+    for (let h = 1; h <= 3; h++) {
+      const futureTime = new Date(now.getTime() + h * 60 * 60 * 1000);
+      const dow = futureTime.getUTCDay();
+      const hour = futureTime.getUTCHours();
+
+      const historicalScores = historicalForSlot(dow, hour);
+      const histCount = historicalScores.length;
+      const histAvg = histCount > 0 ? historicalScores.reduce((a, b) => a + b, 0) / histCount : null;
+
+      // Determine weights based on available history
+      // More historical samples => higher weight to historical average
+      let histWeight = 0.6;
+      if (histCount >= 48) histWeight = 0.8;
+      else if (histCount >= 12) histWeight = 0.7;
+      else if (histCount >= 4) histWeight = 0.55;
+      else histWeight = 0.35;
+
+      const trendWeight = 1 - histWeight;
+
+      const currentScore = recent[recent.length - 1].v;
+      const trendProjected = Math.max(0, Math.round(currentScore + slopePerHour * h));
+
+      let predicted: number;
+      if (histAvg !== null) {
+        predicted = Math.round(histWeight * histAvg + trendWeight * trendProjected);
+      } else {
+        predicted = trendProjected;
+      }
+
+      if (predicted < 0) predicted = 0;
+
+      const level = predicted >= 150 ? 'VERY HIGH' : predicted >= 80 ? 'HIGH' : predicted >= 30 ? 'MEDIUM' : 'LOW';
+      const confidence = histCount >= 48 ? 'HIGH' : histCount >= 12 ? 'MEDIUM' : histCount >= 4 ? 'LOW' : 'LOW';
+
+      predictions.push({
+        hour: h,
+        time: futureTime.toUTCString().slice(17, 22) + 'Z',
+        predicted,
+        level,
+        historicalSamples: histCount,
+        confidence,
+      });
+    }
+
+    // Overall trend descriptor
+    const overallDelta = recent[recent.length - 1].v - recent[0].v;
+    const trend = overallDelta > 10 ? 'INCREASING' : overallDelta < -10 ? 'DECREASING' : 'STABLE';
+
+    res.json({
+      currentScore: recent[recent.length - 1].v,
+      trend,
+      predictions,
+    });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to generate prediction' });
+  }
+});
 export default router;
