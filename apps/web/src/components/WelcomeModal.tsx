@@ -14,7 +14,7 @@ function setCookie(name: string, value: string, days = 365) {
 
 export default function WelcomeModal() {
   const [visible, setVisible] = useState(false)
-  const cookieName = 'sectorsense_welcome'
+  const cookieName = 'vatsense_welcome'
 
   useEffect(() => {
     if (!getCookie(cookieName)) {
@@ -59,13 +59,13 @@ export default function WelcomeModal() {
             boxShadow: '0 0 12px rgba(59,158,255,0.4)',
           }}>✈</div>
           <div>
-            <div style={{ fontSize: 16, fontWeight: 700, letterSpacing: 2, color: '#e0e6f0' }}>WELCOME TO SECTORSENSE</div>
+            <div style={{ fontSize: 16, fontWeight: 700, letterSpacing: 2, color: '#e0e6f0' }}>WELCOME TO VATSENSE</div>
             <div style={{ fontSize: 10, color: '#4a7aaa', letterSpacing: 3 }}>VATSIM TRAFFIC ANALYTICS</div>
           </div>
         </div>
 
         <div style={{ fontSize: 12, color: '#a0b8d0', lineHeight: 2, marginBottom: 32 }}>
-          <div style={{ marginBottom: 16, color: '#e0e6f0', letterSpacing: 1 }}>SEEMS LIKE YOUR FIRST TIME, HERE IS HOW TO USE SECTORSENSE</div>
+          <div style={{ marginBottom: 16, color: '#e0e6f0', letterSpacing: 1 }}>SEEMS LIKE YOUR FIRST TIME, HERE IS HOW TO USE VATSENSE</div>
           
           <div style={{ marginBottom: 12 }}>
             <span style={{ color: '#3b9eff' }}>MAIN DASHBOARD</span>
@@ -85,7 +85,7 @@ export default function WelcomeModal() {
             View busiest airports, live events, ATC coverage, and search specific destinations for traffic insights.
           </div>
 
-          <div style={{ marginBottom: 0, fontSize: 10, color: '#4a7aaa', marginTop: 16 }}>
+            <div style={{ marginBottom: 0, fontSize: 10, color: '#4a7aaa', marginTop: 16 }}>
             DATA IS COLLECTED FROM VATSIM EVERY 10 MINUTES. THIS IS STILL A WORK IN PROGRESS. PREDICTIONS ARE NOT ACCURATE.
           </div>
         </div>

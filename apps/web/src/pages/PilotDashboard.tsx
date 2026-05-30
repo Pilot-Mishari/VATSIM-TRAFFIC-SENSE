@@ -174,7 +174,7 @@ export default function PilotDashboard({ onBack }: { onBack: () => void }) {
             boxShadow: '0 0 12px rgba(59,158,255,0.4)',
           }}>✈</div>
           <div>
-            <div style={{ fontSize: 16, fontWeight: 700, letterSpacing: 2 }}>SECTORSENSE</div>
+            <div style={{ fontSize: 16, fontWeight: 700, letterSpacing: 2 }}>VATSENSE</div>
             <div style={{ fontSize: 10, color: '#4a7aaa', letterSpacing: 3 }}>PILOT DASHBOARD</div>
           </div>
         </div>
