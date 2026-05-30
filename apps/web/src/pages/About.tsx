@@ -67,23 +67,23 @@ export default function About({ onBack }: { onBack: () => void }) {
           <div style={{ fontSize: 18, fontWeight: 700, letterSpacing: 2, color: '#ffffff', marginBottom: 14 }}>FAQ</div>
 
           <div style={{ marginBottom: 18 }}>
-            <div style={{ fontSize: 13, fontWeight: 700, color: '#4dff91', marginBottom: 6 }}>Q: How do I navigate between pages?</div>
+            <div style={{ fontSize: 13, fontWeight: 700, color: '#4dff91', marginBottom: 6 }}> What is SectorSense and who is it for?</div>
             <div style={{ fontSize: 15, lineHeight: 1.8, color: '#d7e2f0' }}>
-              Use the Dashboard buttons to open the Controller or Pilot views. The top links include an About page and blank placeholders for GitHub / Discord.
+              SectorSense is a VATSIM traffic analytics platform that helps controllers, pilots, event coordinators, and vACC staff make better operational decisions. It monitors live VATSIM traffic, analyzes historical patterns, and predicts future workload levels based on real data collected from the VATSIM network. Whether you're deciding when to open a sector, planning a flight to a busy airport, or organizing an event, SectorSense gives you the data to make informed decisions instead of guessing.
             </div>
           </div>
 
           <div style={{ marginBottom: 18 }}>
-            <div style={{ fontSize: 13, fontWeight: 700, color: '#4dff91', marginBottom: 6 }}>Q: What does the arrow on the Dashboard mean?</div>
+            <div style={{ fontSize: 13, fontWeight: 700, color: '#4dff91', marginBottom: 6 }}> How accurate are the predictions?</div>
             <div style={{ fontSize: 15, lineHeight: 1.8, color: '#d7e2f0' }}>
-              The arrow indicates the page continues downward. Add a GIF file at <code style={{ color: '#a0b8d0' }}>/arrow.gif</code> to make it animate.
+              Prediction accuracy improves over time as more historical data is collected. SectorSense launched data collection recently and currently has tens of thousands of snapshots. Predictions for major high-traffic airports like EGLL, EDDF, and OMDB are already showing meaningful patterns. Smaller or less active airports will have lower confidence predictions until enough data is collected. Every prediction displays a confidence level — LOW, MEDIUM, or HIGH — so you always know how reliable the estimate is. As a general rule, predictions become significantly more accurate after 2-3 months of consistent data collection.
             </div>
           </div>
 
           <div>
-            <div style={{ fontSize: 13, fontWeight: 700, color: '#4dff91', marginBottom: 6 }}>Q: How do I close this page?</div>
+            <div style={{ fontSize: 13, fontWeight: 700, color: '#4dff91', marginBottom: 6 }}>How often is the data updated?  </div>
             <div style={{ fontSize: 15, lineHeight: 1.8, color: '#d7e2f0' }}>
-              Click the BACK TO DASHBOARD button at the top to return to the main dashboard.
+              SectorSense collects a snapshot of all active VATSIM traffic every 10 minutes, 24 hours a day. This means the traffic scores, aircraft counts, and airport activity levels you see are never more than 10 minutes old. The live ATC section pulls directly from the VATSIM data feed in real time when you load a dashboard. Historical data is retained permanently and used to build trend analysis and predictions over time.
             </div>
           </div>
         </div>
