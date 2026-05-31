@@ -197,95 +197,142 @@ router.get('/predict/:icao', async (req: Request, res: Response) => {
 
     if (!airport) return res.status(404).json({ error: 'Airport not found' });
 
-    // Pull a reasonable amount of history and recent snapshots
-    const allSnapshots = await prisma.trafficSnapshot.findMany({
+    const snapshots = await prisma.trafficSnapshot.findMany({
       where: { airportId: airport.id },
       orderBy: { timestamp: 'asc' },
     });
 
-    const recentSnapshots = allSnapshots.slice(-12); // last ~2 hours (12 * 10min)
-
-    if (recentSnapshots.length < 2) {
-      return res.json({ prediction: 'INSUFFICIENT_DATA', hours: [] });
+    if (snapshots.length === 0) {
+      return res.json({ currentScore: 0, trend: 'STABLE', predictions: [] });
     }
 
-    // Helper: compute historical scores for a given future slot (dow-hour)
-    function historicalForSlot(dow: number, hour: number) {
-      return allSnapshots
-        .filter(s => {
-          const d = new Date(s.timestamp);
-          return d.getUTCDay() === dow && d.getUTCHours() === hour;
-        })
-        .map(s => s.trafficScore);
+    const latestSnapshot = snapshots[snapshots.length - 1];
+    const currentScore = latestSnapshot.trafficScore;
+
+    function getWeekKey(date: Date) {
+      const tmp = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
+      const dayNumber = tmp.getUTCDay() || 7;
+      tmp.setUTCDate(tmp.getUTCDate() + 4 - dayNumber);
+      const yearStart = new Date(Date.UTC(tmp.getUTCFullYear(), 0, 1));
+      const weekNumber = Math.ceil((((tmp.getTime() - yearStart.getTime()) / 86400000) + 1) / 7);
+      return `${tmp.getUTCFullYear()}-${String(weekNumber).padStart(2, '0')}`;
     }
 
-    // Trend: use linear projection from recent snapshots
-    const recent = recentSnapshots.map(s => ({
-      t: new Date(s.timestamp).getTime() / 1000,
-      v: s.trafficScore,
-    }));
+    const slotToSamples = new Map<string, number[]>();
+    const slotWeekMap = new Map<string, Map<string, number[]>>();
 
-    // Simple slope (v per second) via two-point first/last
-    const slope = (recent[recent.length - 1].v - recent[0].v) / (recent[recent.length - 1].t - recent[0].t);
-    const slopePerHour = slope * 3600; // per hour
+    for (const snap of snapshots) {
+      const date = new Date(snap.timestamp);
+      const dow = date.getUTCDay();
+      const hour = date.getUTCHours();
+      const slot = `${dow}-${hour}`;
+      const weekKey = getWeekKey(date);
 
-    const now = new Date();
-    const predictions: any[] = [];
+      if (!slotToSamples.has(slot)) slotToSamples.set(slot, []);
+      slotToSamples.get(slot)!.push(snap.trafficScore);
 
-    for (let h = 1; h <= 3; h++) {
-      const futureTime = new Date(now.getTime() + h * 60 * 60 * 1000);
-      const dow = futureTime.getUTCDay();
-      const hour = futureTime.getUTCHours();
+      if (!slotWeekMap.has(slot)) slotWeekMap.set(slot, new Map());
+      const weekMap = slotWeekMap.get(slot)!;
+      if (!weekMap.has(weekKey)) weekMap.set(weekKey, []);
+      weekMap.get(weekKey)!.push(snap.trafficScore);
+    }
 
-      const historicalScores = historicalForSlot(dow, hour);
-      const histCount = historicalScores.length;
-      const histAvg = histCount > 0 ? historicalScores.reduce((a, b) => a + b, 0) / histCount : null;
+    const slotAverages = new Map<string, { historicalAvg: number; samples: number; weeklyGrowthRate: number }>();
 
-      // Determine weights based on available history
-      // More historical samples => higher weight to historical average
-      let histWeight = 0.6;
-      if (histCount >= 48) histWeight = 0.8;
-      else if (histCount >= 12) histWeight = 0.7;
-      else if (histCount >= 4) histWeight = 0.55;
-      else histWeight = 0.35;
+    for (const [slot, scores] of slotToSamples.entries()) {
+      const historicalAvg = scores.reduce((sum, score) => sum + score, 0) / scores.length;
+      const weekMap = slotWeekMap.get(slot)!;
+      const weekEntries = Array.from(weekMap.entries()).sort((a, b) => a[0].localeCompare(b[0]));
 
-      const trendWeight = 1 - histWeight;
-
-      const currentScore = recent[recent.length - 1].v;
-      const trendProjected = Math.max(0, Math.round(currentScore + slopePerHour * h));
-
-      let predicted: number;
-      if (histAvg !== null) {
-        predicted = Math.round(histWeight * histAvg + trendWeight * trendProjected);
-      } else {
-        predicted = trendProjected;
+      const changes: { change: number; weight: number }[] = [];
+      for (let i = 1; i < weekEntries.length; i += 1) {
+        const prevAvg = weekEntries[i - 1][1].reduce((sum, score) => sum + score, 0) / weekEntries[i - 1][1].length;
+        const currAvg = weekEntries[i][1].reduce((sum, score) => sum + score, 0) / weekEntries[i][1].length;
+        if (prevAvg > 0) {
+          const change = (currAvg - prevAvg) / prevAvg;
+          const isRecent = i >= Math.max(1, weekEntries.length - 4);
+          changes.push({ change, weight: isRecent ? 2 : 1 });
+        }
       }
 
-      if (predicted < 0) predicted = 0;
+      let weeklyGrowthRate = 0;
+      if (changes.length > 0) {
+        const weightedSum = changes.reduce((sum, item) => sum + item.change * item.weight, 0);
+        const totalWeight = changes.reduce((sum, item) => sum + item.weight, 0);
+        weeklyGrowthRate = weightedSum / totalWeight;
+      }
 
-      const level = predicted >= 150 ? 'VERY HIGH' : predicted >= 80 ? 'HIGH' : predicted >= 30 ? 'MEDIUM' : 'LOW';
-      const confidence = histCount >= 48 ? 'HIGH' : histCount >= 12 ? 'MEDIUM' : histCount >= 4 ? 'LOW' : 'LOW';
+      slotAverages.set(slot, {
+        historicalAvg,
+        samples: scores.length,
+        weeklyGrowthRate,
+      });
+    }
+
+    const currentSlot = `${new Date(latestSnapshot.timestamp).getUTCDay()}-${new Date(latestSnapshot.timestamp).getUTCHours()}`;
+    const currentSlotInfo = slotAverages.get(currentSlot);
+    const currentDeviation = currentSlotInfo && currentSlotInfo.historicalAvg > 0
+      ? (currentScore - currentSlotInfo.historicalAvg) / currentSlotInfo.historicalAvg
+      : 0;
+
+    const recentForTrend = snapshots.slice(-6);
+    const trendDirection = recentForTrend.length >= 2
+      ? recentForTrend[recentForTrend.length - 1].trafficScore - recentForTrend[0].trafficScore
+      : 0;
+    const trend = trendDirection > 10 ? 'INCREASING' : trendDirection < -10 ? 'DECREASING' : 'STABLE';
+
+    function formatHour(hour: number) {
+      return `${String(hour).padStart(2, '0')}:00Z`;
+    }
+
+    const predictions: any[] = [];
+    const fallbackTrendDeltaPerSnapshot = recentForTrend.length > 1
+      ? (recentForTrend[recentForTrend.length - 1].trafficScore - recentForTrend[0].trafficScore) / (recentForTrend.length - 1)
+      : 0;
+
+    const now = new Date();
+    for (let h = 1; h <= 3; h += 1) {
+      const futureTime = new Date(now.getTime() + h * 60 * 60 * 1000);
+      const slot = `${futureTime.getUTCDay()}-${futureTime.getUTCHours()}`;
+      const slotInfo = slotAverages.get(slot);
+
+      let predicted: number;
+      let confidence: string;
+      let sampleCount = slotInfo?.samples ?? 0;
+
+      if (slotInfo && sampleCount >= 3) {
+        confidence = sampleCount >= 9 ? 'HIGH' : 'MEDIUM';
+        predicted = slotInfo.historicalAvg * (1 + slotInfo.weeklyGrowthRate) * (1 + currentDeviation * 0.3);
+      } else {
+        confidence = 'LOW';
+        predicted = currentScore + fallbackTrendDeltaPerSnapshot * 6;
+      }
+
+      predicted = Math.max(0, Math.floor(predicted));
+
+      const level = predicted >= 150
+        ? 'VERY HIGH'
+        : predicted >= 80
+          ? 'HIGH'
+          : predicted >= 30
+            ? 'MEDIUM'
+            : 'LOW';
 
       predictions.push({
         hour: h,
-        time: futureTime.toUTCString().slice(17, 22) + 'Z',
+        time: formatHour(futureTime.getUTCHours()),
         predicted,
         level,
-        historicalSamples: histCount,
+        historicalSamples: sampleCount,
         confidence,
       });
     }
 
-    // Overall trend descriptor
-    const overallDelta = recent[recent.length - 1].v - recent[0].v;
-    const trend = overallDelta > 10 ? 'INCREASING' : overallDelta < -10 ? 'DECREASING' : 'STABLE';
-
     res.json({
-      currentScore: recent[recent.length - 1].v,
+      currentScore,
       trend,
       predictions,
     });
-
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Failed to generate prediction' });

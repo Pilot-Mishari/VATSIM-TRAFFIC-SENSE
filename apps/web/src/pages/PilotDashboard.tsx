@@ -39,6 +39,7 @@ export default function PilotDashboard({ onBack }: { onBack: () => void }) {
   const [searchTrend, setSearchTrend] = useState<Snapshot[]>([])
   const [searchToday, setSearchToday] = useState<Snapshot[]>([])
   const [searchLoading, setSearchLoading] = useState(false)
+  const [showWorkloadTooltip, setShowWorkloadTooltip] = useState(false)
   const [searchError, setSearchError] = useState('')
   const [loading, setLoading] = useState(true)
 
@@ -371,9 +372,54 @@ export default function PilotDashboard({ onBack }: { onBack: () => void }) {
                         <div style={{ fontSize: 9, color: '#4a7aaa', letterSpacing: 2, marginBottom: 4 }}>AIRCRAFT</div>
                         <div style={{ fontSize: 20, fontWeight: 700 }}>{searchSnap.totalAircraft}</div>
                       </div>
-                      <div style={{ background: 'rgba(59,158,255,0.05)', borderRadius: 8, padding: 12, borderColor: `${searchLevel?.color}44` }}>
-                        <div style={{ fontSize: 9, color: '#4a7aaa', letterSpacing: 2, marginBottom: 4 }}>LEVEL</div>
+                      <div style={{ position: 'relative', background: 'rgba(59,158,255,0.05)', borderRadius: 8, padding: 12, borderColor: `${searchLevel?.color}44` }}>
+                        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 9, color: '#4a7aaa', letterSpacing: 2, marginBottom: 4 }}>
+                          LEVEL
+                          <span
+                            onMouseEnter={() => setShowWorkloadTooltip(true)}
+                            onMouseLeave={() => setShowWorkloadTooltip(false)}
+                            style={{
+                              width: 18,
+                              height: 18,
+                              borderRadius: '50%',
+                              background: '#3b9eff',
+                              color: '#0d0f1a',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              fontSize: 12,
+                              fontWeight: 700,
+                              cursor: 'default',
+                            }}
+                          >?
+                          </span>
+                        </div>
                         <div style={{ fontSize: 16, fontWeight: 700, color: searchLevel?.color }}>{searchLevel?.label}</div>
+                        {showWorkloadTooltip && (
+                          <div style={{
+                            position: 'absolute',
+                            top: 'calc(100% + 10px)',
+                            left: 0,
+                            width: 260,
+                            padding: '12px',
+                            background: '#0d0f1a',
+                            border: '1px solid rgba(59,158,255,0.3)',
+                            borderRadius: 10,
+                            boxShadow: '0 0 20px rgba(0,0,0,0.45)',
+                            zIndex: 20,
+                            color: '#e0e6f0',
+                            fontSize: 11,
+                            lineHeight: 1.5,
+                          }}>
+                            <div style={{ fontWeight: 700, marginBottom: 6 }}>Workload Index</div>
+                            <div>Represents airport traffic level as a pilot-facing workload indicator.</div>
+                            <div style={{ marginTop: 8 }}><strong>Ranges:</strong></div>
+                            <div style={{ marginTop: 4 }}><strong>0–29</strong>: Low activity</div>
+                            <div><strong>30–79</strong>: Medium activity</div>
+                            <div><strong>80–149</strong>: High activity</div>
+                            <div><strong>150+</strong>: Very high activity</div>
+                          </div>
+                        )}
                       </div>
                       <div style={{ background: 'rgba(59,158,255,0.05)', borderRadius: 8, padding: 12 }}>
                         <div style={{ fontSize: 9, color: '#4a7aaa', letterSpacing: 2, marginBottom: 4 }}>ARRIVALS</div>

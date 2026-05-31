@@ -22,6 +22,12 @@ interface Summary {
   latestTimestamp: string
 }
 
+interface Controller {
+  callsign: string
+  frequency?: string
+  position?: string
+}
+
 export default function Dashboard({ onNavigate }: { onNavigate: (page: string) => void }) {
   const [summary, setSummary] = useState<Summary | null>(null)
   const [topAirports, setTopAirports] = useState<Airport[]>([])
@@ -30,6 +36,10 @@ export default function Dashboard({ onNavigate }: { onNavigate: (page: string) =
   const [searchResult, setSearchResult] = useState<Airport | null>(null)
   const [searchLoading, setSearchLoading] = useState(false)
   const [searchError, setSearchError] = useState('')
+  const [selectedAirport, setSelectedAirport] = useState<Airport | null>(null)
+  const [selectedControllers, setSelectedControllers] = useState<Controller[]>([])
+  const [selectedLoading, setSelectedLoading] = useState(false)
+  const [selectedError, setSelectedError] = useState('')
 
   useEffect(() => {
     Promise.all([
@@ -74,6 +84,32 @@ export default function Dashboard({ onNavigate }: { onNavigate: (page: string) =
         setSearchLoading(false)
       })
   }, [search, topAirports])
+
+  async function selectAirport(icao: string) {
+    setSelectedLoading(true)
+    setSelectedError('')
+    setSelectedAirport(null)
+    try {
+      const airportResponse = await fetch(`${API}/airport/${icao}`)
+      const airportData = await airportResponse.json()
+      if (airportData.error) {
+        throw new Error(airportData.error)
+      }
+
+      const controllerResponse = await fetch(`${API}/controllers/live/${icao}`)
+      const controllerData = await controllerResponse.json()
+      if (controllerData.error) {
+        throw new Error(controllerData.error)
+      }
+
+      setSelectedAirport(airportData)
+      setSelectedControllers(Array.isArray(controllerData) ? controllerData : [])
+    } catch (error: any) {
+      setSelectedError(error?.message || 'Failed to load airport details')
+    } finally {
+      setSelectedLoading(false)
+    }
+  }
 
   const filtered = search.length > 0
     ? topAirports.filter(a => a.icao.toLowerCase().includes(search.toLowerCase()))
@@ -203,6 +239,106 @@ export default function Dashboard({ onNavigate }: { onNavigate: (page: string) =
           </>
         )}
 
+        {selectedAirport && selectedAirport.TrafficSnapshot[0] && (
+          <div style={{
+            background: 'rgba(13,15,26,0.95)',
+            border: '1px solid rgba(59,158,255,0.25)',
+            borderRadius: 14,
+            padding: '28px 30px',
+            marginBottom: 32,
+            boxShadow: '0 0 24px rgba(59,158,255,0.1)',
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginBottom: 20 }}>
+              <div>
+                <div style={{ fontSize: 14, fontWeight: 700, letterSpacing: 2, color: '#ffffff' }}>{selectedAirport.icao} SUMMARY</div>
+                <div style={{ fontSize: 11, color: '#4a7aaa', letterSpacing: 2, marginTop: 4 }}>CLICKED AIRPORT DETAILS</div>
+              </div>
+              <button
+                onClick={() => {
+                  setSelectedAirport(null)
+                  setSelectedControllers([])
+                  setSelectedError('')
+                }}
+                style={{
+                  background: 'rgba(59,158,255,0.1)',
+                  border: '1px solid rgba(59,158,255,0.25)',
+                  borderRadius: 8,
+                  color: '#4dff91',
+                  fontSize: 12,
+                  letterSpacing: 1.5,
+                  padding: '10px 18px',
+                  cursor: 'pointer',
+                }}>
+                CLEAR
+              </button>
+            </div>
+
+            {selectedLoading ? (
+              <div style={{ color: '#4a7aaa', fontSize: 12, letterSpacing: 1.5 }}>LOADING AIRPORT INFORMATION...</div>
+            ) : selectedError ? (
+              <div style={{ color: '#ff6f6f', fontSize: 12, letterSpacing: 1.5 }}>{selectedError}</div>
+            ) : (
+              (() => {
+                const snap = selectedAirport.TrafficSnapshot[0]
+                const level = trafficLevel(snap.trafficScore)
+                const controllerCount = selectedControllers.length
+                const activePositions = Array.from(new Set(selectedControllers
+                  .map(c => c.position || c.callsign.split(/[_\s-]+/).pop())
+                  .filter(Boolean)
+                ))
+
+                return (
+                  <div style={{ display: 'grid', gap: 16 }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                      <div style={{ padding: 18, background: 'rgba(255,255,255,0.03)', borderRadius: 12, border: '1px solid rgba(59,158,255,0.15)' }}>
+                        <div style={{ fontSize: 10, color: '#4a7aaa', letterSpacing: 2, marginBottom: 8 }}>CURRENT TRAFFIC</div>
+                        <div style={{ fontSize: 22, fontWeight: 700, color: '#3b9eff' }}>{snap.totalAircraft.toLocaleString()} AIRCRAFT</div>
+                        <div style={{ marginTop: 10, fontSize: 12, color: '#a0b8d0' }}>Arrivals: {snap.arrivals} · Departures: {snap.departures}</div>
+                      </div>
+                      <div style={{ padding: 18, background: 'rgba(255,255,255,0.03)', borderRadius: 12, border: '1px solid rgba(59,158,255,0.15)' }}>
+                        <div style={{ fontSize: 10, color: '#4a7aaa', letterSpacing: 2, marginBottom: 8 }}>TRAFFIC LEVEL</div>
+                        <div style={{ fontSize: 22, fontWeight: 700, color: level.color }}>{level.label}</div>
+                        <div style={{ marginTop: 10, fontSize: 12, color: '#a0b8d0' }}>Traffic score: {snap.trafficScore}</div>
+                      </div>
+                    </div>
+
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                      <div style={{ padding: 18, background: 'rgba(255,255,255,0.03)', borderRadius: 12, border: '1px solid rgba(59,158,255,0.15)' }}>
+                        <div style={{ fontSize: 10, color: '#4a7aaa', letterSpacing: 2, marginBottom: 8 }}>CURRENT CONTROLLERS</div>
+                        <div style={{ fontSize: 22, fontWeight: 700, color: '#4dff91' }}>{controllerCount}</div>
+                        <div style={{ marginTop: 10, fontSize: 12, color: '#a0b8d0' }}>{activePositions.join(' · ') || 'NO LIVE POSITIONS'}</div>
+                      </div>
+                      <div style={{ padding: 18, background: 'rgba(255,255,255,0.03)', borderRadius: 12, border: '1px solid rgba(59,158,255,0.15)' }}>
+                        <div style={{ fontSize: 10, color: '#4a7aaa', letterSpacing: 2, marginBottom: 8 }}>ADDITIONAL INSIGHTS</div>
+                        <div style={{ fontSize: 12, lineHeight: 1.8, color: '#e0e6f0' }}>
+                          <div>{snap.arrivals + snap.departures > 60 ? 'Heavy runway demand expected.' : 'Traffic remains manageable.'}</div>
+                          <div>{controllerCount === 0 ? 'No controllers detected. Expect limited ATC coverage.' : 'Live ATC coverage detected.'}</div>
+                          <div>{snap.totalAircraft > 80 ? 'Peak traffic in progress.' : 'Traffic is stable for now.'}</div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16 }}>
+                      <div style={{ padding: 18, background: 'rgba(255,255,255,0.03)', borderRadius: 12, border: '1px solid rgba(59,158,255,0.15)' }}>
+                        <div style={{ fontSize: 10, color: '#4a7aaa', letterSpacing: 2, marginBottom: 8 }}>LAST UPDATE</div>
+                        <div style={{ fontSize: 12, color: '#e0e6f0' }}>{new Date(snap.timestamp).toUTCString()}</div>
+                      </div>
+                      <div style={{ padding: 18, background: 'rgba(255,255,255,0.03)', borderRadius: 12, border: '1px solid rgba(59,158,255,0.15)' }}>
+                        <div style={{ fontSize: 10, color: '#4a7aaa', letterSpacing: 2, marginBottom: 8 }}>ACTIVE RUNWAYS</div>
+                        <div style={{ fontSize: 12, color: '#e0e6f0' }}>Estimated usage based on traffic volume.</div>
+                      </div>
+                      <div style={{ padding: 18, background: 'rgba(255,255,255,0.03)', borderRadius: 12, border: '1px solid rgba(59,158,255,0.15)' }}>
+                        <div style={{ fontSize: 10, color: '#4a7aaa', letterSpacing: 2, marginBottom: 8 }}>RECOMMENDED FOCUS</div>
+                        <div style={{ fontSize: 12, color: '#e0e6f0' }}>{level.label === 'VERY HIGH' ? 'Monitor flow and staffing closely.' : 'Traffic looks stable.'}</div>
+                      </div>
+                    </div>
+                  </div>
+                )
+              })()
+            )}
+          </div>
+        )}
+
         {/* Top Airports Table */}
         <div style={{
           background: 'rgba(255,255,255,0.02)',
@@ -255,7 +391,7 @@ export default function Dashboard({ onNavigate }: { onNavigate: (page: string) =
             <span>DEPARTURES</span>
             <span>AIRCRAFT</span>
             <span>SCORE</span>
-            <span>LEVEL</span>
+            <span>TRAFFIC LEVEL</span>
           </div>
 
           {/* Table Rows */}
@@ -280,15 +416,22 @@ export default function Dashboard({ onNavigate }: { onNavigate: (page: string) =
               {searchResult && searchResult.TrafficSnapshot[0] && (() => {
                 const snap = searchResult.TrafficSnapshot[0]
                 const level = trafficLevel(snap.trafficScore)
+                const selected = selectedAirport?.icao === searchResult.icao
                 return (
-                  <div style={{
-                    display: 'grid',
-                    gridTemplateColumns: '60px 1fr 100px 100px 100px 120px 100px',
-                    padding: '14px 24px',
-                    borderBottom: '1px solid rgba(59,158,255,0.15)',
-                    fontSize: 13,
-                    background: 'rgba(59,158,255,0.08)',
-                  }}>
+                  <div
+                    onClick={() => selectAirport(searchResult.icao)}
+                    style={{
+                      display: 'grid',
+                      gridTemplateColumns: '60px 1fr 100px 100px 100px 120px 100px',
+                      padding: '14px 24px',
+                      borderBottom: '1px solid rgba(59,158,255,0.15)',
+                      fontSize: 13,
+                      background: selected ? 'rgba(77,255,145,0.08)' : 'rgba(59,158,255,0.08)',
+                      cursor: 'pointer',
+                    }}
+                    onMouseEnter={e => (e.currentTarget.style.background = selected ? 'rgba(77,255,145,0.12)' : 'rgba(59,158,255,0.12)')}
+                    onMouseLeave={e => (e.currentTarget.style.background = selected ? 'rgba(77,255,145,0.08)' : 'rgba(59,158,255,0.08)')}
+                  >
                     <span style={{ color: '#4a7aaa', fontSize: 11 }}>—</span>
                     <span style={{ fontWeight: 700, letterSpacing: 2, color: '#ffffff' }}>{searchResult.icao}</span>
                     <span style={{ color: '#4dff91' }}>{snap.arrivals}</span>
@@ -304,18 +447,22 @@ export default function Dashboard({ onNavigate }: { onNavigate: (page: string) =
                 const snap = airport.TrafficSnapshot[0]
                 if (!snap) return null
                 const level = trafficLevel(snap.trafficScore)
+                const selected = selectedAirport?.icao === airport.icao
                 return (
-                  <div key={airport.id} style={{
-                    display: 'grid',
-                    gridTemplateColumns: '60px 1fr 100px 100px 100px 120px 100px',
-                    padding: '14px 24px',
-                    borderBottom: '1px solid rgba(59,158,255,0.07)',
-                    fontSize: 13,
-                    transition: 'background 0.15s',
-                    cursor: 'default',
-                  }}
-                    onMouseEnter={e => (e.currentTarget.style.background = 'rgba(59,158,255,0.05)')}
-                    onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                  <div key={airport.id}
+                    onClick={() => selectAirport(airport.icao)}
+                    style={{
+                      display: 'grid',
+                      gridTemplateColumns: '60px 1fr 100px 100px 100px 120px 100px',
+                      padding: '14px 24px',
+                      borderBottom: '1px solid rgba(59,158,255,0.07)',
+                      fontSize: 13,
+                      transition: 'background 0.15s',
+                      cursor: 'pointer',
+                      background: selected ? 'rgba(77,255,145,0.08)' : 'transparent',
+                    }}
+                    onMouseEnter={e => (e.currentTarget.style.background = selected ? 'rgba(77,255,145,0.12)' : 'rgba(59,158,255,0.05)')}
+                    onMouseLeave={e => (e.currentTarget.style.background = selected ? 'rgba(77,255,145,0.08)' : 'transparent')}
                   >
                     <span style={{ color: '#4a7aaa', fontSize: 11 }}>{i + 1}</span>
                     <span style={{ fontWeight: 700, letterSpacing: 2, color: '#ffffff' }}>{airport.icao}</span>
