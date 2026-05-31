@@ -29,6 +29,7 @@ export default function ControllerDashboard({ onBack }: { onBack: () => void }) 
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [prediction, setPrediction] = useState<any>(null)
+  const [showWorkloadTooltip, setShowWorkloadTooltip] = useState(false)
 
   function handleSearch() {
     if (icaoInput.length !== 4) return
@@ -288,7 +289,52 @@ export default function ControllerDashboard({ onBack }: { onBack: () => void }) 
                 <div style={styles.card}>
                   <div style={styles.label}>TRAFFIC SCORE</div>
                   <div style={{ fontSize: 36, fontWeight: 700, color: '#3b9eff' }}>{currentSnap.trafficScore}</div>
-                  <div style={{ fontSize: 11, color: '#4a7aaa', marginTop: 4 }}>WORKLOAD INDEX</div>
+                  <div style={{ position: 'relative', display: 'inline-flex', alignItems: 'center', gap: 6, marginTop: 4, fontSize: 11, color: '#4a7aaa' }}>
+                    WORKLOAD INDEX
+                    <span
+                      onMouseEnter={() => setShowWorkloadTooltip(true)}
+                      onMouseLeave={() => setShowWorkloadTooltip(false)}
+                      style={{
+                        width: 18,
+                        height: 18,
+                        borderRadius: '50%',
+                        background: '#3b9eff',
+                        color: '#0d0f1a',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontSize: 12,
+                        fontWeight: 700,
+                        cursor: 'default',
+                      }}
+                    >?
+                    </span>
+                    {showWorkloadTooltip && (
+                      <div style={{
+                        position: 'absolute',
+                        top: 'calc(100% + 10px)',
+                        left: 0,
+                        width: 280,
+                        padding: '12px',
+                        background: '#0d0f1a',
+                        border: '1px solid rgba(59,158,255,0.3)',
+                        borderRadius: 10,
+                        boxShadow: '0 0 20px rgba(0,0,0,0.45)',
+                        zIndex: 20,
+                        color: '#e0e6f0',
+                        fontSize: 11,
+                        lineHeight: 1.5,
+                      }}>
+                        <div style={{ fontWeight: 700, marginBottom: 6 }}>Workload Index</div>
+                        <div>Higher values indicate more traffic and controller workload.</div>
+                        <div style={{ marginTop: 8 }}><strong>Ranges:</strong></div>
+                        <div style={{ marginTop: 4 }}><strong>0–29</strong>: Low workload</div>
+                        <div><strong>30–79</strong>: Medium workload</div>
+                        <div><strong>80–149</strong>: High workload</div>
+                        <div><strong>150+</strong>: Very high workload</div>
+                      </div>
+                    )}
+                  </div>
                 </div>
 
                 {/* Traffic Level */}
