@@ -179,6 +179,9 @@ export default function PilotDashboard({ onBack }: { onBack: () => void }) {
             <div style={{ fontSize: 10, color: '#4a7aaa', letterSpacing: 3 }}>PILOT DASHBOARD</div>
           </div>
         </div>
+        <div style={{ fontSize: 11, color: '#7bc7ff', letterSpacing: 1.2 }}>
+          {'</>'} with love by Pilot-Mishari
+        </div>
         <button onClick={onBack} style={{
           fontSize: 11, color: '#4a7aaa', letterSpacing: 2,
           border: '1px solid rgba(59,158,255,0.2)', padding: '6px 14px',
