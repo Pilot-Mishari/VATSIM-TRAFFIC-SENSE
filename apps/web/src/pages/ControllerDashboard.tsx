@@ -165,9 +165,6 @@ export default function ControllerDashboard({ onBack }: { onBack: () => void }) 
             <div style={{ fontSize: 10, color: '#4a7aaa', letterSpacing: 3 }}>CONTROLLER DASHBOARD</div>
           </div>
         </div>
-        <div style={{ fontSize: 11, color: '#7bc7ff', letterSpacing: 1.2 }}>
-          {'</>'} with love by Pilot-Mishari
-        </div>
         <button
   onClick={onBack}
   style={{

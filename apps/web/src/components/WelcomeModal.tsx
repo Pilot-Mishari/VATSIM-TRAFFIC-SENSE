@@ -61,6 +61,9 @@ export default function WelcomeModal() {
           <div>
             <div style={{ fontSize: 16, fontWeight: 700, letterSpacing: 2, color: '#e0e6f0' }}>WELCOME TO VATSENSE</div>
             <div style={{ fontSize: 10, color: '#4a7aaa', letterSpacing: 3 }}>VATSIM TRAFFIC ANALYTICS</div>
+            <div style={{ marginTop: 6, fontSize: 11, color: '#7bc7ff', letterSpacing: 1.2 }}>
+              {'</>'} with love by Pilot-Mishari
+            </div>
           </div>
         </div>
 
