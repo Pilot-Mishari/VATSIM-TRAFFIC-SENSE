@@ -2,11 +2,6 @@ import { Router, Request, Response } from 'express';
 import prisma from '../db';
 
 const router: Router = Router();
-const RETENTION_DAYS = 11;
-
-function getRetentionCutoff(): Date {
-  return new Date(Date.now() - RETENTION_DAYS * 24 * 60 * 60 * 1000);
-}
 
 // Top airports by traffic score
 router.get('/top-airports', async (req: Request, res: Response) => {
@@ -62,36 +57,16 @@ router.get('/summary', async (req: Request, res: Response) => {
   try {
     const totalSnapshots = await prisma.trafficSnapshot.count();
 
-    const latestSnapshot = await prisma.trafficSnapshot.findFirst({
+    const latest = await prisma.trafficSnapshot.findMany({
       orderBy: { timestamp: 'desc' },
+      take: 1,
     });
 
-    const cutoff = getRetentionCutoff();
-    const snapshotsLastWindow = await prisma.trafficSnapshot.count({
-      where: { timestamp: { gte: cutoff } },
-    });
-
-    const scoreAggregates = await prisma.trafficSnapshot.aggregate({
-      _avg: { trafficScore: true },
-      where: { timestamp: { gte: cutoff } },
-    });
-
-    const oldestKept = await prisma.trafficSnapshot.findFirst({
-      orderBy: { timestamp: 'asc' },
-      select: { timestamp: true },
-    });
-
-    const archiveCount = await prisma.trafficSnapshotArchive.count();
+    const latestTimestamp = latest[0]?.timestamp ?? null;
 
     res.json({
       totalSnapshots,
-      latestTimestamp: latestSnapshot?.timestamp ?? null,
-      retentionDays: RETENTION_DAYS,
-      activeWindowStartedAt: cutoff.toISOString(),
-      snapshotsLastRetentionWindow: snapshotsLastWindow,
-      averageTrafficScoreLastRetentionWindow: Math.round(scoreAggregates._avg.trafficScore ?? 0),
-      oldestSnapshotKeptAt: oldestKept?.timestamp ?? null,
-      archivedSummaries: archiveCount,
+      latestTimestamp,
     });
   } catch (error) {
     console.error(error);
@@ -178,10 +153,7 @@ router.get('/hourly-average/:icao', async (req: Request, res: Response) => {
     if (!airport) return res.status(404).json({ error: 'Airport not found' });
 
     const snapshots = await prisma.trafficSnapshot.findMany({
-      where: {
-        airportId: airport.id,
-        timestamp: { gte: getRetentionCutoff() },
-      },
+      where: { airportId: airport.id },
       orderBy: { timestamp: 'asc' },
     });
 
@@ -214,48 +186,6 @@ router.get('/hourly-average/:icao', async (req: Request, res: Response) => {
   }
 });
 
-// Archived summaries for a specific airport
-router.get('/archive/:icao', async (req: Request, res: Response) => {
-  try {
-    const { icao } = req.params;
-
-    const airport = await prisma.airport.findUnique({
-      where: { icao: icao.toUpperCase() },
-      select: { id: true },
-    });
-
-    if (!airport) return res.status(404).json({ error: 'Airport not found' });
-
-    const archive = await prisma.trafficSnapshotArchive.findMany({
-      where: { airportId: airport.id },
-      orderBy: { day: 'asc' },
-    });
-
-    res.json(archive);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Failed to fetch archive data' });
-  }
-});
-
-router.post('/prune-old-data', async (req: Request, res: Response) => {
-  try {
-    const cutoff = getRetentionCutoff();
-    const deleted = await prisma.trafficSnapshot.deleteMany({
-      where: { timestamp: { lt: cutoff } },
-    });
-
-    res.json({
-      deleted: deleted.count,
-      retentionDays: RETENTION_DAYS,
-      cutOff: cutoff.toISOString(),
-    });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Failed to prune old data' });
-  }
-});
-
 // Full prediction for next 3 hours
 router.get('/predict/:icao', async (req: Request, res: Response) => {
   try {
@@ -268,10 +198,7 @@ router.get('/predict/:icao', async (req: Request, res: Response) => {
     if (!airport) return res.status(404).json({ error: 'Airport not found' });
 
     const snapshots = await prisma.trafficSnapshot.findMany({
-      where: {
-        airportId: airport.id,
-        timestamp: { gte: getRetentionCutoff() },
-      },
+      where: { airportId: airport.id },
       orderBy: { timestamp: 'asc' },
     });
 

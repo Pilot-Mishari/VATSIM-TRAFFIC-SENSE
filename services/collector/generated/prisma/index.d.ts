@@ -24,11 +24,6 @@ export type Airport = $Result.DefaultSelection<Prisma.$AirportPayload>
  */
 export type TrafficSnapshot = $Result.DefaultSelection<Prisma.$TrafficSnapshotPayload>
 /**
- * Model TrafficSnapshotArchive
- * 
- */
-export type TrafficSnapshotArchive = $Result.DefaultSelection<Prisma.$TrafficSnapshotArchivePayload>
-/**
  * Model ControllerSession
  * 
  */
@@ -174,16 +169,6 @@ export class PrismaClient<
     * ```
     */
   get trafficSnapshot(): Prisma.TrafficSnapshotDelegate<ExtArgs, ClientOptions>;
-
-  /**
-   * `prisma.trafficSnapshotArchive`: Exposes CRUD operations for the **TrafficSnapshotArchive** model.
-    * Example usage:
-    * ```ts
-    * // Fetch zero or more TrafficSnapshotArchives
-    * const trafficSnapshotArchives = await prisma.trafficSnapshotArchive.findMany()
-    * ```
-    */
-  get trafficSnapshotArchive(): Prisma.TrafficSnapshotArchiveDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.controllerSession`: Exposes CRUD operations for the **ControllerSession** model.
@@ -630,7 +615,6 @@ export namespace Prisma {
   export const ModelName: {
     Airport: 'Airport',
     TrafficSnapshot: 'TrafficSnapshot',
-    TrafficSnapshotArchive: 'TrafficSnapshotArchive',
     ControllerSession: 'ControllerSession'
   };
 
@@ -647,7 +631,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "airport" | "trafficSnapshot" | "trafficSnapshotArchive" | "controllerSession"
+      modelProps: "airport" | "trafficSnapshot" | "controllerSession"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -796,80 +780,6 @@ export namespace Prisma {
           count: {
             args: Prisma.TrafficSnapshotCountArgs<ExtArgs>
             result: $Utils.Optional<TrafficSnapshotCountAggregateOutputType> | number
-          }
-        }
-      }
-      TrafficSnapshotArchive: {
-        payload: Prisma.$TrafficSnapshotArchivePayload<ExtArgs>
-        fields: Prisma.TrafficSnapshotArchiveFieldRefs
-        operations: {
-          findUnique: {
-            args: Prisma.TrafficSnapshotArchiveFindUniqueArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$TrafficSnapshotArchivePayload> | null
-          }
-          findUniqueOrThrow: {
-            args: Prisma.TrafficSnapshotArchiveFindUniqueOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$TrafficSnapshotArchivePayload>
-          }
-          findFirst: {
-            args: Prisma.TrafficSnapshotArchiveFindFirstArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$TrafficSnapshotArchivePayload> | null
-          }
-          findFirstOrThrow: {
-            args: Prisma.TrafficSnapshotArchiveFindFirstOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$TrafficSnapshotArchivePayload>
-          }
-          findMany: {
-            args: Prisma.TrafficSnapshotArchiveFindManyArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$TrafficSnapshotArchivePayload>[]
-          }
-          create: {
-            args: Prisma.TrafficSnapshotArchiveCreateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$TrafficSnapshotArchivePayload>
-          }
-          createMany: {
-            args: Prisma.TrafficSnapshotArchiveCreateManyArgs<ExtArgs>
-            result: BatchPayload
-          }
-          createManyAndReturn: {
-            args: Prisma.TrafficSnapshotArchiveCreateManyAndReturnArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$TrafficSnapshotArchivePayload>[]
-          }
-          delete: {
-            args: Prisma.TrafficSnapshotArchiveDeleteArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$TrafficSnapshotArchivePayload>
-          }
-          update: {
-            args: Prisma.TrafficSnapshotArchiveUpdateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$TrafficSnapshotArchivePayload>
-          }
-          deleteMany: {
-            args: Prisma.TrafficSnapshotArchiveDeleteManyArgs<ExtArgs>
-            result: BatchPayload
-          }
-          updateMany: {
-            args: Prisma.TrafficSnapshotArchiveUpdateManyArgs<ExtArgs>
-            result: BatchPayload
-          }
-          updateManyAndReturn: {
-            args: Prisma.TrafficSnapshotArchiveUpdateManyAndReturnArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$TrafficSnapshotArchivePayload>[]
-          }
-          upsert: {
-            args: Prisma.TrafficSnapshotArchiveUpsertArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$TrafficSnapshotArchivePayload>
-          }
-          aggregate: {
-            args: Prisma.TrafficSnapshotArchiveAggregateArgs<ExtArgs>
-            result: $Utils.Optional<AggregateTrafficSnapshotArchive>
-          }
-          groupBy: {
-            args: Prisma.TrafficSnapshotArchiveGroupByArgs<ExtArgs>
-            result: $Utils.Optional<TrafficSnapshotArchiveGroupByOutputType>[]
-          }
-          count: {
-            args: Prisma.TrafficSnapshotArchiveCountArgs<ExtArgs>
-            result: $Utils.Optional<TrafficSnapshotArchiveCountAggregateOutputType> | number
           }
         }
       }
@@ -1057,7 +967,6 @@ export namespace Prisma {
   export type GlobalOmitConfig = {
     airport?: AirportOmit
     trafficSnapshot?: TrafficSnapshotOmit
-    trafficSnapshotArchive?: TrafficSnapshotArchiveOmit
     controllerSession?: ControllerSessionOmit
   }
 
@@ -1141,13 +1050,11 @@ export namespace Prisma {
   export type AirportCountOutputType = {
     snapshots: number
     sessions: number
-    summaryArchives: number
   }
 
   export type AirportCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     snapshots?: boolean | AirportCountOutputTypeCountSnapshotsArgs
     sessions?: boolean | AirportCountOutputTypeCountSessionsArgs
-    summaryArchives?: boolean | AirportCountOutputTypeCountSummaryArchivesArgs
   }
 
   // Custom InputTypes
@@ -1173,13 +1080,6 @@ export namespace Prisma {
    */
   export type AirportCountOutputTypeCountSessionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: ControllerSessionWhereInput
-  }
-
-  /**
-   * AirportCountOutputType without action
-   */
-  export type AirportCountOutputTypeCountSummaryArchivesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: TrafficSnapshotArchiveWhereInput
   }
 
 
@@ -1387,7 +1287,6 @@ export namespace Prisma {
     fir?: boolean
     snapshots?: boolean | Airport$snapshotsArgs<ExtArgs>
     sessions?: boolean | Airport$sessionsArgs<ExtArgs>
-    summaryArchives?: boolean | Airport$summaryArchivesArgs<ExtArgs>
     _count?: boolean | AirportCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["airport"]>
 
@@ -1419,7 +1318,6 @@ export namespace Prisma {
   export type AirportInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     snapshots?: boolean | Airport$snapshotsArgs<ExtArgs>
     sessions?: boolean | Airport$sessionsArgs<ExtArgs>
-    summaryArchives?: boolean | Airport$summaryArchivesArgs<ExtArgs>
     _count?: boolean | AirportCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type AirportIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -1430,7 +1328,6 @@ export namespace Prisma {
     objects: {
       snapshots: Prisma.$TrafficSnapshotPayload<ExtArgs>[]
       sessions: Prisma.$ControllerSessionPayload<ExtArgs>[]
-      summaryArchives: Prisma.$TrafficSnapshotArchivePayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
@@ -1834,7 +1731,6 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     snapshots<T extends Airport$snapshotsArgs<ExtArgs> = {}>(args?: Subset<T, Airport$snapshotsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TrafficSnapshotPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     sessions<T extends Airport$sessionsArgs<ExtArgs> = {}>(args?: Subset<T, Airport$sessionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ControllerSessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    summaryArchives<T extends Airport$summaryArchivesArgs<ExtArgs> = {}>(args?: Subset<T, Airport$summaryArchivesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TrafficSnapshotArchivePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2307,30 +2203,6 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: ControllerSessionScalarFieldEnum | ControllerSessionScalarFieldEnum[]
-  }
-
-  /**
-   * Airport.summaryArchives
-   */
-  export type Airport$summaryArchivesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the TrafficSnapshotArchive
-     */
-    select?: TrafficSnapshotArchiveSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the TrafficSnapshotArchive
-     */
-    omit?: TrafficSnapshotArchiveOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: TrafficSnapshotArchiveInclude<ExtArgs> | null
-    where?: TrafficSnapshotArchiveWhereInput
-    orderBy?: TrafficSnapshotArchiveOrderByWithRelationInput | TrafficSnapshotArchiveOrderByWithRelationInput[]
-    cursor?: TrafficSnapshotArchiveWhereUniqueInput
-    take?: number
-    skip?: number
-    distinct?: TrafficSnapshotArchiveScalarFieldEnum | TrafficSnapshotArchiveScalarFieldEnum[]
   }
 
   /**
@@ -3513,1183 +3385,6 @@ export namespace Prisma {
 
 
   /**
-   * Model TrafficSnapshotArchive
-   */
-
-  export type AggregateTrafficSnapshotArchive = {
-    _count: TrafficSnapshotArchiveCountAggregateOutputType | null
-    _avg: TrafficSnapshotArchiveAvgAggregateOutputType | null
-    _sum: TrafficSnapshotArchiveSumAggregateOutputType | null
-    _min: TrafficSnapshotArchiveMinAggregateOutputType | null
-    _max: TrafficSnapshotArchiveMaxAggregateOutputType | null
-  }
-
-  export type TrafficSnapshotArchiveAvgAggregateOutputType = {
-    id: number | null
-    airportId: number | null
-    snapshotsCount: number | null
-    totalArrivals: number | null
-    totalDepartures: number | null
-    totalAircraft: number | null
-    sumTrafficScore: number | null
-    peakTrafficScore: number | null
-  }
-
-  export type TrafficSnapshotArchiveSumAggregateOutputType = {
-    id: number | null
-    airportId: number | null
-    snapshotsCount: number | null
-    totalArrivals: number | null
-    totalDepartures: number | null
-    totalAircraft: number | null
-    sumTrafficScore: number | null
-    peakTrafficScore: number | null
-  }
-
-  export type TrafficSnapshotArchiveMinAggregateOutputType = {
-    id: number | null
-    airportId: number | null
-    day: Date | null
-    snapshotsCount: number | null
-    totalArrivals: number | null
-    totalDepartures: number | null
-    totalAircraft: number | null
-    sumTrafficScore: number | null
-    peakTrafficScore: number | null
-  }
-
-  export type TrafficSnapshotArchiveMaxAggregateOutputType = {
-    id: number | null
-    airportId: number | null
-    day: Date | null
-    snapshotsCount: number | null
-    totalArrivals: number | null
-    totalDepartures: number | null
-    totalAircraft: number | null
-    sumTrafficScore: number | null
-    peakTrafficScore: number | null
-  }
-
-  export type TrafficSnapshotArchiveCountAggregateOutputType = {
-    id: number
-    airportId: number
-    day: number
-    snapshotsCount: number
-    totalArrivals: number
-    totalDepartures: number
-    totalAircraft: number
-    sumTrafficScore: number
-    peakTrafficScore: number
-    _all: number
-  }
-
-
-  export type TrafficSnapshotArchiveAvgAggregateInputType = {
-    id?: true
-    airportId?: true
-    snapshotsCount?: true
-    totalArrivals?: true
-    totalDepartures?: true
-    totalAircraft?: true
-    sumTrafficScore?: true
-    peakTrafficScore?: true
-  }
-
-  export type TrafficSnapshotArchiveSumAggregateInputType = {
-    id?: true
-    airportId?: true
-    snapshotsCount?: true
-    totalArrivals?: true
-    totalDepartures?: true
-    totalAircraft?: true
-    sumTrafficScore?: true
-    peakTrafficScore?: true
-  }
-
-  export type TrafficSnapshotArchiveMinAggregateInputType = {
-    id?: true
-    airportId?: true
-    day?: true
-    snapshotsCount?: true
-    totalArrivals?: true
-    totalDepartures?: true
-    totalAircraft?: true
-    sumTrafficScore?: true
-    peakTrafficScore?: true
-  }
-
-  export type TrafficSnapshotArchiveMaxAggregateInputType = {
-    id?: true
-    airportId?: true
-    day?: true
-    snapshotsCount?: true
-    totalArrivals?: true
-    totalDepartures?: true
-    totalAircraft?: true
-    sumTrafficScore?: true
-    peakTrafficScore?: true
-  }
-
-  export type TrafficSnapshotArchiveCountAggregateInputType = {
-    id?: true
-    airportId?: true
-    day?: true
-    snapshotsCount?: true
-    totalArrivals?: true
-    totalDepartures?: true
-    totalAircraft?: true
-    sumTrafficScore?: true
-    peakTrafficScore?: true
-    _all?: true
-  }
-
-  export type TrafficSnapshotArchiveAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Filter which TrafficSnapshotArchive to aggregate.
-     */
-    where?: TrafficSnapshotArchiveWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of TrafficSnapshotArchives to fetch.
-     */
-    orderBy?: TrafficSnapshotArchiveOrderByWithRelationInput | TrafficSnapshotArchiveOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the start position
-     */
-    cursor?: TrafficSnapshotArchiveWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` TrafficSnapshotArchives from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` TrafficSnapshotArchives.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Count returned TrafficSnapshotArchives
-    **/
-    _count?: true | TrafficSnapshotArchiveCountAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to average
-    **/
-    _avg?: TrafficSnapshotArchiveAvgAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to sum
-    **/
-    _sum?: TrafficSnapshotArchiveSumAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to find the minimum value
-    **/
-    _min?: TrafficSnapshotArchiveMinAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to find the maximum value
-    **/
-    _max?: TrafficSnapshotArchiveMaxAggregateInputType
-  }
-
-  export type GetTrafficSnapshotArchiveAggregateType<T extends TrafficSnapshotArchiveAggregateArgs> = {
-        [P in keyof T & keyof AggregateTrafficSnapshotArchive]: P extends '_count' | 'count'
-      ? T[P] extends true
-        ? number
-        : GetScalarType<T[P], AggregateTrafficSnapshotArchive[P]>
-      : GetScalarType<T[P], AggregateTrafficSnapshotArchive[P]>
-  }
-
-
-
-
-  export type TrafficSnapshotArchiveGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: TrafficSnapshotArchiveWhereInput
-    orderBy?: TrafficSnapshotArchiveOrderByWithAggregationInput | TrafficSnapshotArchiveOrderByWithAggregationInput[]
-    by: TrafficSnapshotArchiveScalarFieldEnum[] | TrafficSnapshotArchiveScalarFieldEnum
-    having?: TrafficSnapshotArchiveScalarWhereWithAggregatesInput
-    take?: number
-    skip?: number
-    _count?: TrafficSnapshotArchiveCountAggregateInputType | true
-    _avg?: TrafficSnapshotArchiveAvgAggregateInputType
-    _sum?: TrafficSnapshotArchiveSumAggregateInputType
-    _min?: TrafficSnapshotArchiveMinAggregateInputType
-    _max?: TrafficSnapshotArchiveMaxAggregateInputType
-  }
-
-  export type TrafficSnapshotArchiveGroupByOutputType = {
-    id: number
-    airportId: number
-    day: Date
-    snapshotsCount: number
-    totalArrivals: number
-    totalDepartures: number
-    totalAircraft: number
-    sumTrafficScore: number
-    peakTrafficScore: number
-    _count: TrafficSnapshotArchiveCountAggregateOutputType | null
-    _avg: TrafficSnapshotArchiveAvgAggregateOutputType | null
-    _sum: TrafficSnapshotArchiveSumAggregateOutputType | null
-    _min: TrafficSnapshotArchiveMinAggregateOutputType | null
-    _max: TrafficSnapshotArchiveMaxAggregateOutputType | null
-  }
-
-  type GetTrafficSnapshotArchiveGroupByPayload<T extends TrafficSnapshotArchiveGroupByArgs> = Prisma.PrismaPromise<
-    Array<
-      PickEnumerable<TrafficSnapshotArchiveGroupByOutputType, T['by']> &
-        {
-          [P in ((keyof T) & (keyof TrafficSnapshotArchiveGroupByOutputType))]: P extends '_count'
-            ? T[P] extends boolean
-              ? number
-              : GetScalarType<T[P], TrafficSnapshotArchiveGroupByOutputType[P]>
-            : GetScalarType<T[P], TrafficSnapshotArchiveGroupByOutputType[P]>
-        }
-      >
-    >
-
-
-  export type TrafficSnapshotArchiveSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    id?: boolean
-    airportId?: boolean
-    day?: boolean
-    snapshotsCount?: boolean
-    totalArrivals?: boolean
-    totalDepartures?: boolean
-    totalAircraft?: boolean
-    sumTrafficScore?: boolean
-    peakTrafficScore?: boolean
-    airport?: boolean | AirportDefaultArgs<ExtArgs>
-  }, ExtArgs["result"]["trafficSnapshotArchive"]>
-
-  export type TrafficSnapshotArchiveSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    id?: boolean
-    airportId?: boolean
-    day?: boolean
-    snapshotsCount?: boolean
-    totalArrivals?: boolean
-    totalDepartures?: boolean
-    totalAircraft?: boolean
-    sumTrafficScore?: boolean
-    peakTrafficScore?: boolean
-    airport?: boolean | AirportDefaultArgs<ExtArgs>
-  }, ExtArgs["result"]["trafficSnapshotArchive"]>
-
-  export type TrafficSnapshotArchiveSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    id?: boolean
-    airportId?: boolean
-    day?: boolean
-    snapshotsCount?: boolean
-    totalArrivals?: boolean
-    totalDepartures?: boolean
-    totalAircraft?: boolean
-    sumTrafficScore?: boolean
-    peakTrafficScore?: boolean
-    airport?: boolean | AirportDefaultArgs<ExtArgs>
-  }, ExtArgs["result"]["trafficSnapshotArchive"]>
-
-  export type TrafficSnapshotArchiveSelectScalar = {
-    id?: boolean
-    airportId?: boolean
-    day?: boolean
-    snapshotsCount?: boolean
-    totalArrivals?: boolean
-    totalDepartures?: boolean
-    totalAircraft?: boolean
-    sumTrafficScore?: boolean
-    peakTrafficScore?: boolean
-  }
-
-  export type TrafficSnapshotArchiveOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "airportId" | "day" | "snapshotsCount" | "totalArrivals" | "totalDepartures" | "totalAircraft" | "sumTrafficScore" | "peakTrafficScore", ExtArgs["result"]["trafficSnapshotArchive"]>
-  export type TrafficSnapshotArchiveInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    airport?: boolean | AirportDefaultArgs<ExtArgs>
-  }
-  export type TrafficSnapshotArchiveIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    airport?: boolean | AirportDefaultArgs<ExtArgs>
-  }
-  export type TrafficSnapshotArchiveIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    airport?: boolean | AirportDefaultArgs<ExtArgs>
-  }
-
-  export type $TrafficSnapshotArchivePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    name: "TrafficSnapshotArchive"
-    objects: {
-      airport: Prisma.$AirportPayload<ExtArgs>
-    }
-    scalars: $Extensions.GetPayloadResult<{
-      id: number
-      airportId: number
-      day: Date
-      snapshotsCount: number
-      totalArrivals: number
-      totalDepartures: number
-      totalAircraft: number
-      sumTrafficScore: number
-      peakTrafficScore: number
-    }, ExtArgs["result"]["trafficSnapshotArchive"]>
-    composites: {}
-  }
-
-  type TrafficSnapshotArchiveGetPayload<S extends boolean | null | undefined | TrafficSnapshotArchiveDefaultArgs> = $Result.GetResult<Prisma.$TrafficSnapshotArchivePayload, S>
-
-  type TrafficSnapshotArchiveCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
-    Omit<TrafficSnapshotArchiveFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
-      select?: TrafficSnapshotArchiveCountAggregateInputType | true
-    }
-
-  export interface TrafficSnapshotArchiveDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
-    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['TrafficSnapshotArchive'], meta: { name: 'TrafficSnapshotArchive' } }
-    /**
-     * Find zero or one TrafficSnapshotArchive that matches the filter.
-     * @param {TrafficSnapshotArchiveFindUniqueArgs} args - Arguments to find a TrafficSnapshotArchive
-     * @example
-     * // Get one TrafficSnapshotArchive
-     * const trafficSnapshotArchive = await prisma.trafficSnapshotArchive.findUnique({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findUnique<T extends TrafficSnapshotArchiveFindUniqueArgs>(args: SelectSubset<T, TrafficSnapshotArchiveFindUniqueArgs<ExtArgs>>): Prisma__TrafficSnapshotArchiveClient<$Result.GetResult<Prisma.$TrafficSnapshotArchivePayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Find one TrafficSnapshotArchive that matches the filter or throw an error with `error.code='P2025'`
-     * if no matches were found.
-     * @param {TrafficSnapshotArchiveFindUniqueOrThrowArgs} args - Arguments to find a TrafficSnapshotArchive
-     * @example
-     * // Get one TrafficSnapshotArchive
-     * const trafficSnapshotArchive = await prisma.trafficSnapshotArchive.findUniqueOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findUniqueOrThrow<T extends TrafficSnapshotArchiveFindUniqueOrThrowArgs>(args: SelectSubset<T, TrafficSnapshotArchiveFindUniqueOrThrowArgs<ExtArgs>>): Prisma__TrafficSnapshotArchiveClient<$Result.GetResult<Prisma.$TrafficSnapshotArchivePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Find the first TrafficSnapshotArchive that matches the filter.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {TrafficSnapshotArchiveFindFirstArgs} args - Arguments to find a TrafficSnapshotArchive
-     * @example
-     * // Get one TrafficSnapshotArchive
-     * const trafficSnapshotArchive = await prisma.trafficSnapshotArchive.findFirst({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findFirst<T extends TrafficSnapshotArchiveFindFirstArgs>(args?: SelectSubset<T, TrafficSnapshotArchiveFindFirstArgs<ExtArgs>>): Prisma__TrafficSnapshotArchiveClient<$Result.GetResult<Prisma.$TrafficSnapshotArchivePayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Find the first TrafficSnapshotArchive that matches the filter or
-     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {TrafficSnapshotArchiveFindFirstOrThrowArgs} args - Arguments to find a TrafficSnapshotArchive
-     * @example
-     * // Get one TrafficSnapshotArchive
-     * const trafficSnapshotArchive = await prisma.trafficSnapshotArchive.findFirstOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findFirstOrThrow<T extends TrafficSnapshotArchiveFindFirstOrThrowArgs>(args?: SelectSubset<T, TrafficSnapshotArchiveFindFirstOrThrowArgs<ExtArgs>>): Prisma__TrafficSnapshotArchiveClient<$Result.GetResult<Prisma.$TrafficSnapshotArchivePayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Find zero or more TrafficSnapshotArchives that matches the filter.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {TrafficSnapshotArchiveFindManyArgs} args - Arguments to filter and select certain fields only.
-     * @example
-     * // Get all TrafficSnapshotArchives
-     * const trafficSnapshotArchives = await prisma.trafficSnapshotArchive.findMany()
-     * 
-     * // Get first 10 TrafficSnapshotArchives
-     * const trafficSnapshotArchives = await prisma.trafficSnapshotArchive.findMany({ take: 10 })
-     * 
-     * // Only select the `id`
-     * const trafficSnapshotArchiveWithIdOnly = await prisma.trafficSnapshotArchive.findMany({ select: { id: true } })
-     * 
-     */
-    findMany<T extends TrafficSnapshotArchiveFindManyArgs>(args?: SelectSubset<T, TrafficSnapshotArchiveFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TrafficSnapshotArchivePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
-
-    /**
-     * Create a TrafficSnapshotArchive.
-     * @param {TrafficSnapshotArchiveCreateArgs} args - Arguments to create a TrafficSnapshotArchive.
-     * @example
-     * // Create one TrafficSnapshotArchive
-     * const TrafficSnapshotArchive = await prisma.trafficSnapshotArchive.create({
-     *   data: {
-     *     // ... data to create a TrafficSnapshotArchive
-     *   }
-     * })
-     * 
-     */
-    create<T extends TrafficSnapshotArchiveCreateArgs>(args: SelectSubset<T, TrafficSnapshotArchiveCreateArgs<ExtArgs>>): Prisma__TrafficSnapshotArchiveClient<$Result.GetResult<Prisma.$TrafficSnapshotArchivePayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Create many TrafficSnapshotArchives.
-     * @param {TrafficSnapshotArchiveCreateManyArgs} args - Arguments to create many TrafficSnapshotArchives.
-     * @example
-     * // Create many TrafficSnapshotArchives
-     * const trafficSnapshotArchive = await prisma.trafficSnapshotArchive.createMany({
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     *     
-     */
-    createMany<T extends TrafficSnapshotArchiveCreateManyArgs>(args?: SelectSubset<T, TrafficSnapshotArchiveCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Create many TrafficSnapshotArchives and returns the data saved in the database.
-     * @param {TrafficSnapshotArchiveCreateManyAndReturnArgs} args - Arguments to create many TrafficSnapshotArchives.
-     * @example
-     * // Create many TrafficSnapshotArchives
-     * const trafficSnapshotArchive = await prisma.trafficSnapshotArchive.createManyAndReturn({
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * 
-     * // Create many TrafficSnapshotArchives and only return the `id`
-     * const trafficSnapshotArchiveWithIdOnly = await prisma.trafficSnapshotArchive.createManyAndReturn({
-     *   select: { id: true },
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * 
-     */
-    createManyAndReturn<T extends TrafficSnapshotArchiveCreateManyAndReturnArgs>(args?: SelectSubset<T, TrafficSnapshotArchiveCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TrafficSnapshotArchivePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
-
-    /**
-     * Delete a TrafficSnapshotArchive.
-     * @param {TrafficSnapshotArchiveDeleteArgs} args - Arguments to delete one TrafficSnapshotArchive.
-     * @example
-     * // Delete one TrafficSnapshotArchive
-     * const TrafficSnapshotArchive = await prisma.trafficSnapshotArchive.delete({
-     *   where: {
-     *     // ... filter to delete one TrafficSnapshotArchive
-     *   }
-     * })
-     * 
-     */
-    delete<T extends TrafficSnapshotArchiveDeleteArgs>(args: SelectSubset<T, TrafficSnapshotArchiveDeleteArgs<ExtArgs>>): Prisma__TrafficSnapshotArchiveClient<$Result.GetResult<Prisma.$TrafficSnapshotArchivePayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Update one TrafficSnapshotArchive.
-     * @param {TrafficSnapshotArchiveUpdateArgs} args - Arguments to update one TrafficSnapshotArchive.
-     * @example
-     * // Update one TrafficSnapshotArchive
-     * const trafficSnapshotArchive = await prisma.trafficSnapshotArchive.update({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: {
-     *     // ... provide data here
-     *   }
-     * })
-     * 
-     */
-    update<T extends TrafficSnapshotArchiveUpdateArgs>(args: SelectSubset<T, TrafficSnapshotArchiveUpdateArgs<ExtArgs>>): Prisma__TrafficSnapshotArchiveClient<$Result.GetResult<Prisma.$TrafficSnapshotArchivePayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Delete zero or more TrafficSnapshotArchives.
-     * @param {TrafficSnapshotArchiveDeleteManyArgs} args - Arguments to filter TrafficSnapshotArchives to delete.
-     * @example
-     * // Delete a few TrafficSnapshotArchives
-     * const { count } = await prisma.trafficSnapshotArchive.deleteMany({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     * 
-     */
-    deleteMany<T extends TrafficSnapshotArchiveDeleteManyArgs>(args?: SelectSubset<T, TrafficSnapshotArchiveDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Update zero or more TrafficSnapshotArchives.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {TrafficSnapshotArchiveUpdateManyArgs} args - Arguments to update one or more rows.
-     * @example
-     * // Update many TrafficSnapshotArchives
-     * const trafficSnapshotArchive = await prisma.trafficSnapshotArchive.updateMany({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: {
-     *     // ... provide data here
-     *   }
-     * })
-     * 
-     */
-    updateMany<T extends TrafficSnapshotArchiveUpdateManyArgs>(args: SelectSubset<T, TrafficSnapshotArchiveUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Update zero or more TrafficSnapshotArchives and returns the data updated in the database.
-     * @param {TrafficSnapshotArchiveUpdateManyAndReturnArgs} args - Arguments to update many TrafficSnapshotArchives.
-     * @example
-     * // Update many TrafficSnapshotArchives
-     * const trafficSnapshotArchive = await prisma.trafficSnapshotArchive.updateManyAndReturn({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * 
-     * // Update zero or more TrafficSnapshotArchives and only return the `id`
-     * const trafficSnapshotArchiveWithIdOnly = await prisma.trafficSnapshotArchive.updateManyAndReturn({
-     *   select: { id: true },
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * 
-     */
-    updateManyAndReturn<T extends TrafficSnapshotArchiveUpdateManyAndReturnArgs>(args: SelectSubset<T, TrafficSnapshotArchiveUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TrafficSnapshotArchivePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
-
-    /**
-     * Create or update one TrafficSnapshotArchive.
-     * @param {TrafficSnapshotArchiveUpsertArgs} args - Arguments to update or create a TrafficSnapshotArchive.
-     * @example
-     * // Update or create a TrafficSnapshotArchive
-     * const trafficSnapshotArchive = await prisma.trafficSnapshotArchive.upsert({
-     *   create: {
-     *     // ... data to create a TrafficSnapshotArchive
-     *   },
-     *   update: {
-     *     // ... in case it already exists, update
-     *   },
-     *   where: {
-     *     // ... the filter for the TrafficSnapshotArchive we want to update
-     *   }
-     * })
-     */
-    upsert<T extends TrafficSnapshotArchiveUpsertArgs>(args: SelectSubset<T, TrafficSnapshotArchiveUpsertArgs<ExtArgs>>): Prisma__TrafficSnapshotArchiveClient<$Result.GetResult<Prisma.$TrafficSnapshotArchivePayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-
-    /**
-     * Count the number of TrafficSnapshotArchives.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {TrafficSnapshotArchiveCountArgs} args - Arguments to filter TrafficSnapshotArchives to count.
-     * @example
-     * // Count the number of TrafficSnapshotArchives
-     * const count = await prisma.trafficSnapshotArchive.count({
-     *   where: {
-     *     // ... the filter for the TrafficSnapshotArchives we want to count
-     *   }
-     * })
-    **/
-    count<T extends TrafficSnapshotArchiveCountArgs>(
-      args?: Subset<T, TrafficSnapshotArchiveCountArgs>,
-    ): Prisma.PrismaPromise<
-      T extends $Utils.Record<'select', any>
-        ? T['select'] extends true
-          ? number
-          : GetScalarType<T['select'], TrafficSnapshotArchiveCountAggregateOutputType>
-        : number
-    >
-
-    /**
-     * Allows you to perform aggregations operations on a TrafficSnapshotArchive.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {TrafficSnapshotArchiveAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
-     * @example
-     * // Ordered by age ascending
-     * // Where email contains prisma.io
-     * // Limited to the 10 users
-     * const aggregations = await prisma.user.aggregate({
-     *   _avg: {
-     *     age: true,
-     *   },
-     *   where: {
-     *     email: {
-     *       contains: "prisma.io",
-     *     },
-     *   },
-     *   orderBy: {
-     *     age: "asc",
-     *   },
-     *   take: 10,
-     * })
-    **/
-    aggregate<T extends TrafficSnapshotArchiveAggregateArgs>(args: Subset<T, TrafficSnapshotArchiveAggregateArgs>): Prisma.PrismaPromise<GetTrafficSnapshotArchiveAggregateType<T>>
-
-    /**
-     * Group by TrafficSnapshotArchive.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {TrafficSnapshotArchiveGroupByArgs} args - Group by arguments.
-     * @example
-     * // Group by city, order by createdAt, get count
-     * const result = await prisma.user.groupBy({
-     *   by: ['city', 'createdAt'],
-     *   orderBy: {
-     *     createdAt: true
-     *   },
-     *   _count: {
-     *     _all: true
-     *   },
-     * })
-     * 
-    **/
-    groupBy<
-      T extends TrafficSnapshotArchiveGroupByArgs,
-      HasSelectOrTake extends Or<
-        Extends<'skip', Keys<T>>,
-        Extends<'take', Keys<T>>
-      >,
-      OrderByArg extends True extends HasSelectOrTake
-        ? { orderBy: TrafficSnapshotArchiveGroupByArgs['orderBy'] }
-        : { orderBy?: TrafficSnapshotArchiveGroupByArgs['orderBy'] },
-      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
-      ByFields extends MaybeTupleToUnion<T['by']>,
-      ByValid extends Has<ByFields, OrderFields>,
-      HavingFields extends GetHavingFields<T['having']>,
-      HavingValid extends Has<ByFields, HavingFields>,
-      ByEmpty extends T['by'] extends never[] ? True : False,
-      InputErrors extends ByEmpty extends True
-      ? `Error: "by" must not be empty.`
-      : HavingValid extends False
-      ? {
-          [P in HavingFields]: P extends ByFields
-            ? never
-            : P extends string
-            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
-            : [
-                Error,
-                'Field ',
-                P,
-                ` in "having" needs to be provided in "by"`,
-              ]
-        }[HavingFields]
-      : 'take' extends Keys<T>
-      ? 'orderBy' extends Keys<T>
-        ? ByValid extends True
-          ? {}
-          : {
-              [P in OrderFields]: P extends ByFields
-                ? never
-                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-            }[OrderFields]
-        : 'Error: If you provide "take", you also need to provide "orderBy"'
-      : 'skip' extends Keys<T>
-      ? 'orderBy' extends Keys<T>
-        ? ByValid extends True
-          ? {}
-          : {
-              [P in OrderFields]: P extends ByFields
-                ? never
-                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-            }[OrderFields]
-        : 'Error: If you provide "skip", you also need to provide "orderBy"'
-      : ByValid extends True
-      ? {}
-      : {
-          [P in OrderFields]: P extends ByFields
-            ? never
-            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-        }[OrderFields]
-    >(args: SubsetIntersection<T, TrafficSnapshotArchiveGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetTrafficSnapshotArchiveGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
-  /**
-   * Fields of the TrafficSnapshotArchive model
-   */
-  readonly fields: TrafficSnapshotArchiveFieldRefs;
-  }
-
-  /**
-   * The delegate class that acts as a "Promise-like" for TrafficSnapshotArchive.
-   * Why is this prefixed with `Prisma__`?
-   * Because we want to prevent naming conflicts as mentioned in
-   * https://github.com/prisma/prisma-client-js/issues/707
-   */
-  export interface Prisma__TrafficSnapshotArchiveClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
-    readonly [Symbol.toStringTag]: "PrismaPromise"
-    airport<T extends AirportDefaultArgs<ExtArgs> = {}>(args?: Subset<T, AirportDefaultArgs<ExtArgs>>): Prisma__AirportClient<$Result.GetResult<Prisma.$AirportPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-    /**
-     * Attaches callbacks for the resolution and/or rejection of the Promise.
-     * @param onfulfilled The callback to execute when the Promise is resolved.
-     * @param onrejected The callback to execute when the Promise is rejected.
-     * @returns A Promise for the completion of which ever callback is executed.
-     */
-    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
-    /**
-     * Attaches a callback for only the rejection of the Promise.
-     * @param onrejected The callback to execute when the Promise is rejected.
-     * @returns A Promise for the completion of the callback.
-     */
-    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
-    /**
-     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
-     * resolved value cannot be modified from the callback.
-     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
-     * @returns A Promise for the completion of the callback.
-     */
-    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
-  }
-
-
-
-
-  /**
-   * Fields of the TrafficSnapshotArchive model
-   */
-  interface TrafficSnapshotArchiveFieldRefs {
-    readonly id: FieldRef<"TrafficSnapshotArchive", 'Int'>
-    readonly airportId: FieldRef<"TrafficSnapshotArchive", 'Int'>
-    readonly day: FieldRef<"TrafficSnapshotArchive", 'DateTime'>
-    readonly snapshotsCount: FieldRef<"TrafficSnapshotArchive", 'Int'>
-    readonly totalArrivals: FieldRef<"TrafficSnapshotArchive", 'Int'>
-    readonly totalDepartures: FieldRef<"TrafficSnapshotArchive", 'Int'>
-    readonly totalAircraft: FieldRef<"TrafficSnapshotArchive", 'Int'>
-    readonly sumTrafficScore: FieldRef<"TrafficSnapshotArchive", 'Int'>
-    readonly peakTrafficScore: FieldRef<"TrafficSnapshotArchive", 'Int'>
-  }
-    
-
-  // Custom InputTypes
-  /**
-   * TrafficSnapshotArchive findUnique
-   */
-  export type TrafficSnapshotArchiveFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the TrafficSnapshotArchive
-     */
-    select?: TrafficSnapshotArchiveSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the TrafficSnapshotArchive
-     */
-    omit?: TrafficSnapshotArchiveOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: TrafficSnapshotArchiveInclude<ExtArgs> | null
-    /**
-     * Filter, which TrafficSnapshotArchive to fetch.
-     */
-    where: TrafficSnapshotArchiveWhereUniqueInput
-  }
-
-  /**
-   * TrafficSnapshotArchive findUniqueOrThrow
-   */
-  export type TrafficSnapshotArchiveFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the TrafficSnapshotArchive
-     */
-    select?: TrafficSnapshotArchiveSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the TrafficSnapshotArchive
-     */
-    omit?: TrafficSnapshotArchiveOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: TrafficSnapshotArchiveInclude<ExtArgs> | null
-    /**
-     * Filter, which TrafficSnapshotArchive to fetch.
-     */
-    where: TrafficSnapshotArchiveWhereUniqueInput
-  }
-
-  /**
-   * TrafficSnapshotArchive findFirst
-   */
-  export type TrafficSnapshotArchiveFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the TrafficSnapshotArchive
-     */
-    select?: TrafficSnapshotArchiveSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the TrafficSnapshotArchive
-     */
-    omit?: TrafficSnapshotArchiveOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: TrafficSnapshotArchiveInclude<ExtArgs> | null
-    /**
-     * Filter, which TrafficSnapshotArchive to fetch.
-     */
-    where?: TrafficSnapshotArchiveWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of TrafficSnapshotArchives to fetch.
-     */
-    orderBy?: TrafficSnapshotArchiveOrderByWithRelationInput | TrafficSnapshotArchiveOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for searching for TrafficSnapshotArchives.
-     */
-    cursor?: TrafficSnapshotArchiveWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` TrafficSnapshotArchives from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` TrafficSnapshotArchives.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of TrafficSnapshotArchives.
-     */
-    distinct?: TrafficSnapshotArchiveScalarFieldEnum | TrafficSnapshotArchiveScalarFieldEnum[]
-  }
-
-  /**
-   * TrafficSnapshotArchive findFirstOrThrow
-   */
-  export type TrafficSnapshotArchiveFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the TrafficSnapshotArchive
-     */
-    select?: TrafficSnapshotArchiveSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the TrafficSnapshotArchive
-     */
-    omit?: TrafficSnapshotArchiveOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: TrafficSnapshotArchiveInclude<ExtArgs> | null
-    /**
-     * Filter, which TrafficSnapshotArchive to fetch.
-     */
-    where?: TrafficSnapshotArchiveWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of TrafficSnapshotArchives to fetch.
-     */
-    orderBy?: TrafficSnapshotArchiveOrderByWithRelationInput | TrafficSnapshotArchiveOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for searching for TrafficSnapshotArchives.
-     */
-    cursor?: TrafficSnapshotArchiveWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` TrafficSnapshotArchives from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` TrafficSnapshotArchives.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of TrafficSnapshotArchives.
-     */
-    distinct?: TrafficSnapshotArchiveScalarFieldEnum | TrafficSnapshotArchiveScalarFieldEnum[]
-  }
-
-  /**
-   * TrafficSnapshotArchive findMany
-   */
-  export type TrafficSnapshotArchiveFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the TrafficSnapshotArchive
-     */
-    select?: TrafficSnapshotArchiveSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the TrafficSnapshotArchive
-     */
-    omit?: TrafficSnapshotArchiveOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: TrafficSnapshotArchiveInclude<ExtArgs> | null
-    /**
-     * Filter, which TrafficSnapshotArchives to fetch.
-     */
-    where?: TrafficSnapshotArchiveWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of TrafficSnapshotArchives to fetch.
-     */
-    orderBy?: TrafficSnapshotArchiveOrderByWithRelationInput | TrafficSnapshotArchiveOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for listing TrafficSnapshotArchives.
-     */
-    cursor?: TrafficSnapshotArchiveWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` TrafficSnapshotArchives from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` TrafficSnapshotArchives.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of TrafficSnapshotArchives.
-     */
-    distinct?: TrafficSnapshotArchiveScalarFieldEnum | TrafficSnapshotArchiveScalarFieldEnum[]
-  }
-
-  /**
-   * TrafficSnapshotArchive create
-   */
-  export type TrafficSnapshotArchiveCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the TrafficSnapshotArchive
-     */
-    select?: TrafficSnapshotArchiveSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the TrafficSnapshotArchive
-     */
-    omit?: TrafficSnapshotArchiveOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: TrafficSnapshotArchiveInclude<ExtArgs> | null
-    /**
-     * The data needed to create a TrafficSnapshotArchive.
-     */
-    data: XOR<TrafficSnapshotArchiveCreateInput, TrafficSnapshotArchiveUncheckedCreateInput>
-  }
-
-  /**
-   * TrafficSnapshotArchive createMany
-   */
-  export type TrafficSnapshotArchiveCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * The data used to create many TrafficSnapshotArchives.
-     */
-    data: TrafficSnapshotArchiveCreateManyInput | TrafficSnapshotArchiveCreateManyInput[]
-    skipDuplicates?: boolean
-  }
-
-  /**
-   * TrafficSnapshotArchive createManyAndReturn
-   */
-  export type TrafficSnapshotArchiveCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the TrafficSnapshotArchive
-     */
-    select?: TrafficSnapshotArchiveSelectCreateManyAndReturn<ExtArgs> | null
-    /**
-     * Omit specific fields from the TrafficSnapshotArchive
-     */
-    omit?: TrafficSnapshotArchiveOmit<ExtArgs> | null
-    /**
-     * The data used to create many TrafficSnapshotArchives.
-     */
-    data: TrafficSnapshotArchiveCreateManyInput | TrafficSnapshotArchiveCreateManyInput[]
-    skipDuplicates?: boolean
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: TrafficSnapshotArchiveIncludeCreateManyAndReturn<ExtArgs> | null
-  }
-
-  /**
-   * TrafficSnapshotArchive update
-   */
-  export type TrafficSnapshotArchiveUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the TrafficSnapshotArchive
-     */
-    select?: TrafficSnapshotArchiveSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the TrafficSnapshotArchive
-     */
-    omit?: TrafficSnapshotArchiveOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: TrafficSnapshotArchiveInclude<ExtArgs> | null
-    /**
-     * The data needed to update a TrafficSnapshotArchive.
-     */
-    data: XOR<TrafficSnapshotArchiveUpdateInput, TrafficSnapshotArchiveUncheckedUpdateInput>
-    /**
-     * Choose, which TrafficSnapshotArchive to update.
-     */
-    where: TrafficSnapshotArchiveWhereUniqueInput
-  }
-
-  /**
-   * TrafficSnapshotArchive updateMany
-   */
-  export type TrafficSnapshotArchiveUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * The data used to update TrafficSnapshotArchives.
-     */
-    data: XOR<TrafficSnapshotArchiveUpdateManyMutationInput, TrafficSnapshotArchiveUncheckedUpdateManyInput>
-    /**
-     * Filter which TrafficSnapshotArchives to update
-     */
-    where?: TrafficSnapshotArchiveWhereInput
-    /**
-     * Limit how many TrafficSnapshotArchives to update.
-     */
-    limit?: number
-  }
-
-  /**
-   * TrafficSnapshotArchive updateManyAndReturn
-   */
-  export type TrafficSnapshotArchiveUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the TrafficSnapshotArchive
-     */
-    select?: TrafficSnapshotArchiveSelectUpdateManyAndReturn<ExtArgs> | null
-    /**
-     * Omit specific fields from the TrafficSnapshotArchive
-     */
-    omit?: TrafficSnapshotArchiveOmit<ExtArgs> | null
-    /**
-     * The data used to update TrafficSnapshotArchives.
-     */
-    data: XOR<TrafficSnapshotArchiveUpdateManyMutationInput, TrafficSnapshotArchiveUncheckedUpdateManyInput>
-    /**
-     * Filter which TrafficSnapshotArchives to update
-     */
-    where?: TrafficSnapshotArchiveWhereInput
-    /**
-     * Limit how many TrafficSnapshotArchives to update.
-     */
-    limit?: number
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: TrafficSnapshotArchiveIncludeUpdateManyAndReturn<ExtArgs> | null
-  }
-
-  /**
-   * TrafficSnapshotArchive upsert
-   */
-  export type TrafficSnapshotArchiveUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the TrafficSnapshotArchive
-     */
-    select?: TrafficSnapshotArchiveSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the TrafficSnapshotArchive
-     */
-    omit?: TrafficSnapshotArchiveOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: TrafficSnapshotArchiveInclude<ExtArgs> | null
-    /**
-     * The filter to search for the TrafficSnapshotArchive to update in case it exists.
-     */
-    where: TrafficSnapshotArchiveWhereUniqueInput
-    /**
-     * In case the TrafficSnapshotArchive found by the `where` argument doesn't exist, create a new TrafficSnapshotArchive with this data.
-     */
-    create: XOR<TrafficSnapshotArchiveCreateInput, TrafficSnapshotArchiveUncheckedCreateInput>
-    /**
-     * In case the TrafficSnapshotArchive was found with the provided `where` argument, update it with this data.
-     */
-    update: XOR<TrafficSnapshotArchiveUpdateInput, TrafficSnapshotArchiveUncheckedUpdateInput>
-  }
-
-  /**
-   * TrafficSnapshotArchive delete
-   */
-  export type TrafficSnapshotArchiveDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the TrafficSnapshotArchive
-     */
-    select?: TrafficSnapshotArchiveSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the TrafficSnapshotArchive
-     */
-    omit?: TrafficSnapshotArchiveOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: TrafficSnapshotArchiveInclude<ExtArgs> | null
-    /**
-     * Filter which TrafficSnapshotArchive to delete.
-     */
-    where: TrafficSnapshotArchiveWhereUniqueInput
-  }
-
-  /**
-   * TrafficSnapshotArchive deleteMany
-   */
-  export type TrafficSnapshotArchiveDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Filter which TrafficSnapshotArchives to delete
-     */
-    where?: TrafficSnapshotArchiveWhereInput
-    /**
-     * Limit how many TrafficSnapshotArchives to delete.
-     */
-    limit?: number
-  }
-
-  /**
-   * TrafficSnapshotArchive without action
-   */
-  export type TrafficSnapshotArchiveDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the TrafficSnapshotArchive
-     */
-    select?: TrafficSnapshotArchiveSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the TrafficSnapshotArchive
-     */
-    omit?: TrafficSnapshotArchiveOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: TrafficSnapshotArchiveInclude<ExtArgs> | null
-  }
-
-
-  /**
    * Model ControllerSession
    */
 
@@ -5842,21 +4537,6 @@ export namespace Prisma {
   export type TrafficSnapshotScalarFieldEnum = (typeof TrafficSnapshotScalarFieldEnum)[keyof typeof TrafficSnapshotScalarFieldEnum]
 
 
-  export const TrafficSnapshotArchiveScalarFieldEnum: {
-    id: 'id',
-    airportId: 'airportId',
-    day: 'day',
-    snapshotsCount: 'snapshotsCount',
-    totalArrivals: 'totalArrivals',
-    totalDepartures: 'totalDepartures',
-    totalAircraft: 'totalAircraft',
-    sumTrafficScore: 'sumTrafficScore',
-    peakTrafficScore: 'peakTrafficScore'
-  };
-
-  export type TrafficSnapshotArchiveScalarFieldEnum = (typeof TrafficSnapshotArchiveScalarFieldEnum)[keyof typeof TrafficSnapshotArchiveScalarFieldEnum]
-
-
   export const ControllerSessionScalarFieldEnum: {
     id: 'id',
     callsign: 'callsign',
@@ -5968,7 +4648,6 @@ export namespace Prisma {
     fir?: StringNullableFilter<"Airport"> | string | null
     snapshots?: TrafficSnapshotListRelationFilter
     sessions?: ControllerSessionListRelationFilter
-    summaryArchives?: TrafficSnapshotArchiveListRelationFilter
   }
 
   export type AirportOrderByWithRelationInput = {
@@ -5979,7 +4658,6 @@ export namespace Prisma {
     fir?: SortOrderInput | SortOrder
     snapshots?: TrafficSnapshotOrderByRelationAggregateInput
     sessions?: ControllerSessionOrderByRelationAggregateInput
-    summaryArchives?: TrafficSnapshotArchiveOrderByRelationAggregateInput
   }
 
   export type AirportWhereUniqueInput = Prisma.AtLeast<{
@@ -5993,7 +4671,6 @@ export namespace Prisma {
     fir?: StringNullableFilter<"Airport"> | string | null
     snapshots?: TrafficSnapshotListRelationFilter
     sessions?: ControllerSessionListRelationFilter
-    summaryArchives?: TrafficSnapshotArchiveListRelationFilter
   }, "id" | "icao">
 
   export type AirportOrderByWithAggregationInput = {
@@ -6092,84 +4769,6 @@ export namespace Prisma {
     trafficScore?: IntWithAggregatesFilter<"TrafficSnapshot"> | number
   }
 
-  export type TrafficSnapshotArchiveWhereInput = {
-    AND?: TrafficSnapshotArchiveWhereInput | TrafficSnapshotArchiveWhereInput[]
-    OR?: TrafficSnapshotArchiveWhereInput[]
-    NOT?: TrafficSnapshotArchiveWhereInput | TrafficSnapshotArchiveWhereInput[]
-    id?: IntFilter<"TrafficSnapshotArchive"> | number
-    airportId?: IntFilter<"TrafficSnapshotArchive"> | number
-    day?: DateTimeFilter<"TrafficSnapshotArchive"> | Date | string
-    snapshotsCount?: IntFilter<"TrafficSnapshotArchive"> | number
-    totalArrivals?: IntFilter<"TrafficSnapshotArchive"> | number
-    totalDepartures?: IntFilter<"TrafficSnapshotArchive"> | number
-    totalAircraft?: IntFilter<"TrafficSnapshotArchive"> | number
-    sumTrafficScore?: IntFilter<"TrafficSnapshotArchive"> | number
-    peakTrafficScore?: IntFilter<"TrafficSnapshotArchive"> | number
-    airport?: XOR<AirportScalarRelationFilter, AirportWhereInput>
-  }
-
-  export type TrafficSnapshotArchiveOrderByWithRelationInput = {
-    id?: SortOrder
-    airportId?: SortOrder
-    day?: SortOrder
-    snapshotsCount?: SortOrder
-    totalArrivals?: SortOrder
-    totalDepartures?: SortOrder
-    totalAircraft?: SortOrder
-    sumTrafficScore?: SortOrder
-    peakTrafficScore?: SortOrder
-    airport?: AirportOrderByWithRelationInput
-  }
-
-  export type TrafficSnapshotArchiveWhereUniqueInput = Prisma.AtLeast<{
-    id?: number
-    airportId_day?: TrafficSnapshotArchiveAirportIdDayCompoundUniqueInput
-    AND?: TrafficSnapshotArchiveWhereInput | TrafficSnapshotArchiveWhereInput[]
-    OR?: TrafficSnapshotArchiveWhereInput[]
-    NOT?: TrafficSnapshotArchiveWhereInput | TrafficSnapshotArchiveWhereInput[]
-    airportId?: IntFilter<"TrafficSnapshotArchive"> | number
-    day?: DateTimeFilter<"TrafficSnapshotArchive"> | Date | string
-    snapshotsCount?: IntFilter<"TrafficSnapshotArchive"> | number
-    totalArrivals?: IntFilter<"TrafficSnapshotArchive"> | number
-    totalDepartures?: IntFilter<"TrafficSnapshotArchive"> | number
-    totalAircraft?: IntFilter<"TrafficSnapshotArchive"> | number
-    sumTrafficScore?: IntFilter<"TrafficSnapshotArchive"> | number
-    peakTrafficScore?: IntFilter<"TrafficSnapshotArchive"> | number
-    airport?: XOR<AirportScalarRelationFilter, AirportWhereInput>
-  }, "id" | "airportId_day">
-
-  export type TrafficSnapshotArchiveOrderByWithAggregationInput = {
-    id?: SortOrder
-    airportId?: SortOrder
-    day?: SortOrder
-    snapshotsCount?: SortOrder
-    totalArrivals?: SortOrder
-    totalDepartures?: SortOrder
-    totalAircraft?: SortOrder
-    sumTrafficScore?: SortOrder
-    peakTrafficScore?: SortOrder
-    _count?: TrafficSnapshotArchiveCountOrderByAggregateInput
-    _avg?: TrafficSnapshotArchiveAvgOrderByAggregateInput
-    _max?: TrafficSnapshotArchiveMaxOrderByAggregateInput
-    _min?: TrafficSnapshotArchiveMinOrderByAggregateInput
-    _sum?: TrafficSnapshotArchiveSumOrderByAggregateInput
-  }
-
-  export type TrafficSnapshotArchiveScalarWhereWithAggregatesInput = {
-    AND?: TrafficSnapshotArchiveScalarWhereWithAggregatesInput | TrafficSnapshotArchiveScalarWhereWithAggregatesInput[]
-    OR?: TrafficSnapshotArchiveScalarWhereWithAggregatesInput[]
-    NOT?: TrafficSnapshotArchiveScalarWhereWithAggregatesInput | TrafficSnapshotArchiveScalarWhereWithAggregatesInput[]
-    id?: IntWithAggregatesFilter<"TrafficSnapshotArchive"> | number
-    airportId?: IntWithAggregatesFilter<"TrafficSnapshotArchive"> | number
-    day?: DateTimeWithAggregatesFilter<"TrafficSnapshotArchive"> | Date | string
-    snapshotsCount?: IntWithAggregatesFilter<"TrafficSnapshotArchive"> | number
-    totalArrivals?: IntWithAggregatesFilter<"TrafficSnapshotArchive"> | number
-    totalDepartures?: IntWithAggregatesFilter<"TrafficSnapshotArchive"> | number
-    totalAircraft?: IntWithAggregatesFilter<"TrafficSnapshotArchive"> | number
-    sumTrafficScore?: IntWithAggregatesFilter<"TrafficSnapshotArchive"> | number
-    peakTrafficScore?: IntWithAggregatesFilter<"TrafficSnapshotArchive"> | number
-  }
-
   export type ControllerSessionWhereInput = {
     AND?: ControllerSessionWhereInput | ControllerSessionWhereInput[]
     OR?: ControllerSessionWhereInput[]
@@ -6239,7 +4838,6 @@ export namespace Prisma {
     fir?: string | null
     snapshots?: TrafficSnapshotCreateNestedManyWithoutAirportInput
     sessions?: ControllerSessionCreateNestedManyWithoutAirportInput
-    summaryArchives?: TrafficSnapshotArchiveCreateNestedManyWithoutAirportInput
   }
 
   export type AirportUncheckedCreateInput = {
@@ -6250,7 +4848,6 @@ export namespace Prisma {
     fir?: string | null
     snapshots?: TrafficSnapshotUncheckedCreateNestedManyWithoutAirportInput
     sessions?: ControllerSessionUncheckedCreateNestedManyWithoutAirportInput
-    summaryArchives?: TrafficSnapshotArchiveUncheckedCreateNestedManyWithoutAirportInput
   }
 
   export type AirportUpdateInput = {
@@ -6260,7 +4857,6 @@ export namespace Prisma {
     fir?: NullableStringFieldUpdateOperationsInput | string | null
     snapshots?: TrafficSnapshotUpdateManyWithoutAirportNestedInput
     sessions?: ControllerSessionUpdateManyWithoutAirportNestedInput
-    summaryArchives?: TrafficSnapshotArchiveUpdateManyWithoutAirportNestedInput
   }
 
   export type AirportUncheckedUpdateInput = {
@@ -6271,7 +4867,6 @@ export namespace Prisma {
     fir?: NullableStringFieldUpdateOperationsInput | string | null
     snapshots?: TrafficSnapshotUncheckedUpdateManyWithoutAirportNestedInput
     sessions?: ControllerSessionUncheckedUpdateManyWithoutAirportNestedInput
-    summaryArchives?: TrafficSnapshotArchiveUncheckedUpdateManyWithoutAirportNestedInput
   }
 
   export type AirportCreateManyInput = {
@@ -6368,86 +4963,6 @@ export namespace Prisma {
     overflights?: IntFieldUpdateOperationsInput | number
     totalAircraft?: IntFieldUpdateOperationsInput | number
     trafficScore?: IntFieldUpdateOperationsInput | number
-  }
-
-  export type TrafficSnapshotArchiveCreateInput = {
-    day: Date | string
-    snapshotsCount: number
-    totalArrivals: number
-    totalDepartures: number
-    totalAircraft: number
-    sumTrafficScore: number
-    peakTrafficScore: number
-    airport: AirportCreateNestedOneWithoutSummaryArchivesInput
-  }
-
-  export type TrafficSnapshotArchiveUncheckedCreateInput = {
-    id?: number
-    airportId: number
-    day: Date | string
-    snapshotsCount: number
-    totalArrivals: number
-    totalDepartures: number
-    totalAircraft: number
-    sumTrafficScore: number
-    peakTrafficScore: number
-  }
-
-  export type TrafficSnapshotArchiveUpdateInput = {
-    day?: DateTimeFieldUpdateOperationsInput | Date | string
-    snapshotsCount?: IntFieldUpdateOperationsInput | number
-    totalArrivals?: IntFieldUpdateOperationsInput | number
-    totalDepartures?: IntFieldUpdateOperationsInput | number
-    totalAircraft?: IntFieldUpdateOperationsInput | number
-    sumTrafficScore?: IntFieldUpdateOperationsInput | number
-    peakTrafficScore?: IntFieldUpdateOperationsInput | number
-    airport?: AirportUpdateOneRequiredWithoutSummaryArchivesNestedInput
-  }
-
-  export type TrafficSnapshotArchiveUncheckedUpdateInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    airportId?: IntFieldUpdateOperationsInput | number
-    day?: DateTimeFieldUpdateOperationsInput | Date | string
-    snapshotsCount?: IntFieldUpdateOperationsInput | number
-    totalArrivals?: IntFieldUpdateOperationsInput | number
-    totalDepartures?: IntFieldUpdateOperationsInput | number
-    totalAircraft?: IntFieldUpdateOperationsInput | number
-    sumTrafficScore?: IntFieldUpdateOperationsInput | number
-    peakTrafficScore?: IntFieldUpdateOperationsInput | number
-  }
-
-  export type TrafficSnapshotArchiveCreateManyInput = {
-    id?: number
-    airportId: number
-    day: Date | string
-    snapshotsCount: number
-    totalArrivals: number
-    totalDepartures: number
-    totalAircraft: number
-    sumTrafficScore: number
-    peakTrafficScore: number
-  }
-
-  export type TrafficSnapshotArchiveUpdateManyMutationInput = {
-    day?: DateTimeFieldUpdateOperationsInput | Date | string
-    snapshotsCount?: IntFieldUpdateOperationsInput | number
-    totalArrivals?: IntFieldUpdateOperationsInput | number
-    totalDepartures?: IntFieldUpdateOperationsInput | number
-    totalAircraft?: IntFieldUpdateOperationsInput | number
-    sumTrafficScore?: IntFieldUpdateOperationsInput | number
-    peakTrafficScore?: IntFieldUpdateOperationsInput | number
-  }
-
-  export type TrafficSnapshotArchiveUncheckedUpdateManyInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    airportId?: IntFieldUpdateOperationsInput | number
-    day?: DateTimeFieldUpdateOperationsInput | Date | string
-    snapshotsCount?: IntFieldUpdateOperationsInput | number
-    totalArrivals?: IntFieldUpdateOperationsInput | number
-    totalDepartures?: IntFieldUpdateOperationsInput | number
-    totalAircraft?: IntFieldUpdateOperationsInput | number
-    sumTrafficScore?: IntFieldUpdateOperationsInput | number
-    peakTrafficScore?: IntFieldUpdateOperationsInput | number
   }
 
   export type ControllerSessionCreateInput = {
@@ -6562,12 +5077,6 @@ export namespace Prisma {
     none?: ControllerSessionWhereInput
   }
 
-  export type TrafficSnapshotArchiveListRelationFilter = {
-    every?: TrafficSnapshotArchiveWhereInput
-    some?: TrafficSnapshotArchiveWhereInput
-    none?: TrafficSnapshotArchiveWhereInput
-  }
-
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
@@ -6578,10 +5087,6 @@ export namespace Prisma {
   }
 
   export type ControllerSessionOrderByRelationAggregateInput = {
-    _count?: SortOrder
-  }
-
-  export type TrafficSnapshotArchiveOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -6752,69 +5257,6 @@ export namespace Prisma {
     _max?: NestedDateTimeFilter<$PrismaModel>
   }
 
-  export type TrafficSnapshotArchiveAirportIdDayCompoundUniqueInput = {
-    airportId: number
-    day: Date | string
-  }
-
-  export type TrafficSnapshotArchiveCountOrderByAggregateInput = {
-    id?: SortOrder
-    airportId?: SortOrder
-    day?: SortOrder
-    snapshotsCount?: SortOrder
-    totalArrivals?: SortOrder
-    totalDepartures?: SortOrder
-    totalAircraft?: SortOrder
-    sumTrafficScore?: SortOrder
-    peakTrafficScore?: SortOrder
-  }
-
-  export type TrafficSnapshotArchiveAvgOrderByAggregateInput = {
-    id?: SortOrder
-    airportId?: SortOrder
-    snapshotsCount?: SortOrder
-    totalArrivals?: SortOrder
-    totalDepartures?: SortOrder
-    totalAircraft?: SortOrder
-    sumTrafficScore?: SortOrder
-    peakTrafficScore?: SortOrder
-  }
-
-  export type TrafficSnapshotArchiveMaxOrderByAggregateInput = {
-    id?: SortOrder
-    airportId?: SortOrder
-    day?: SortOrder
-    snapshotsCount?: SortOrder
-    totalArrivals?: SortOrder
-    totalDepartures?: SortOrder
-    totalAircraft?: SortOrder
-    sumTrafficScore?: SortOrder
-    peakTrafficScore?: SortOrder
-  }
-
-  export type TrafficSnapshotArchiveMinOrderByAggregateInput = {
-    id?: SortOrder
-    airportId?: SortOrder
-    day?: SortOrder
-    snapshotsCount?: SortOrder
-    totalArrivals?: SortOrder
-    totalDepartures?: SortOrder
-    totalAircraft?: SortOrder
-    sumTrafficScore?: SortOrder
-    peakTrafficScore?: SortOrder
-  }
-
-  export type TrafficSnapshotArchiveSumOrderByAggregateInput = {
-    id?: SortOrder
-    airportId?: SortOrder
-    snapshotsCount?: SortOrder
-    totalArrivals?: SortOrder
-    totalDepartures?: SortOrder
-    totalAircraft?: SortOrder
-    sumTrafficScore?: SortOrder
-    peakTrafficScore?: SortOrder
-  }
-
   export type DateTimeNullableFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
     in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
@@ -6891,13 +5333,6 @@ export namespace Prisma {
     connect?: ControllerSessionWhereUniqueInput | ControllerSessionWhereUniqueInput[]
   }
 
-  export type TrafficSnapshotArchiveCreateNestedManyWithoutAirportInput = {
-    create?: XOR<TrafficSnapshotArchiveCreateWithoutAirportInput, TrafficSnapshotArchiveUncheckedCreateWithoutAirportInput> | TrafficSnapshotArchiveCreateWithoutAirportInput[] | TrafficSnapshotArchiveUncheckedCreateWithoutAirportInput[]
-    connectOrCreate?: TrafficSnapshotArchiveCreateOrConnectWithoutAirportInput | TrafficSnapshotArchiveCreateOrConnectWithoutAirportInput[]
-    createMany?: TrafficSnapshotArchiveCreateManyAirportInputEnvelope
-    connect?: TrafficSnapshotArchiveWhereUniqueInput | TrafficSnapshotArchiveWhereUniqueInput[]
-  }
-
   export type TrafficSnapshotUncheckedCreateNestedManyWithoutAirportInput = {
     create?: XOR<TrafficSnapshotCreateWithoutAirportInput, TrafficSnapshotUncheckedCreateWithoutAirportInput> | TrafficSnapshotCreateWithoutAirportInput[] | TrafficSnapshotUncheckedCreateWithoutAirportInput[]
     connectOrCreate?: TrafficSnapshotCreateOrConnectWithoutAirportInput | TrafficSnapshotCreateOrConnectWithoutAirportInput[]
@@ -6910,13 +5345,6 @@ export namespace Prisma {
     connectOrCreate?: ControllerSessionCreateOrConnectWithoutAirportInput | ControllerSessionCreateOrConnectWithoutAirportInput[]
     createMany?: ControllerSessionCreateManyAirportInputEnvelope
     connect?: ControllerSessionWhereUniqueInput | ControllerSessionWhereUniqueInput[]
-  }
-
-  export type TrafficSnapshotArchiveUncheckedCreateNestedManyWithoutAirportInput = {
-    create?: XOR<TrafficSnapshotArchiveCreateWithoutAirportInput, TrafficSnapshotArchiveUncheckedCreateWithoutAirportInput> | TrafficSnapshotArchiveCreateWithoutAirportInput[] | TrafficSnapshotArchiveUncheckedCreateWithoutAirportInput[]
-    connectOrCreate?: TrafficSnapshotArchiveCreateOrConnectWithoutAirportInput | TrafficSnapshotArchiveCreateOrConnectWithoutAirportInput[]
-    createMany?: TrafficSnapshotArchiveCreateManyAirportInputEnvelope
-    connect?: TrafficSnapshotArchiveWhereUniqueInput | TrafficSnapshotArchiveWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -6955,20 +5383,6 @@ export namespace Prisma {
     deleteMany?: ControllerSessionScalarWhereInput | ControllerSessionScalarWhereInput[]
   }
 
-  export type TrafficSnapshotArchiveUpdateManyWithoutAirportNestedInput = {
-    create?: XOR<TrafficSnapshotArchiveCreateWithoutAirportInput, TrafficSnapshotArchiveUncheckedCreateWithoutAirportInput> | TrafficSnapshotArchiveCreateWithoutAirportInput[] | TrafficSnapshotArchiveUncheckedCreateWithoutAirportInput[]
-    connectOrCreate?: TrafficSnapshotArchiveCreateOrConnectWithoutAirportInput | TrafficSnapshotArchiveCreateOrConnectWithoutAirportInput[]
-    upsert?: TrafficSnapshotArchiveUpsertWithWhereUniqueWithoutAirportInput | TrafficSnapshotArchiveUpsertWithWhereUniqueWithoutAirportInput[]
-    createMany?: TrafficSnapshotArchiveCreateManyAirportInputEnvelope
-    set?: TrafficSnapshotArchiveWhereUniqueInput | TrafficSnapshotArchiveWhereUniqueInput[]
-    disconnect?: TrafficSnapshotArchiveWhereUniqueInput | TrafficSnapshotArchiveWhereUniqueInput[]
-    delete?: TrafficSnapshotArchiveWhereUniqueInput | TrafficSnapshotArchiveWhereUniqueInput[]
-    connect?: TrafficSnapshotArchiveWhereUniqueInput | TrafficSnapshotArchiveWhereUniqueInput[]
-    update?: TrafficSnapshotArchiveUpdateWithWhereUniqueWithoutAirportInput | TrafficSnapshotArchiveUpdateWithWhereUniqueWithoutAirportInput[]
-    updateMany?: TrafficSnapshotArchiveUpdateManyWithWhereWithoutAirportInput | TrafficSnapshotArchiveUpdateManyWithWhereWithoutAirportInput[]
-    deleteMany?: TrafficSnapshotArchiveScalarWhereInput | TrafficSnapshotArchiveScalarWhereInput[]
-  }
-
   export type IntFieldUpdateOperationsInput = {
     set?: number
     increment?: number
@@ -7005,20 +5419,6 @@ export namespace Prisma {
     deleteMany?: ControllerSessionScalarWhereInput | ControllerSessionScalarWhereInput[]
   }
 
-  export type TrafficSnapshotArchiveUncheckedUpdateManyWithoutAirportNestedInput = {
-    create?: XOR<TrafficSnapshotArchiveCreateWithoutAirportInput, TrafficSnapshotArchiveUncheckedCreateWithoutAirportInput> | TrafficSnapshotArchiveCreateWithoutAirportInput[] | TrafficSnapshotArchiveUncheckedCreateWithoutAirportInput[]
-    connectOrCreate?: TrafficSnapshotArchiveCreateOrConnectWithoutAirportInput | TrafficSnapshotArchiveCreateOrConnectWithoutAirportInput[]
-    upsert?: TrafficSnapshotArchiveUpsertWithWhereUniqueWithoutAirportInput | TrafficSnapshotArchiveUpsertWithWhereUniqueWithoutAirportInput[]
-    createMany?: TrafficSnapshotArchiveCreateManyAirportInputEnvelope
-    set?: TrafficSnapshotArchiveWhereUniqueInput | TrafficSnapshotArchiveWhereUniqueInput[]
-    disconnect?: TrafficSnapshotArchiveWhereUniqueInput | TrafficSnapshotArchiveWhereUniqueInput[]
-    delete?: TrafficSnapshotArchiveWhereUniqueInput | TrafficSnapshotArchiveWhereUniqueInput[]
-    connect?: TrafficSnapshotArchiveWhereUniqueInput | TrafficSnapshotArchiveWhereUniqueInput[]
-    update?: TrafficSnapshotArchiveUpdateWithWhereUniqueWithoutAirportInput | TrafficSnapshotArchiveUpdateWithWhereUniqueWithoutAirportInput[]
-    updateMany?: TrafficSnapshotArchiveUpdateManyWithWhereWithoutAirportInput | TrafficSnapshotArchiveUpdateManyWithWhereWithoutAirportInput[]
-    deleteMany?: TrafficSnapshotArchiveScalarWhereInput | TrafficSnapshotArchiveScalarWhereInput[]
-  }
-
   export type AirportCreateNestedOneWithoutSnapshotsInput = {
     create?: XOR<AirportCreateWithoutSnapshotsInput, AirportUncheckedCreateWithoutSnapshotsInput>
     connectOrCreate?: AirportCreateOrConnectWithoutSnapshotsInput
@@ -7035,20 +5435,6 @@ export namespace Prisma {
     upsert?: AirportUpsertWithoutSnapshotsInput
     connect?: AirportWhereUniqueInput
     update?: XOR<XOR<AirportUpdateToOneWithWhereWithoutSnapshotsInput, AirportUpdateWithoutSnapshotsInput>, AirportUncheckedUpdateWithoutSnapshotsInput>
-  }
-
-  export type AirportCreateNestedOneWithoutSummaryArchivesInput = {
-    create?: XOR<AirportCreateWithoutSummaryArchivesInput, AirportUncheckedCreateWithoutSummaryArchivesInput>
-    connectOrCreate?: AirportCreateOrConnectWithoutSummaryArchivesInput
-    connect?: AirportWhereUniqueInput
-  }
-
-  export type AirportUpdateOneRequiredWithoutSummaryArchivesNestedInput = {
-    create?: XOR<AirportCreateWithoutSummaryArchivesInput, AirportUncheckedCreateWithoutSummaryArchivesInput>
-    connectOrCreate?: AirportCreateOrConnectWithoutSummaryArchivesInput
-    upsert?: AirportUpsertWithoutSummaryArchivesInput
-    connect?: AirportWhereUniqueInput
-    update?: XOR<XOR<AirportUpdateToOneWithWhereWithoutSummaryArchivesInput, AirportUpdateWithoutSummaryArchivesInput>, AirportUncheckedUpdateWithoutSummaryArchivesInput>
   }
 
   export type AirportCreateNestedOneWithoutSessionsInput = {
@@ -7284,37 +5670,6 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
-  export type TrafficSnapshotArchiveCreateWithoutAirportInput = {
-    day: Date | string
-    snapshotsCount: number
-    totalArrivals: number
-    totalDepartures: number
-    totalAircraft: number
-    sumTrafficScore: number
-    peakTrafficScore: number
-  }
-
-  export type TrafficSnapshotArchiveUncheckedCreateWithoutAirportInput = {
-    id?: number
-    day: Date | string
-    snapshotsCount: number
-    totalArrivals: number
-    totalDepartures: number
-    totalAircraft: number
-    sumTrafficScore: number
-    peakTrafficScore: number
-  }
-
-  export type TrafficSnapshotArchiveCreateOrConnectWithoutAirportInput = {
-    where: TrafficSnapshotArchiveWhereUniqueInput
-    create: XOR<TrafficSnapshotArchiveCreateWithoutAirportInput, TrafficSnapshotArchiveUncheckedCreateWithoutAirportInput>
-  }
-
-  export type TrafficSnapshotArchiveCreateManyAirportInputEnvelope = {
-    data: TrafficSnapshotArchiveCreateManyAirportInput | TrafficSnapshotArchiveCreateManyAirportInput[]
-    skipDuplicates?: boolean
-  }
-
   export type TrafficSnapshotUpsertWithWhereUniqueWithoutAirportInput = {
     where: TrafficSnapshotWhereUniqueInput
     update: XOR<TrafficSnapshotUpdateWithoutAirportInput, TrafficSnapshotUncheckedUpdateWithoutAirportInput>
@@ -7373,44 +5728,12 @@ export namespace Prisma {
     endTime?: DateTimeNullableFilter<"ControllerSession"> | Date | string | null
   }
 
-  export type TrafficSnapshotArchiveUpsertWithWhereUniqueWithoutAirportInput = {
-    where: TrafficSnapshotArchiveWhereUniqueInput
-    update: XOR<TrafficSnapshotArchiveUpdateWithoutAirportInput, TrafficSnapshotArchiveUncheckedUpdateWithoutAirportInput>
-    create: XOR<TrafficSnapshotArchiveCreateWithoutAirportInput, TrafficSnapshotArchiveUncheckedCreateWithoutAirportInput>
-  }
-
-  export type TrafficSnapshotArchiveUpdateWithWhereUniqueWithoutAirportInput = {
-    where: TrafficSnapshotArchiveWhereUniqueInput
-    data: XOR<TrafficSnapshotArchiveUpdateWithoutAirportInput, TrafficSnapshotArchiveUncheckedUpdateWithoutAirportInput>
-  }
-
-  export type TrafficSnapshotArchiveUpdateManyWithWhereWithoutAirportInput = {
-    where: TrafficSnapshotArchiveScalarWhereInput
-    data: XOR<TrafficSnapshotArchiveUpdateManyMutationInput, TrafficSnapshotArchiveUncheckedUpdateManyWithoutAirportInput>
-  }
-
-  export type TrafficSnapshotArchiveScalarWhereInput = {
-    AND?: TrafficSnapshotArchiveScalarWhereInput | TrafficSnapshotArchiveScalarWhereInput[]
-    OR?: TrafficSnapshotArchiveScalarWhereInput[]
-    NOT?: TrafficSnapshotArchiveScalarWhereInput | TrafficSnapshotArchiveScalarWhereInput[]
-    id?: IntFilter<"TrafficSnapshotArchive"> | number
-    airportId?: IntFilter<"TrafficSnapshotArchive"> | number
-    day?: DateTimeFilter<"TrafficSnapshotArchive"> | Date | string
-    snapshotsCount?: IntFilter<"TrafficSnapshotArchive"> | number
-    totalArrivals?: IntFilter<"TrafficSnapshotArchive"> | number
-    totalDepartures?: IntFilter<"TrafficSnapshotArchive"> | number
-    totalAircraft?: IntFilter<"TrafficSnapshotArchive"> | number
-    sumTrafficScore?: IntFilter<"TrafficSnapshotArchive"> | number
-    peakTrafficScore?: IntFilter<"TrafficSnapshotArchive"> | number
-  }
-
   export type AirportCreateWithoutSnapshotsInput = {
     icao: string
     name?: string | null
     country?: string | null
     fir?: string | null
     sessions?: ControllerSessionCreateNestedManyWithoutAirportInput
-    summaryArchives?: TrafficSnapshotArchiveCreateNestedManyWithoutAirportInput
   }
 
   export type AirportUncheckedCreateWithoutSnapshotsInput = {
@@ -7420,7 +5743,6 @@ export namespace Prisma {
     country?: string | null
     fir?: string | null
     sessions?: ControllerSessionUncheckedCreateNestedManyWithoutAirportInput
-    summaryArchives?: TrafficSnapshotArchiveUncheckedCreateNestedManyWithoutAirportInput
   }
 
   export type AirportCreateOrConnectWithoutSnapshotsInput = {
@@ -7445,7 +5767,6 @@ export namespace Prisma {
     country?: NullableStringFieldUpdateOperationsInput | string | null
     fir?: NullableStringFieldUpdateOperationsInput | string | null
     sessions?: ControllerSessionUpdateManyWithoutAirportNestedInput
-    summaryArchives?: TrafficSnapshotArchiveUpdateManyWithoutAirportNestedInput
   }
 
   export type AirportUncheckedUpdateWithoutSnapshotsInput = {
@@ -7455,61 +5776,6 @@ export namespace Prisma {
     country?: NullableStringFieldUpdateOperationsInput | string | null
     fir?: NullableStringFieldUpdateOperationsInput | string | null
     sessions?: ControllerSessionUncheckedUpdateManyWithoutAirportNestedInput
-    summaryArchives?: TrafficSnapshotArchiveUncheckedUpdateManyWithoutAirportNestedInput
-  }
-
-  export type AirportCreateWithoutSummaryArchivesInput = {
-    icao: string
-    name?: string | null
-    country?: string | null
-    fir?: string | null
-    snapshots?: TrafficSnapshotCreateNestedManyWithoutAirportInput
-    sessions?: ControllerSessionCreateNestedManyWithoutAirportInput
-  }
-
-  export type AirportUncheckedCreateWithoutSummaryArchivesInput = {
-    id?: number
-    icao: string
-    name?: string | null
-    country?: string | null
-    fir?: string | null
-    snapshots?: TrafficSnapshotUncheckedCreateNestedManyWithoutAirportInput
-    sessions?: ControllerSessionUncheckedCreateNestedManyWithoutAirportInput
-  }
-
-  export type AirportCreateOrConnectWithoutSummaryArchivesInput = {
-    where: AirportWhereUniqueInput
-    create: XOR<AirportCreateWithoutSummaryArchivesInput, AirportUncheckedCreateWithoutSummaryArchivesInput>
-  }
-
-  export type AirportUpsertWithoutSummaryArchivesInput = {
-    update: XOR<AirportUpdateWithoutSummaryArchivesInput, AirportUncheckedUpdateWithoutSummaryArchivesInput>
-    create: XOR<AirportCreateWithoutSummaryArchivesInput, AirportUncheckedCreateWithoutSummaryArchivesInput>
-    where?: AirportWhereInput
-  }
-
-  export type AirportUpdateToOneWithWhereWithoutSummaryArchivesInput = {
-    where?: AirportWhereInput
-    data: XOR<AirportUpdateWithoutSummaryArchivesInput, AirportUncheckedUpdateWithoutSummaryArchivesInput>
-  }
-
-  export type AirportUpdateWithoutSummaryArchivesInput = {
-    icao?: StringFieldUpdateOperationsInput | string
-    name?: NullableStringFieldUpdateOperationsInput | string | null
-    country?: NullableStringFieldUpdateOperationsInput | string | null
-    fir?: NullableStringFieldUpdateOperationsInput | string | null
-    snapshots?: TrafficSnapshotUpdateManyWithoutAirportNestedInput
-    sessions?: ControllerSessionUpdateManyWithoutAirportNestedInput
-  }
-
-  export type AirportUncheckedUpdateWithoutSummaryArchivesInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    icao?: StringFieldUpdateOperationsInput | string
-    name?: NullableStringFieldUpdateOperationsInput | string | null
-    country?: NullableStringFieldUpdateOperationsInput | string | null
-    fir?: NullableStringFieldUpdateOperationsInput | string | null
-    snapshots?: TrafficSnapshotUncheckedUpdateManyWithoutAirportNestedInput
-    sessions?: ControllerSessionUncheckedUpdateManyWithoutAirportNestedInput
   }
 
   export type AirportCreateWithoutSessionsInput = {
@@ -7518,7 +5784,6 @@ export namespace Prisma {
     country?: string | null
     fir?: string | null
     snapshots?: TrafficSnapshotCreateNestedManyWithoutAirportInput
-    summaryArchives?: TrafficSnapshotArchiveCreateNestedManyWithoutAirportInput
   }
 
   export type AirportUncheckedCreateWithoutSessionsInput = {
@@ -7528,7 +5793,6 @@ export namespace Prisma {
     country?: string | null
     fir?: string | null
     snapshots?: TrafficSnapshotUncheckedCreateNestedManyWithoutAirportInput
-    summaryArchives?: TrafficSnapshotArchiveUncheckedCreateNestedManyWithoutAirportInput
   }
 
   export type AirportCreateOrConnectWithoutSessionsInput = {
@@ -7553,7 +5817,6 @@ export namespace Prisma {
     country?: NullableStringFieldUpdateOperationsInput | string | null
     fir?: NullableStringFieldUpdateOperationsInput | string | null
     snapshots?: TrafficSnapshotUpdateManyWithoutAirportNestedInput
-    summaryArchives?: TrafficSnapshotArchiveUpdateManyWithoutAirportNestedInput
   }
 
   export type AirportUncheckedUpdateWithoutSessionsInput = {
@@ -7563,7 +5826,6 @@ export namespace Prisma {
     country?: NullableStringFieldUpdateOperationsInput | string | null
     fir?: NullableStringFieldUpdateOperationsInput | string | null
     snapshots?: TrafficSnapshotUncheckedUpdateManyWithoutAirportNestedInput
-    summaryArchives?: TrafficSnapshotArchiveUncheckedUpdateManyWithoutAirportNestedInput
   }
 
   export type TrafficSnapshotCreateManyAirportInput = {
@@ -7582,17 +5844,6 @@ export namespace Prisma {
     positionType: string
     startTime: Date | string
     endTime?: Date | string | null
-  }
-
-  export type TrafficSnapshotArchiveCreateManyAirportInput = {
-    id?: number
-    day: Date | string
-    snapshotsCount: number
-    totalArrivals: number
-    totalDepartures: number
-    totalAircraft: number
-    sumTrafficScore: number
-    peakTrafficScore: number
   }
 
   export type TrafficSnapshotUpdateWithoutAirportInput = {
@@ -7645,38 +5896,6 @@ export namespace Prisma {
     positionType?: StringFieldUpdateOperationsInput | string
     startTime?: DateTimeFieldUpdateOperationsInput | Date | string
     endTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  }
-
-  export type TrafficSnapshotArchiveUpdateWithoutAirportInput = {
-    day?: DateTimeFieldUpdateOperationsInput | Date | string
-    snapshotsCount?: IntFieldUpdateOperationsInput | number
-    totalArrivals?: IntFieldUpdateOperationsInput | number
-    totalDepartures?: IntFieldUpdateOperationsInput | number
-    totalAircraft?: IntFieldUpdateOperationsInput | number
-    sumTrafficScore?: IntFieldUpdateOperationsInput | number
-    peakTrafficScore?: IntFieldUpdateOperationsInput | number
-  }
-
-  export type TrafficSnapshotArchiveUncheckedUpdateWithoutAirportInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    day?: DateTimeFieldUpdateOperationsInput | Date | string
-    snapshotsCount?: IntFieldUpdateOperationsInput | number
-    totalArrivals?: IntFieldUpdateOperationsInput | number
-    totalDepartures?: IntFieldUpdateOperationsInput | number
-    totalAircraft?: IntFieldUpdateOperationsInput | number
-    sumTrafficScore?: IntFieldUpdateOperationsInput | number
-    peakTrafficScore?: IntFieldUpdateOperationsInput | number
-  }
-
-  export type TrafficSnapshotArchiveUncheckedUpdateManyWithoutAirportInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    day?: DateTimeFieldUpdateOperationsInput | Date | string
-    snapshotsCount?: IntFieldUpdateOperationsInput | number
-    totalArrivals?: IntFieldUpdateOperationsInput | number
-    totalDepartures?: IntFieldUpdateOperationsInput | number
-    totalAircraft?: IntFieldUpdateOperationsInput | number
-    sumTrafficScore?: IntFieldUpdateOperationsInput | number
-    peakTrafficScore?: IntFieldUpdateOperationsInput | number
   }
 
 
