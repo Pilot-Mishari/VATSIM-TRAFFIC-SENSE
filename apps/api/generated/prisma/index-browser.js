@@ -148,6 +148,18 @@ exports.Prisma.TrafficSnapshotScalarFieldEnum = {
   trafficScore: 'trafficScore'
 };
 
+exports.Prisma.TrafficSnapshotArchiveScalarFieldEnum = {
+  id: 'id',
+  airportId: 'airportId',
+  day: 'day',
+  snapshotsCount: 'snapshotsCount',
+  totalArrivals: 'totalArrivals',
+  totalDepartures: 'totalDepartures',
+  totalAircraft: 'totalAircraft',
+  sumTrafficScore: 'sumTrafficScore',
+  peakTrafficScore: 'peakTrafficScore'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -167,7 +179,8 @@ exports.Prisma.NullsOrder = {
 exports.Prisma.ModelName = {
   Airport: 'Airport',
   ControllerSession: 'ControllerSession',
-  TrafficSnapshot: 'TrafficSnapshot'
+  TrafficSnapshot: 'TrafficSnapshot',
+  TrafficSnapshotArchive: 'TrafficSnapshotArchive'
 };
 
 /**
