@@ -214,7 +214,7 @@ export default function Dashboard({ onNavigate }: { onNavigate: (page: string) =
               <div style={{ fontSize: 18, fontWeight: 700, color: '#3b9eff', marginBottom: 12 }}>
                 {changelog?.title ?? 'Loading latest PR...'}
               </div>
-              <div style={{ fontSize: 12, lineHeight: 1.5, color: '#d6e4ff', minHeight: 64 }}>
+              <div style={{ fontSize: 12, lineHeight: 1.5, color: '#d6e4ff', maxHeight: 96, overflowY: 'auto', paddingRight: 8, whiteSpace: 'pre-wrap' }}>
                 {changelog?.body ? changelog.body : 'No open pull requests available.'}
               </div>
               {changelog?.url ? (
