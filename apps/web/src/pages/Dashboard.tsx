@@ -18,8 +18,15 @@ interface Airport {
 }
 
 interface Summary {
-  totalSnapshots: number
   latestTimestamp: string
+}
+
+interface Changelog {
+  title: string
+  body: string
+  url?: string
+  state?: string
+  updatedAt?: string
 }
 
 interface Controller {
@@ -30,6 +37,7 @@ interface Controller {
 
 export default function Dashboard({ onNavigate }: { onNavigate: (page: string) => void }) {
   const [summary, setSummary] = useState<Summary | null>(null)
+  const [changelog, setChangelog] = useState<Changelog | null>(null)
   const [topAirports, setTopAirports] = useState<Airport[]>([])
   const [search, setSearch] = useState('')
   const [loading, setLoading] = useState(true)
@@ -44,9 +52,11 @@ export default function Dashboard({ onNavigate }: { onNavigate: (page: string) =
   useEffect(() => {
     Promise.all([
       fetch(`${API}/analytics/summary`).then(r => r.json()),
+      fetch(`${API}/analytics/changelog`).then(r => r.json()),
       fetch(`${API}/analytics/top-airports`).then(r => r.json()),
-    ]).then(([s, t]) => {
+    ]).then(([s, c, t]) => {
       setSummary(s)
+      setChangelog(c)
       setTopAirports(t)
       setLoading(false)
     })
@@ -196,9 +206,22 @@ export default function Dashboard({ onNavigate }: { onNavigate: (page: string) =
               borderRadius: 10,
               padding: '20px 24px',
               boxShadow: '0 0 12px rgba(59,158,255,0.05)',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'space-between',
             }}>
-              <div style={{ fontSize: 10, color: '#4a7aaa', letterSpacing: 2, marginBottom: 8 }}>SNAPSHOTS COLLECTED</div>
-              <div style={{ fontSize: 28, fontWeight: 700, color: '#3b9eff' }}>{summary.totalSnapshots.toLocaleString()}</div>
+              <div style={{ fontSize: 10, color: '#4a7aaa', letterSpacing: 2, marginBottom: 8 }}>CHANGELOG</div>
+              <div style={{ fontSize: 18, fontWeight: 700, color: '#3b9eff', marginBottom: 12 }}>
+                {changelog?.title ?? 'Loading latest PR...'}
+              </div>
+              <div style={{ fontSize: 12, lineHeight: 1.5, color: '#d6e4ff', minHeight: 64 }}>
+                {changelog?.body ? changelog.body : 'No open pull requests available.'}
+              </div>
+              {changelog?.url ? (
+                <a href={changelog.url} target="_blank" rel="noreferrer" style={{ marginTop: 12, fontSize: 11, color: '#4dff91', textDecoration: 'none' }}>
+                  View PR
+                </a>
+              ) : null}
             </div>
 
             {[

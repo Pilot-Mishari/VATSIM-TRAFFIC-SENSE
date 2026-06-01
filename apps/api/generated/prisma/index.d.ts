@@ -28,6 +28,11 @@ export type ControllerSession = $Result.DefaultSelection<Prisma.$ControllerSessi
  * 
  */
 export type TrafficSnapshot = $Result.DefaultSelection<Prisma.$TrafficSnapshotPayload>
+/**
+ * Model TrafficSummary
+ * 
+ */
+export type TrafficSummary = $Result.DefaultSelection<Prisma.$TrafficSummaryPayload>
 
 /**
  * ##  Prisma Client ʲˢ
@@ -179,6 +184,16 @@ export class PrismaClient<
     * ```
     */
   get trafficSnapshot(): Prisma.TrafficSnapshotDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.trafficSummary`: Exposes CRUD operations for the **TrafficSummary** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more TrafficSummaries
+    * const trafficSummaries = await prisma.trafficSummary.findMany()
+    * ```
+    */
+  get trafficSummary(): Prisma.TrafficSummaryDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -615,7 +630,8 @@ export namespace Prisma {
   export const ModelName: {
     Airport: 'Airport',
     ControllerSession: 'ControllerSession',
-    TrafficSnapshot: 'TrafficSnapshot'
+    TrafficSnapshot: 'TrafficSnapshot',
+    TrafficSummary: 'TrafficSummary'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -631,7 +647,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "airport" | "controllerSession" | "trafficSnapshot"
+      modelProps: "airport" | "controllerSession" | "trafficSnapshot" | "trafficSummary"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -857,6 +873,80 @@ export namespace Prisma {
           }
         }
       }
+      TrafficSummary: {
+        payload: Prisma.$TrafficSummaryPayload<ExtArgs>
+        fields: Prisma.TrafficSummaryFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.TrafficSummaryFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TrafficSummaryPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.TrafficSummaryFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TrafficSummaryPayload>
+          }
+          findFirst: {
+            args: Prisma.TrafficSummaryFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TrafficSummaryPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.TrafficSummaryFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TrafficSummaryPayload>
+          }
+          findMany: {
+            args: Prisma.TrafficSummaryFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TrafficSummaryPayload>[]
+          }
+          create: {
+            args: Prisma.TrafficSummaryCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TrafficSummaryPayload>
+          }
+          createMany: {
+            args: Prisma.TrafficSummaryCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.TrafficSummaryCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TrafficSummaryPayload>[]
+          }
+          delete: {
+            args: Prisma.TrafficSummaryDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TrafficSummaryPayload>
+          }
+          update: {
+            args: Prisma.TrafficSummaryUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TrafficSummaryPayload>
+          }
+          deleteMany: {
+            args: Prisma.TrafficSummaryDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.TrafficSummaryUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.TrafficSummaryUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TrafficSummaryPayload>[]
+          }
+          upsert: {
+            args: Prisma.TrafficSummaryUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TrafficSummaryPayload>
+          }
+          aggregate: {
+            args: Prisma.TrafficSummaryAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateTrafficSummary>
+          }
+          groupBy: {
+            args: Prisma.TrafficSummaryGroupByArgs<ExtArgs>
+            result: $Utils.Optional<TrafficSummaryGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.TrafficSummaryCountArgs<ExtArgs>
+            result: $Utils.Optional<TrafficSummaryCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -968,6 +1058,7 @@ export namespace Prisma {
     airport?: AirportOmit
     controllerSession?: ControllerSessionOmit
     trafficSnapshot?: TrafficSnapshotOmit
+    trafficSummary?: TrafficSummaryOmit
   }
 
   /* Types for Logging */
@@ -1050,11 +1141,13 @@ export namespace Prisma {
   export type AirportCountOutputType = {
     ControllerSession: number
     TrafficSnapshot: number
+    TrafficSummary: number
   }
 
   export type AirportCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     ControllerSession?: boolean | AirportCountOutputTypeCountControllerSessionArgs
     TrafficSnapshot?: boolean | AirportCountOutputTypeCountTrafficSnapshotArgs
+    TrafficSummary?: boolean | AirportCountOutputTypeCountTrafficSummaryArgs
   }
 
   // Custom InputTypes
@@ -1080,6 +1173,13 @@ export namespace Prisma {
    */
   export type AirportCountOutputTypeCountTrafficSnapshotArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: TrafficSnapshotWhereInput
+  }
+
+  /**
+   * AirportCountOutputType without action
+   */
+  export type AirportCountOutputTypeCountTrafficSummaryArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: TrafficSummaryWhereInput
   }
 
 
@@ -1287,6 +1387,7 @@ export namespace Prisma {
     fir?: boolean
     ControllerSession?: boolean | Airport$ControllerSessionArgs<ExtArgs>
     TrafficSnapshot?: boolean | Airport$TrafficSnapshotArgs<ExtArgs>
+    TrafficSummary?: boolean | Airport$TrafficSummaryArgs<ExtArgs>
     _count?: boolean | AirportCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["airport"]>
 
@@ -1318,6 +1419,7 @@ export namespace Prisma {
   export type AirportInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     ControllerSession?: boolean | Airport$ControllerSessionArgs<ExtArgs>
     TrafficSnapshot?: boolean | Airport$TrafficSnapshotArgs<ExtArgs>
+    TrafficSummary?: boolean | Airport$TrafficSummaryArgs<ExtArgs>
     _count?: boolean | AirportCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type AirportIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -1328,6 +1430,7 @@ export namespace Prisma {
     objects: {
       ControllerSession: Prisma.$ControllerSessionPayload<ExtArgs>[]
       TrafficSnapshot: Prisma.$TrafficSnapshotPayload<ExtArgs>[]
+      TrafficSummary: Prisma.$TrafficSummaryPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
@@ -1731,6 +1834,7 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     ControllerSession<T extends Airport$ControllerSessionArgs<ExtArgs> = {}>(args?: Subset<T, Airport$ControllerSessionArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ControllerSessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     TrafficSnapshot<T extends Airport$TrafficSnapshotArgs<ExtArgs> = {}>(args?: Subset<T, Airport$TrafficSnapshotArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TrafficSnapshotPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    TrafficSummary<T extends Airport$TrafficSummaryArgs<ExtArgs> = {}>(args?: Subset<T, Airport$TrafficSummaryArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TrafficSummaryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2203,6 +2307,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: TrafficSnapshotScalarFieldEnum | TrafficSnapshotScalarFieldEnum[]
+  }
+
+  /**
+   * Airport.TrafficSummary
+   */
+  export type Airport$TrafficSummaryArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TrafficSummary
+     */
+    select?: TrafficSummarySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TrafficSummary
+     */
+    omit?: TrafficSummaryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TrafficSummaryInclude<ExtArgs> | null
+    where?: TrafficSummaryWhereInput
+    orderBy?: TrafficSummaryOrderByWithRelationInput | TrafficSummaryOrderByWithRelationInput[]
+    cursor?: TrafficSummaryWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: TrafficSummaryScalarFieldEnum | TrafficSummaryScalarFieldEnum[]
   }
 
   /**
@@ -4499,6 +4627,1230 @@ export namespace Prisma {
 
 
   /**
+   * Model TrafficSummary
+   */
+
+  export type AggregateTrafficSummary = {
+    _count: TrafficSummaryCountAggregateOutputType | null
+    _avg: TrafficSummaryAvgAggregateOutputType | null
+    _sum: TrafficSummarySumAggregateOutputType | null
+    _min: TrafficSummaryMinAggregateOutputType | null
+    _max: TrafficSummaryMaxAggregateOutputType | null
+  }
+
+  export type TrafficSummaryAvgAggregateOutputType = {
+    id: number | null
+    airportId: number | null
+    dayOfWeek: number | null
+    hour: number | null
+    avgTrafficScore: number | null
+    peakTrafficScore: number | null
+    avgArrivals: number | null
+    avgDepartures: number | null
+    totalAircraft: number | null
+    sampleCount: number | null
+  }
+
+  export type TrafficSummarySumAggregateOutputType = {
+    id: number | null
+    airportId: number | null
+    dayOfWeek: number | null
+    hour: number | null
+    avgTrafficScore: number | null
+    peakTrafficScore: number | null
+    avgArrivals: number | null
+    avgDepartures: number | null
+    totalAircraft: number | null
+    sampleCount: number | null
+  }
+
+  export type TrafficSummaryMinAggregateOutputType = {
+    id: number | null
+    airportId: number | null
+    date: Date | null
+    dayOfWeek: number | null
+    hour: number | null
+    avgTrafficScore: number | null
+    peakTrafficScore: number | null
+    avgArrivals: number | null
+    avgDepartures: number | null
+    totalAircraft: number | null
+    sampleCount: number | null
+    createdAt: Date | null
+  }
+
+  export type TrafficSummaryMaxAggregateOutputType = {
+    id: number | null
+    airportId: number | null
+    date: Date | null
+    dayOfWeek: number | null
+    hour: number | null
+    avgTrafficScore: number | null
+    peakTrafficScore: number | null
+    avgArrivals: number | null
+    avgDepartures: number | null
+    totalAircraft: number | null
+    sampleCount: number | null
+    createdAt: Date | null
+  }
+
+  export type TrafficSummaryCountAggregateOutputType = {
+    id: number
+    airportId: number
+    date: number
+    dayOfWeek: number
+    hour: number
+    avgTrafficScore: number
+    peakTrafficScore: number
+    avgArrivals: number
+    avgDepartures: number
+    totalAircraft: number
+    sampleCount: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type TrafficSummaryAvgAggregateInputType = {
+    id?: true
+    airportId?: true
+    dayOfWeek?: true
+    hour?: true
+    avgTrafficScore?: true
+    peakTrafficScore?: true
+    avgArrivals?: true
+    avgDepartures?: true
+    totalAircraft?: true
+    sampleCount?: true
+  }
+
+  export type TrafficSummarySumAggregateInputType = {
+    id?: true
+    airportId?: true
+    dayOfWeek?: true
+    hour?: true
+    avgTrafficScore?: true
+    peakTrafficScore?: true
+    avgArrivals?: true
+    avgDepartures?: true
+    totalAircraft?: true
+    sampleCount?: true
+  }
+
+  export type TrafficSummaryMinAggregateInputType = {
+    id?: true
+    airportId?: true
+    date?: true
+    dayOfWeek?: true
+    hour?: true
+    avgTrafficScore?: true
+    peakTrafficScore?: true
+    avgArrivals?: true
+    avgDepartures?: true
+    totalAircraft?: true
+    sampleCount?: true
+    createdAt?: true
+  }
+
+  export type TrafficSummaryMaxAggregateInputType = {
+    id?: true
+    airportId?: true
+    date?: true
+    dayOfWeek?: true
+    hour?: true
+    avgTrafficScore?: true
+    peakTrafficScore?: true
+    avgArrivals?: true
+    avgDepartures?: true
+    totalAircraft?: true
+    sampleCount?: true
+    createdAt?: true
+  }
+
+  export type TrafficSummaryCountAggregateInputType = {
+    id?: true
+    airportId?: true
+    date?: true
+    dayOfWeek?: true
+    hour?: true
+    avgTrafficScore?: true
+    peakTrafficScore?: true
+    avgArrivals?: true
+    avgDepartures?: true
+    totalAircraft?: true
+    sampleCount?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type TrafficSummaryAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which TrafficSummary to aggregate.
+     */
+    where?: TrafficSummaryWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TrafficSummaries to fetch.
+     */
+    orderBy?: TrafficSummaryOrderByWithRelationInput | TrafficSummaryOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: TrafficSummaryWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TrafficSummaries from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TrafficSummaries.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned TrafficSummaries
+    **/
+    _count?: true | TrafficSummaryCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: TrafficSummaryAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: TrafficSummarySumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: TrafficSummaryMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: TrafficSummaryMaxAggregateInputType
+  }
+
+  export type GetTrafficSummaryAggregateType<T extends TrafficSummaryAggregateArgs> = {
+        [P in keyof T & keyof AggregateTrafficSummary]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateTrafficSummary[P]>
+      : GetScalarType<T[P], AggregateTrafficSummary[P]>
+  }
+
+
+
+
+  export type TrafficSummaryGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: TrafficSummaryWhereInput
+    orderBy?: TrafficSummaryOrderByWithAggregationInput | TrafficSummaryOrderByWithAggregationInput[]
+    by: TrafficSummaryScalarFieldEnum[] | TrafficSummaryScalarFieldEnum
+    having?: TrafficSummaryScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: TrafficSummaryCountAggregateInputType | true
+    _avg?: TrafficSummaryAvgAggregateInputType
+    _sum?: TrafficSummarySumAggregateInputType
+    _min?: TrafficSummaryMinAggregateInputType
+    _max?: TrafficSummaryMaxAggregateInputType
+  }
+
+  export type TrafficSummaryGroupByOutputType = {
+    id: number
+    airportId: number
+    date: Date
+    dayOfWeek: number
+    hour: number
+    avgTrafficScore: number
+    peakTrafficScore: number
+    avgArrivals: number
+    avgDepartures: number
+    totalAircraft: number
+    sampleCount: number
+    createdAt: Date
+    _count: TrafficSummaryCountAggregateOutputType | null
+    _avg: TrafficSummaryAvgAggregateOutputType | null
+    _sum: TrafficSummarySumAggregateOutputType | null
+    _min: TrafficSummaryMinAggregateOutputType | null
+    _max: TrafficSummaryMaxAggregateOutputType | null
+  }
+
+  type GetTrafficSummaryGroupByPayload<T extends TrafficSummaryGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<TrafficSummaryGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof TrafficSummaryGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], TrafficSummaryGroupByOutputType[P]>
+            : GetScalarType<T[P], TrafficSummaryGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type TrafficSummarySelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    airportId?: boolean
+    date?: boolean
+    dayOfWeek?: boolean
+    hour?: boolean
+    avgTrafficScore?: boolean
+    peakTrafficScore?: boolean
+    avgArrivals?: boolean
+    avgDepartures?: boolean
+    totalAircraft?: boolean
+    sampleCount?: boolean
+    createdAt?: boolean
+    Airport?: boolean | AirportDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["trafficSummary"]>
+
+  export type TrafficSummarySelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    airportId?: boolean
+    date?: boolean
+    dayOfWeek?: boolean
+    hour?: boolean
+    avgTrafficScore?: boolean
+    peakTrafficScore?: boolean
+    avgArrivals?: boolean
+    avgDepartures?: boolean
+    totalAircraft?: boolean
+    sampleCount?: boolean
+    createdAt?: boolean
+    Airport?: boolean | AirportDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["trafficSummary"]>
+
+  export type TrafficSummarySelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    airportId?: boolean
+    date?: boolean
+    dayOfWeek?: boolean
+    hour?: boolean
+    avgTrafficScore?: boolean
+    peakTrafficScore?: boolean
+    avgArrivals?: boolean
+    avgDepartures?: boolean
+    totalAircraft?: boolean
+    sampleCount?: boolean
+    createdAt?: boolean
+    Airport?: boolean | AirportDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["trafficSummary"]>
+
+  export type TrafficSummarySelectScalar = {
+    id?: boolean
+    airportId?: boolean
+    date?: boolean
+    dayOfWeek?: boolean
+    hour?: boolean
+    avgTrafficScore?: boolean
+    peakTrafficScore?: boolean
+    avgArrivals?: boolean
+    avgDepartures?: boolean
+    totalAircraft?: boolean
+    sampleCount?: boolean
+    createdAt?: boolean
+  }
+
+  export type TrafficSummaryOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "airportId" | "date" | "dayOfWeek" | "hour" | "avgTrafficScore" | "peakTrafficScore" | "avgArrivals" | "avgDepartures" | "totalAircraft" | "sampleCount" | "createdAt", ExtArgs["result"]["trafficSummary"]>
+  export type TrafficSummaryInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    Airport?: boolean | AirportDefaultArgs<ExtArgs>
+  }
+  export type TrafficSummaryIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    Airport?: boolean | AirportDefaultArgs<ExtArgs>
+  }
+  export type TrafficSummaryIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    Airport?: boolean | AirportDefaultArgs<ExtArgs>
+  }
+
+  export type $TrafficSummaryPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "TrafficSummary"
+    objects: {
+      Airport: Prisma.$AirportPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: number
+      airportId: number
+      date: Date
+      dayOfWeek: number
+      hour: number
+      avgTrafficScore: number
+      peakTrafficScore: number
+      avgArrivals: number
+      avgDepartures: number
+      totalAircraft: number
+      sampleCount: number
+      createdAt: Date
+    }, ExtArgs["result"]["trafficSummary"]>
+    composites: {}
+  }
+
+  type TrafficSummaryGetPayload<S extends boolean | null | undefined | TrafficSummaryDefaultArgs> = $Result.GetResult<Prisma.$TrafficSummaryPayload, S>
+
+  type TrafficSummaryCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<TrafficSummaryFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: TrafficSummaryCountAggregateInputType | true
+    }
+
+  export interface TrafficSummaryDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['TrafficSummary'], meta: { name: 'TrafficSummary' } }
+    /**
+     * Find zero or one TrafficSummary that matches the filter.
+     * @param {TrafficSummaryFindUniqueArgs} args - Arguments to find a TrafficSummary
+     * @example
+     * // Get one TrafficSummary
+     * const trafficSummary = await prisma.trafficSummary.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends TrafficSummaryFindUniqueArgs>(args: SelectSubset<T, TrafficSummaryFindUniqueArgs<ExtArgs>>): Prisma__TrafficSummaryClient<$Result.GetResult<Prisma.$TrafficSummaryPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one TrafficSummary that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {TrafficSummaryFindUniqueOrThrowArgs} args - Arguments to find a TrafficSummary
+     * @example
+     * // Get one TrafficSummary
+     * const trafficSummary = await prisma.trafficSummary.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends TrafficSummaryFindUniqueOrThrowArgs>(args: SelectSubset<T, TrafficSummaryFindUniqueOrThrowArgs<ExtArgs>>): Prisma__TrafficSummaryClient<$Result.GetResult<Prisma.$TrafficSummaryPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first TrafficSummary that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TrafficSummaryFindFirstArgs} args - Arguments to find a TrafficSummary
+     * @example
+     * // Get one TrafficSummary
+     * const trafficSummary = await prisma.trafficSummary.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends TrafficSummaryFindFirstArgs>(args?: SelectSubset<T, TrafficSummaryFindFirstArgs<ExtArgs>>): Prisma__TrafficSummaryClient<$Result.GetResult<Prisma.$TrafficSummaryPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first TrafficSummary that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TrafficSummaryFindFirstOrThrowArgs} args - Arguments to find a TrafficSummary
+     * @example
+     * // Get one TrafficSummary
+     * const trafficSummary = await prisma.trafficSummary.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends TrafficSummaryFindFirstOrThrowArgs>(args?: SelectSubset<T, TrafficSummaryFindFirstOrThrowArgs<ExtArgs>>): Prisma__TrafficSummaryClient<$Result.GetResult<Prisma.$TrafficSummaryPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more TrafficSummaries that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TrafficSummaryFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all TrafficSummaries
+     * const trafficSummaries = await prisma.trafficSummary.findMany()
+     * 
+     * // Get first 10 TrafficSummaries
+     * const trafficSummaries = await prisma.trafficSummary.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const trafficSummaryWithIdOnly = await prisma.trafficSummary.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends TrafficSummaryFindManyArgs>(args?: SelectSubset<T, TrafficSummaryFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TrafficSummaryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a TrafficSummary.
+     * @param {TrafficSummaryCreateArgs} args - Arguments to create a TrafficSummary.
+     * @example
+     * // Create one TrafficSummary
+     * const TrafficSummary = await prisma.trafficSummary.create({
+     *   data: {
+     *     // ... data to create a TrafficSummary
+     *   }
+     * })
+     * 
+     */
+    create<T extends TrafficSummaryCreateArgs>(args: SelectSubset<T, TrafficSummaryCreateArgs<ExtArgs>>): Prisma__TrafficSummaryClient<$Result.GetResult<Prisma.$TrafficSummaryPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many TrafficSummaries.
+     * @param {TrafficSummaryCreateManyArgs} args - Arguments to create many TrafficSummaries.
+     * @example
+     * // Create many TrafficSummaries
+     * const trafficSummary = await prisma.trafficSummary.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends TrafficSummaryCreateManyArgs>(args?: SelectSubset<T, TrafficSummaryCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many TrafficSummaries and returns the data saved in the database.
+     * @param {TrafficSummaryCreateManyAndReturnArgs} args - Arguments to create many TrafficSummaries.
+     * @example
+     * // Create many TrafficSummaries
+     * const trafficSummary = await prisma.trafficSummary.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many TrafficSummaries and only return the `id`
+     * const trafficSummaryWithIdOnly = await prisma.trafficSummary.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends TrafficSummaryCreateManyAndReturnArgs>(args?: SelectSubset<T, TrafficSummaryCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TrafficSummaryPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a TrafficSummary.
+     * @param {TrafficSummaryDeleteArgs} args - Arguments to delete one TrafficSummary.
+     * @example
+     * // Delete one TrafficSummary
+     * const TrafficSummary = await prisma.trafficSummary.delete({
+     *   where: {
+     *     // ... filter to delete one TrafficSummary
+     *   }
+     * })
+     * 
+     */
+    delete<T extends TrafficSummaryDeleteArgs>(args: SelectSubset<T, TrafficSummaryDeleteArgs<ExtArgs>>): Prisma__TrafficSummaryClient<$Result.GetResult<Prisma.$TrafficSummaryPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one TrafficSummary.
+     * @param {TrafficSummaryUpdateArgs} args - Arguments to update one TrafficSummary.
+     * @example
+     * // Update one TrafficSummary
+     * const trafficSummary = await prisma.trafficSummary.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends TrafficSummaryUpdateArgs>(args: SelectSubset<T, TrafficSummaryUpdateArgs<ExtArgs>>): Prisma__TrafficSummaryClient<$Result.GetResult<Prisma.$TrafficSummaryPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more TrafficSummaries.
+     * @param {TrafficSummaryDeleteManyArgs} args - Arguments to filter TrafficSummaries to delete.
+     * @example
+     * // Delete a few TrafficSummaries
+     * const { count } = await prisma.trafficSummary.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends TrafficSummaryDeleteManyArgs>(args?: SelectSubset<T, TrafficSummaryDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more TrafficSummaries.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TrafficSummaryUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many TrafficSummaries
+     * const trafficSummary = await prisma.trafficSummary.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends TrafficSummaryUpdateManyArgs>(args: SelectSubset<T, TrafficSummaryUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more TrafficSummaries and returns the data updated in the database.
+     * @param {TrafficSummaryUpdateManyAndReturnArgs} args - Arguments to update many TrafficSummaries.
+     * @example
+     * // Update many TrafficSummaries
+     * const trafficSummary = await prisma.trafficSummary.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more TrafficSummaries and only return the `id`
+     * const trafficSummaryWithIdOnly = await prisma.trafficSummary.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends TrafficSummaryUpdateManyAndReturnArgs>(args: SelectSubset<T, TrafficSummaryUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TrafficSummaryPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one TrafficSummary.
+     * @param {TrafficSummaryUpsertArgs} args - Arguments to update or create a TrafficSummary.
+     * @example
+     * // Update or create a TrafficSummary
+     * const trafficSummary = await prisma.trafficSummary.upsert({
+     *   create: {
+     *     // ... data to create a TrafficSummary
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the TrafficSummary we want to update
+     *   }
+     * })
+     */
+    upsert<T extends TrafficSummaryUpsertArgs>(args: SelectSubset<T, TrafficSummaryUpsertArgs<ExtArgs>>): Prisma__TrafficSummaryClient<$Result.GetResult<Prisma.$TrafficSummaryPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of TrafficSummaries.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TrafficSummaryCountArgs} args - Arguments to filter TrafficSummaries to count.
+     * @example
+     * // Count the number of TrafficSummaries
+     * const count = await prisma.trafficSummary.count({
+     *   where: {
+     *     // ... the filter for the TrafficSummaries we want to count
+     *   }
+     * })
+    **/
+    count<T extends TrafficSummaryCountArgs>(
+      args?: Subset<T, TrafficSummaryCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], TrafficSummaryCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a TrafficSummary.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TrafficSummaryAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends TrafficSummaryAggregateArgs>(args: Subset<T, TrafficSummaryAggregateArgs>): Prisma.PrismaPromise<GetTrafficSummaryAggregateType<T>>
+
+    /**
+     * Group by TrafficSummary.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TrafficSummaryGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends TrafficSummaryGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: TrafficSummaryGroupByArgs['orderBy'] }
+        : { orderBy?: TrafficSummaryGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, TrafficSummaryGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetTrafficSummaryGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the TrafficSummary model
+   */
+  readonly fields: TrafficSummaryFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for TrafficSummary.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__TrafficSummaryClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    Airport<T extends AirportDefaultArgs<ExtArgs> = {}>(args?: Subset<T, AirportDefaultArgs<ExtArgs>>): Prisma__AirportClient<$Result.GetResult<Prisma.$AirportPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the TrafficSummary model
+   */
+  interface TrafficSummaryFieldRefs {
+    readonly id: FieldRef<"TrafficSummary", 'Int'>
+    readonly airportId: FieldRef<"TrafficSummary", 'Int'>
+    readonly date: FieldRef<"TrafficSummary", 'DateTime'>
+    readonly dayOfWeek: FieldRef<"TrafficSummary", 'Int'>
+    readonly hour: FieldRef<"TrafficSummary", 'Int'>
+    readonly avgTrafficScore: FieldRef<"TrafficSummary", 'Int'>
+    readonly peakTrafficScore: FieldRef<"TrafficSummary", 'Int'>
+    readonly avgArrivals: FieldRef<"TrafficSummary", 'Float'>
+    readonly avgDepartures: FieldRef<"TrafficSummary", 'Float'>
+    readonly totalAircraft: FieldRef<"TrafficSummary", 'Int'>
+    readonly sampleCount: FieldRef<"TrafficSummary", 'Int'>
+    readonly createdAt: FieldRef<"TrafficSummary", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * TrafficSummary findUnique
+   */
+  export type TrafficSummaryFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TrafficSummary
+     */
+    select?: TrafficSummarySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TrafficSummary
+     */
+    omit?: TrafficSummaryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TrafficSummaryInclude<ExtArgs> | null
+    /**
+     * Filter, which TrafficSummary to fetch.
+     */
+    where: TrafficSummaryWhereUniqueInput
+  }
+
+  /**
+   * TrafficSummary findUniqueOrThrow
+   */
+  export type TrafficSummaryFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TrafficSummary
+     */
+    select?: TrafficSummarySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TrafficSummary
+     */
+    omit?: TrafficSummaryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TrafficSummaryInclude<ExtArgs> | null
+    /**
+     * Filter, which TrafficSummary to fetch.
+     */
+    where: TrafficSummaryWhereUniqueInput
+  }
+
+  /**
+   * TrafficSummary findFirst
+   */
+  export type TrafficSummaryFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TrafficSummary
+     */
+    select?: TrafficSummarySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TrafficSummary
+     */
+    omit?: TrafficSummaryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TrafficSummaryInclude<ExtArgs> | null
+    /**
+     * Filter, which TrafficSummary to fetch.
+     */
+    where?: TrafficSummaryWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TrafficSummaries to fetch.
+     */
+    orderBy?: TrafficSummaryOrderByWithRelationInput | TrafficSummaryOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for TrafficSummaries.
+     */
+    cursor?: TrafficSummaryWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TrafficSummaries from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TrafficSummaries.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of TrafficSummaries.
+     */
+    distinct?: TrafficSummaryScalarFieldEnum | TrafficSummaryScalarFieldEnum[]
+  }
+
+  /**
+   * TrafficSummary findFirstOrThrow
+   */
+  export type TrafficSummaryFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TrafficSummary
+     */
+    select?: TrafficSummarySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TrafficSummary
+     */
+    omit?: TrafficSummaryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TrafficSummaryInclude<ExtArgs> | null
+    /**
+     * Filter, which TrafficSummary to fetch.
+     */
+    where?: TrafficSummaryWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TrafficSummaries to fetch.
+     */
+    orderBy?: TrafficSummaryOrderByWithRelationInput | TrafficSummaryOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for TrafficSummaries.
+     */
+    cursor?: TrafficSummaryWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TrafficSummaries from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TrafficSummaries.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of TrafficSummaries.
+     */
+    distinct?: TrafficSummaryScalarFieldEnum | TrafficSummaryScalarFieldEnum[]
+  }
+
+  /**
+   * TrafficSummary findMany
+   */
+  export type TrafficSummaryFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TrafficSummary
+     */
+    select?: TrafficSummarySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TrafficSummary
+     */
+    omit?: TrafficSummaryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TrafficSummaryInclude<ExtArgs> | null
+    /**
+     * Filter, which TrafficSummaries to fetch.
+     */
+    where?: TrafficSummaryWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TrafficSummaries to fetch.
+     */
+    orderBy?: TrafficSummaryOrderByWithRelationInput | TrafficSummaryOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing TrafficSummaries.
+     */
+    cursor?: TrafficSummaryWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TrafficSummaries from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TrafficSummaries.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of TrafficSummaries.
+     */
+    distinct?: TrafficSummaryScalarFieldEnum | TrafficSummaryScalarFieldEnum[]
+  }
+
+  /**
+   * TrafficSummary create
+   */
+  export type TrafficSummaryCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TrafficSummary
+     */
+    select?: TrafficSummarySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TrafficSummary
+     */
+    omit?: TrafficSummaryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TrafficSummaryInclude<ExtArgs> | null
+    /**
+     * The data needed to create a TrafficSummary.
+     */
+    data: XOR<TrafficSummaryCreateInput, TrafficSummaryUncheckedCreateInput>
+  }
+
+  /**
+   * TrafficSummary createMany
+   */
+  export type TrafficSummaryCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many TrafficSummaries.
+     */
+    data: TrafficSummaryCreateManyInput | TrafficSummaryCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * TrafficSummary createManyAndReturn
+   */
+  export type TrafficSummaryCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TrafficSummary
+     */
+    select?: TrafficSummarySelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the TrafficSummary
+     */
+    omit?: TrafficSummaryOmit<ExtArgs> | null
+    /**
+     * The data used to create many TrafficSummaries.
+     */
+    data: TrafficSummaryCreateManyInput | TrafficSummaryCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TrafficSummaryIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * TrafficSummary update
+   */
+  export type TrafficSummaryUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TrafficSummary
+     */
+    select?: TrafficSummarySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TrafficSummary
+     */
+    omit?: TrafficSummaryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TrafficSummaryInclude<ExtArgs> | null
+    /**
+     * The data needed to update a TrafficSummary.
+     */
+    data: XOR<TrafficSummaryUpdateInput, TrafficSummaryUncheckedUpdateInput>
+    /**
+     * Choose, which TrafficSummary to update.
+     */
+    where: TrafficSummaryWhereUniqueInput
+  }
+
+  /**
+   * TrafficSummary updateMany
+   */
+  export type TrafficSummaryUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update TrafficSummaries.
+     */
+    data: XOR<TrafficSummaryUpdateManyMutationInput, TrafficSummaryUncheckedUpdateManyInput>
+    /**
+     * Filter which TrafficSummaries to update
+     */
+    where?: TrafficSummaryWhereInput
+    /**
+     * Limit how many TrafficSummaries to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * TrafficSummary updateManyAndReturn
+   */
+  export type TrafficSummaryUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TrafficSummary
+     */
+    select?: TrafficSummarySelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the TrafficSummary
+     */
+    omit?: TrafficSummaryOmit<ExtArgs> | null
+    /**
+     * The data used to update TrafficSummaries.
+     */
+    data: XOR<TrafficSummaryUpdateManyMutationInput, TrafficSummaryUncheckedUpdateManyInput>
+    /**
+     * Filter which TrafficSummaries to update
+     */
+    where?: TrafficSummaryWhereInput
+    /**
+     * Limit how many TrafficSummaries to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TrafficSummaryIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * TrafficSummary upsert
+   */
+  export type TrafficSummaryUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TrafficSummary
+     */
+    select?: TrafficSummarySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TrafficSummary
+     */
+    omit?: TrafficSummaryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TrafficSummaryInclude<ExtArgs> | null
+    /**
+     * The filter to search for the TrafficSummary to update in case it exists.
+     */
+    where: TrafficSummaryWhereUniqueInput
+    /**
+     * In case the TrafficSummary found by the `where` argument doesn't exist, create a new TrafficSummary with this data.
+     */
+    create: XOR<TrafficSummaryCreateInput, TrafficSummaryUncheckedCreateInput>
+    /**
+     * In case the TrafficSummary was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<TrafficSummaryUpdateInput, TrafficSummaryUncheckedUpdateInput>
+  }
+
+  /**
+   * TrafficSummary delete
+   */
+  export type TrafficSummaryDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TrafficSummary
+     */
+    select?: TrafficSummarySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TrafficSummary
+     */
+    omit?: TrafficSummaryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TrafficSummaryInclude<ExtArgs> | null
+    /**
+     * Filter which TrafficSummary to delete.
+     */
+    where: TrafficSummaryWhereUniqueInput
+  }
+
+  /**
+   * TrafficSummary deleteMany
+   */
+  export type TrafficSummaryDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which TrafficSummaries to delete
+     */
+    where?: TrafficSummaryWhereInput
+    /**
+     * Limit how many TrafficSummaries to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * TrafficSummary without action
+   */
+  export type TrafficSummaryDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TrafficSummary
+     */
+    select?: TrafficSummarySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TrafficSummary
+     */
+    omit?: TrafficSummaryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TrafficSummaryInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -4547,6 +5899,24 @@ export namespace Prisma {
   };
 
   export type TrafficSnapshotScalarFieldEnum = (typeof TrafficSnapshotScalarFieldEnum)[keyof typeof TrafficSnapshotScalarFieldEnum]
+
+
+  export const TrafficSummaryScalarFieldEnum: {
+    id: 'id',
+    airportId: 'airportId',
+    date: 'date',
+    dayOfWeek: 'dayOfWeek',
+    hour: 'hour',
+    avgTrafficScore: 'avgTrafficScore',
+    peakTrafficScore: 'peakTrafficScore',
+    avgArrivals: 'avgArrivals',
+    avgDepartures: 'avgDepartures',
+    totalAircraft: 'totalAircraft',
+    sampleCount: 'sampleCount',
+    createdAt: 'createdAt'
+  };
+
+  export type TrafficSummaryScalarFieldEnum = (typeof TrafficSummaryScalarFieldEnum)[keyof typeof TrafficSummaryScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -4648,6 +6018,7 @@ export namespace Prisma {
     fir?: StringNullableFilter<"Airport"> | string | null
     ControllerSession?: ControllerSessionListRelationFilter
     TrafficSnapshot?: TrafficSnapshotListRelationFilter
+    TrafficSummary?: TrafficSummaryListRelationFilter
   }
 
   export type AirportOrderByWithRelationInput = {
@@ -4658,6 +6029,7 @@ export namespace Prisma {
     fir?: SortOrderInput | SortOrder
     ControllerSession?: ControllerSessionOrderByRelationAggregateInput
     TrafficSnapshot?: TrafficSnapshotOrderByRelationAggregateInput
+    TrafficSummary?: TrafficSummaryOrderByRelationAggregateInput
   }
 
   export type AirportWhereUniqueInput = Prisma.AtLeast<{
@@ -4671,6 +6043,7 @@ export namespace Prisma {
     fir?: StringNullableFilter<"Airport"> | string | null
     ControllerSession?: ControllerSessionListRelationFilter
     TrafficSnapshot?: TrafficSnapshotListRelationFilter
+    TrafficSummary?: TrafficSummaryListRelationFilter
   }, "id" | "icao">
 
   export type AirportOrderByWithAggregationInput = {
@@ -4831,6 +6204,99 @@ export namespace Prisma {
     trafficScore?: IntWithAggregatesFilter<"TrafficSnapshot"> | number
   }
 
+  export type TrafficSummaryWhereInput = {
+    AND?: TrafficSummaryWhereInput | TrafficSummaryWhereInput[]
+    OR?: TrafficSummaryWhereInput[]
+    NOT?: TrafficSummaryWhereInput | TrafficSummaryWhereInput[]
+    id?: IntFilter<"TrafficSummary"> | number
+    airportId?: IntFilter<"TrafficSummary"> | number
+    date?: DateTimeFilter<"TrafficSummary"> | Date | string
+    dayOfWeek?: IntFilter<"TrafficSummary"> | number
+    hour?: IntFilter<"TrafficSummary"> | number
+    avgTrafficScore?: IntFilter<"TrafficSummary"> | number
+    peakTrafficScore?: IntFilter<"TrafficSummary"> | number
+    avgArrivals?: FloatFilter<"TrafficSummary"> | number
+    avgDepartures?: FloatFilter<"TrafficSummary"> | number
+    totalAircraft?: IntFilter<"TrafficSummary"> | number
+    sampleCount?: IntFilter<"TrafficSummary"> | number
+    createdAt?: DateTimeFilter<"TrafficSummary"> | Date | string
+    Airport?: XOR<AirportScalarRelationFilter, AirportWhereInput>
+  }
+
+  export type TrafficSummaryOrderByWithRelationInput = {
+    id?: SortOrder
+    airportId?: SortOrder
+    date?: SortOrder
+    dayOfWeek?: SortOrder
+    hour?: SortOrder
+    avgTrafficScore?: SortOrder
+    peakTrafficScore?: SortOrder
+    avgArrivals?: SortOrder
+    avgDepartures?: SortOrder
+    totalAircraft?: SortOrder
+    sampleCount?: SortOrder
+    createdAt?: SortOrder
+    Airport?: AirportOrderByWithRelationInput
+  }
+
+  export type TrafficSummaryWhereUniqueInput = Prisma.AtLeast<{
+    id?: number
+    airportId_date_hour?: TrafficSummaryAirportIdDateHourCompoundUniqueInput
+    AND?: TrafficSummaryWhereInput | TrafficSummaryWhereInput[]
+    OR?: TrafficSummaryWhereInput[]
+    NOT?: TrafficSummaryWhereInput | TrafficSummaryWhereInput[]
+    airportId?: IntFilter<"TrafficSummary"> | number
+    date?: DateTimeFilter<"TrafficSummary"> | Date | string
+    dayOfWeek?: IntFilter<"TrafficSummary"> | number
+    hour?: IntFilter<"TrafficSummary"> | number
+    avgTrafficScore?: IntFilter<"TrafficSummary"> | number
+    peakTrafficScore?: IntFilter<"TrafficSummary"> | number
+    avgArrivals?: FloatFilter<"TrafficSummary"> | number
+    avgDepartures?: FloatFilter<"TrafficSummary"> | number
+    totalAircraft?: IntFilter<"TrafficSummary"> | number
+    sampleCount?: IntFilter<"TrafficSummary"> | number
+    createdAt?: DateTimeFilter<"TrafficSummary"> | Date | string
+    Airport?: XOR<AirportScalarRelationFilter, AirportWhereInput>
+  }, "id" | "airportId_date_hour">
+
+  export type TrafficSummaryOrderByWithAggregationInput = {
+    id?: SortOrder
+    airportId?: SortOrder
+    date?: SortOrder
+    dayOfWeek?: SortOrder
+    hour?: SortOrder
+    avgTrafficScore?: SortOrder
+    peakTrafficScore?: SortOrder
+    avgArrivals?: SortOrder
+    avgDepartures?: SortOrder
+    totalAircraft?: SortOrder
+    sampleCount?: SortOrder
+    createdAt?: SortOrder
+    _count?: TrafficSummaryCountOrderByAggregateInput
+    _avg?: TrafficSummaryAvgOrderByAggregateInput
+    _max?: TrafficSummaryMaxOrderByAggregateInput
+    _min?: TrafficSummaryMinOrderByAggregateInput
+    _sum?: TrafficSummarySumOrderByAggregateInput
+  }
+
+  export type TrafficSummaryScalarWhereWithAggregatesInput = {
+    AND?: TrafficSummaryScalarWhereWithAggregatesInput | TrafficSummaryScalarWhereWithAggregatesInput[]
+    OR?: TrafficSummaryScalarWhereWithAggregatesInput[]
+    NOT?: TrafficSummaryScalarWhereWithAggregatesInput | TrafficSummaryScalarWhereWithAggregatesInput[]
+    id?: IntWithAggregatesFilter<"TrafficSummary"> | number
+    airportId?: IntWithAggregatesFilter<"TrafficSummary"> | number
+    date?: DateTimeWithAggregatesFilter<"TrafficSummary"> | Date | string
+    dayOfWeek?: IntWithAggregatesFilter<"TrafficSummary"> | number
+    hour?: IntWithAggregatesFilter<"TrafficSummary"> | number
+    avgTrafficScore?: IntWithAggregatesFilter<"TrafficSummary"> | number
+    peakTrafficScore?: IntWithAggregatesFilter<"TrafficSummary"> | number
+    avgArrivals?: FloatWithAggregatesFilter<"TrafficSummary"> | number
+    avgDepartures?: FloatWithAggregatesFilter<"TrafficSummary"> | number
+    totalAircraft?: IntWithAggregatesFilter<"TrafficSummary"> | number
+    sampleCount?: IntWithAggregatesFilter<"TrafficSummary"> | number
+    createdAt?: DateTimeWithAggregatesFilter<"TrafficSummary"> | Date | string
+  }
+
   export type AirportCreateInput = {
     icao: string
     name?: string | null
@@ -4838,6 +6304,7 @@ export namespace Prisma {
     fir?: string | null
     ControllerSession?: ControllerSessionCreateNestedManyWithoutAirportInput
     TrafficSnapshot?: TrafficSnapshotCreateNestedManyWithoutAirportInput
+    TrafficSummary?: TrafficSummaryCreateNestedManyWithoutAirportInput
   }
 
   export type AirportUncheckedCreateInput = {
@@ -4848,6 +6315,7 @@ export namespace Prisma {
     fir?: string | null
     ControllerSession?: ControllerSessionUncheckedCreateNestedManyWithoutAirportInput
     TrafficSnapshot?: TrafficSnapshotUncheckedCreateNestedManyWithoutAirportInput
+    TrafficSummary?: TrafficSummaryUncheckedCreateNestedManyWithoutAirportInput
   }
 
   export type AirportUpdateInput = {
@@ -4857,6 +6325,7 @@ export namespace Prisma {
     fir?: NullableStringFieldUpdateOperationsInput | string | null
     ControllerSession?: ControllerSessionUpdateManyWithoutAirportNestedInput
     TrafficSnapshot?: TrafficSnapshotUpdateManyWithoutAirportNestedInput
+    TrafficSummary?: TrafficSummaryUpdateManyWithoutAirportNestedInput
   }
 
   export type AirportUncheckedUpdateInput = {
@@ -4867,6 +6336,7 @@ export namespace Prisma {
     fir?: NullableStringFieldUpdateOperationsInput | string | null
     ControllerSession?: ControllerSessionUncheckedUpdateManyWithoutAirportNestedInput
     TrafficSnapshot?: TrafficSnapshotUncheckedUpdateManyWithoutAirportNestedInput
+    TrafficSummary?: TrafficSummaryUncheckedUpdateManyWithoutAirportNestedInput
   }
 
   export type AirportCreateManyInput = {
@@ -5024,6 +6494,107 @@ export namespace Prisma {
     trafficScore?: IntFieldUpdateOperationsInput | number
   }
 
+  export type TrafficSummaryCreateInput = {
+    date: Date | string
+    dayOfWeek: number
+    hour: number
+    avgTrafficScore: number
+    peakTrafficScore: number
+    avgArrivals: number
+    avgDepartures: number
+    totalAircraft: number
+    sampleCount: number
+    createdAt?: Date | string
+    Airport: AirportCreateNestedOneWithoutTrafficSummaryInput
+  }
+
+  export type TrafficSummaryUncheckedCreateInput = {
+    id?: number
+    airportId: number
+    date: Date | string
+    dayOfWeek: number
+    hour: number
+    avgTrafficScore: number
+    peakTrafficScore: number
+    avgArrivals: number
+    avgDepartures: number
+    totalAircraft: number
+    sampleCount: number
+    createdAt?: Date | string
+  }
+
+  export type TrafficSummaryUpdateInput = {
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    dayOfWeek?: IntFieldUpdateOperationsInput | number
+    hour?: IntFieldUpdateOperationsInput | number
+    avgTrafficScore?: IntFieldUpdateOperationsInput | number
+    peakTrafficScore?: IntFieldUpdateOperationsInput | number
+    avgArrivals?: FloatFieldUpdateOperationsInput | number
+    avgDepartures?: FloatFieldUpdateOperationsInput | number
+    totalAircraft?: IntFieldUpdateOperationsInput | number
+    sampleCount?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    Airport?: AirportUpdateOneRequiredWithoutTrafficSummaryNestedInput
+  }
+
+  export type TrafficSummaryUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    airportId?: IntFieldUpdateOperationsInput | number
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    dayOfWeek?: IntFieldUpdateOperationsInput | number
+    hour?: IntFieldUpdateOperationsInput | number
+    avgTrafficScore?: IntFieldUpdateOperationsInput | number
+    peakTrafficScore?: IntFieldUpdateOperationsInput | number
+    avgArrivals?: FloatFieldUpdateOperationsInput | number
+    avgDepartures?: FloatFieldUpdateOperationsInput | number
+    totalAircraft?: IntFieldUpdateOperationsInput | number
+    sampleCount?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TrafficSummaryCreateManyInput = {
+    id?: number
+    airportId: number
+    date: Date | string
+    dayOfWeek: number
+    hour: number
+    avgTrafficScore: number
+    peakTrafficScore: number
+    avgArrivals: number
+    avgDepartures: number
+    totalAircraft: number
+    sampleCount: number
+    createdAt?: Date | string
+  }
+
+  export type TrafficSummaryUpdateManyMutationInput = {
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    dayOfWeek?: IntFieldUpdateOperationsInput | number
+    hour?: IntFieldUpdateOperationsInput | number
+    avgTrafficScore?: IntFieldUpdateOperationsInput | number
+    peakTrafficScore?: IntFieldUpdateOperationsInput | number
+    avgArrivals?: FloatFieldUpdateOperationsInput | number
+    avgDepartures?: FloatFieldUpdateOperationsInput | number
+    totalAircraft?: IntFieldUpdateOperationsInput | number
+    sampleCount?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TrafficSummaryUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    airportId?: IntFieldUpdateOperationsInput | number
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    dayOfWeek?: IntFieldUpdateOperationsInput | number
+    hour?: IntFieldUpdateOperationsInput | number
+    avgTrafficScore?: IntFieldUpdateOperationsInput | number
+    peakTrafficScore?: IntFieldUpdateOperationsInput | number
+    avgArrivals?: FloatFieldUpdateOperationsInput | number
+    avgDepartures?: FloatFieldUpdateOperationsInput | number
+    totalAircraft?: IntFieldUpdateOperationsInput | number
+    sampleCount?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type IntFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel>
     in?: number[] | ListIntFieldRefInput<$PrismaModel>
@@ -5077,6 +6648,12 @@ export namespace Prisma {
     none?: TrafficSnapshotWhereInput
   }
 
+  export type TrafficSummaryListRelationFilter = {
+    every?: TrafficSummaryWhereInput
+    some?: TrafficSummaryWhereInput
+    none?: TrafficSummaryWhereInput
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
@@ -5087,6 +6664,10 @@ export namespace Prisma {
   }
 
   export type TrafficSnapshotOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type TrafficSummaryOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -5319,6 +6900,110 @@ export namespace Prisma {
     trafficScore?: SortOrder
   }
 
+  export type FloatFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel>
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatFilter<$PrismaModel> | number
+  }
+
+  export type TrafficSummaryAirportIdDateHourCompoundUniqueInput = {
+    airportId: number
+    date: Date | string
+    hour: number
+  }
+
+  export type TrafficSummaryCountOrderByAggregateInput = {
+    id?: SortOrder
+    airportId?: SortOrder
+    date?: SortOrder
+    dayOfWeek?: SortOrder
+    hour?: SortOrder
+    avgTrafficScore?: SortOrder
+    peakTrafficScore?: SortOrder
+    avgArrivals?: SortOrder
+    avgDepartures?: SortOrder
+    totalAircraft?: SortOrder
+    sampleCount?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type TrafficSummaryAvgOrderByAggregateInput = {
+    id?: SortOrder
+    airportId?: SortOrder
+    dayOfWeek?: SortOrder
+    hour?: SortOrder
+    avgTrafficScore?: SortOrder
+    peakTrafficScore?: SortOrder
+    avgArrivals?: SortOrder
+    avgDepartures?: SortOrder
+    totalAircraft?: SortOrder
+    sampleCount?: SortOrder
+  }
+
+  export type TrafficSummaryMaxOrderByAggregateInput = {
+    id?: SortOrder
+    airportId?: SortOrder
+    date?: SortOrder
+    dayOfWeek?: SortOrder
+    hour?: SortOrder
+    avgTrafficScore?: SortOrder
+    peakTrafficScore?: SortOrder
+    avgArrivals?: SortOrder
+    avgDepartures?: SortOrder
+    totalAircraft?: SortOrder
+    sampleCount?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type TrafficSummaryMinOrderByAggregateInput = {
+    id?: SortOrder
+    airportId?: SortOrder
+    date?: SortOrder
+    dayOfWeek?: SortOrder
+    hour?: SortOrder
+    avgTrafficScore?: SortOrder
+    peakTrafficScore?: SortOrder
+    avgArrivals?: SortOrder
+    avgDepartures?: SortOrder
+    totalAircraft?: SortOrder
+    sampleCount?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type TrafficSummarySumOrderByAggregateInput = {
+    id?: SortOrder
+    airportId?: SortOrder
+    dayOfWeek?: SortOrder
+    hour?: SortOrder
+    avgTrafficScore?: SortOrder
+    peakTrafficScore?: SortOrder
+    avgArrivals?: SortOrder
+    avgDepartures?: SortOrder
+    totalAircraft?: SortOrder
+    sampleCount?: SortOrder
+  }
+
+  export type FloatWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel>
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatWithAggregatesFilter<$PrismaModel> | number
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedFloatFilter<$PrismaModel>
+    _sum?: NestedFloatFilter<$PrismaModel>
+    _min?: NestedFloatFilter<$PrismaModel>
+    _max?: NestedFloatFilter<$PrismaModel>
+  }
+
   export type ControllerSessionCreateNestedManyWithoutAirportInput = {
     create?: XOR<ControllerSessionCreateWithoutAirportInput, ControllerSessionUncheckedCreateWithoutAirportInput> | ControllerSessionCreateWithoutAirportInput[] | ControllerSessionUncheckedCreateWithoutAirportInput[]
     connectOrCreate?: ControllerSessionCreateOrConnectWithoutAirportInput | ControllerSessionCreateOrConnectWithoutAirportInput[]
@@ -5333,6 +7018,13 @@ export namespace Prisma {
     connect?: TrafficSnapshotWhereUniqueInput | TrafficSnapshotWhereUniqueInput[]
   }
 
+  export type TrafficSummaryCreateNestedManyWithoutAirportInput = {
+    create?: XOR<TrafficSummaryCreateWithoutAirportInput, TrafficSummaryUncheckedCreateWithoutAirportInput> | TrafficSummaryCreateWithoutAirportInput[] | TrafficSummaryUncheckedCreateWithoutAirportInput[]
+    connectOrCreate?: TrafficSummaryCreateOrConnectWithoutAirportInput | TrafficSummaryCreateOrConnectWithoutAirportInput[]
+    createMany?: TrafficSummaryCreateManyAirportInputEnvelope
+    connect?: TrafficSummaryWhereUniqueInput | TrafficSummaryWhereUniqueInput[]
+  }
+
   export type ControllerSessionUncheckedCreateNestedManyWithoutAirportInput = {
     create?: XOR<ControllerSessionCreateWithoutAirportInput, ControllerSessionUncheckedCreateWithoutAirportInput> | ControllerSessionCreateWithoutAirportInput[] | ControllerSessionUncheckedCreateWithoutAirportInput[]
     connectOrCreate?: ControllerSessionCreateOrConnectWithoutAirportInput | ControllerSessionCreateOrConnectWithoutAirportInput[]
@@ -5345,6 +7037,13 @@ export namespace Prisma {
     connectOrCreate?: TrafficSnapshotCreateOrConnectWithoutAirportInput | TrafficSnapshotCreateOrConnectWithoutAirportInput[]
     createMany?: TrafficSnapshotCreateManyAirportInputEnvelope
     connect?: TrafficSnapshotWhereUniqueInput | TrafficSnapshotWhereUniqueInput[]
+  }
+
+  export type TrafficSummaryUncheckedCreateNestedManyWithoutAirportInput = {
+    create?: XOR<TrafficSummaryCreateWithoutAirportInput, TrafficSummaryUncheckedCreateWithoutAirportInput> | TrafficSummaryCreateWithoutAirportInput[] | TrafficSummaryUncheckedCreateWithoutAirportInput[]
+    connectOrCreate?: TrafficSummaryCreateOrConnectWithoutAirportInput | TrafficSummaryCreateOrConnectWithoutAirportInput[]
+    createMany?: TrafficSummaryCreateManyAirportInputEnvelope
+    connect?: TrafficSummaryWhereUniqueInput | TrafficSummaryWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -5383,6 +7082,20 @@ export namespace Prisma {
     deleteMany?: TrafficSnapshotScalarWhereInput | TrafficSnapshotScalarWhereInput[]
   }
 
+  export type TrafficSummaryUpdateManyWithoutAirportNestedInput = {
+    create?: XOR<TrafficSummaryCreateWithoutAirportInput, TrafficSummaryUncheckedCreateWithoutAirportInput> | TrafficSummaryCreateWithoutAirportInput[] | TrafficSummaryUncheckedCreateWithoutAirportInput[]
+    connectOrCreate?: TrafficSummaryCreateOrConnectWithoutAirportInput | TrafficSummaryCreateOrConnectWithoutAirportInput[]
+    upsert?: TrafficSummaryUpsertWithWhereUniqueWithoutAirportInput | TrafficSummaryUpsertWithWhereUniqueWithoutAirportInput[]
+    createMany?: TrafficSummaryCreateManyAirportInputEnvelope
+    set?: TrafficSummaryWhereUniqueInput | TrafficSummaryWhereUniqueInput[]
+    disconnect?: TrafficSummaryWhereUniqueInput | TrafficSummaryWhereUniqueInput[]
+    delete?: TrafficSummaryWhereUniqueInput | TrafficSummaryWhereUniqueInput[]
+    connect?: TrafficSummaryWhereUniqueInput | TrafficSummaryWhereUniqueInput[]
+    update?: TrafficSummaryUpdateWithWhereUniqueWithoutAirportInput | TrafficSummaryUpdateWithWhereUniqueWithoutAirportInput[]
+    updateMany?: TrafficSummaryUpdateManyWithWhereWithoutAirportInput | TrafficSummaryUpdateManyWithWhereWithoutAirportInput[]
+    deleteMany?: TrafficSummaryScalarWhereInput | TrafficSummaryScalarWhereInput[]
+  }
+
   export type IntFieldUpdateOperationsInput = {
     set?: number
     increment?: number
@@ -5419,6 +7132,20 @@ export namespace Prisma {
     deleteMany?: TrafficSnapshotScalarWhereInput | TrafficSnapshotScalarWhereInput[]
   }
 
+  export type TrafficSummaryUncheckedUpdateManyWithoutAirportNestedInput = {
+    create?: XOR<TrafficSummaryCreateWithoutAirportInput, TrafficSummaryUncheckedCreateWithoutAirportInput> | TrafficSummaryCreateWithoutAirportInput[] | TrafficSummaryUncheckedCreateWithoutAirportInput[]
+    connectOrCreate?: TrafficSummaryCreateOrConnectWithoutAirportInput | TrafficSummaryCreateOrConnectWithoutAirportInput[]
+    upsert?: TrafficSummaryUpsertWithWhereUniqueWithoutAirportInput | TrafficSummaryUpsertWithWhereUniqueWithoutAirportInput[]
+    createMany?: TrafficSummaryCreateManyAirportInputEnvelope
+    set?: TrafficSummaryWhereUniqueInput | TrafficSummaryWhereUniqueInput[]
+    disconnect?: TrafficSummaryWhereUniqueInput | TrafficSummaryWhereUniqueInput[]
+    delete?: TrafficSummaryWhereUniqueInput | TrafficSummaryWhereUniqueInput[]
+    connect?: TrafficSummaryWhereUniqueInput | TrafficSummaryWhereUniqueInput[]
+    update?: TrafficSummaryUpdateWithWhereUniqueWithoutAirportInput | TrafficSummaryUpdateWithWhereUniqueWithoutAirportInput[]
+    updateMany?: TrafficSummaryUpdateManyWithWhereWithoutAirportInput | TrafficSummaryUpdateManyWithWhereWithoutAirportInput[]
+    deleteMany?: TrafficSummaryScalarWhereInput | TrafficSummaryScalarWhereInput[]
+  }
+
   export type AirportCreateNestedOneWithoutControllerSessionInput = {
     create?: XOR<AirportCreateWithoutControllerSessionInput, AirportUncheckedCreateWithoutControllerSessionInput>
     connectOrCreate?: AirportCreateOrConnectWithoutControllerSessionInput
@@ -5453,6 +7180,28 @@ export namespace Prisma {
     upsert?: AirportUpsertWithoutTrafficSnapshotInput
     connect?: AirportWhereUniqueInput
     update?: XOR<XOR<AirportUpdateToOneWithWhereWithoutTrafficSnapshotInput, AirportUpdateWithoutTrafficSnapshotInput>, AirportUncheckedUpdateWithoutTrafficSnapshotInput>
+  }
+
+  export type AirportCreateNestedOneWithoutTrafficSummaryInput = {
+    create?: XOR<AirportCreateWithoutTrafficSummaryInput, AirportUncheckedCreateWithoutTrafficSummaryInput>
+    connectOrCreate?: AirportCreateOrConnectWithoutTrafficSummaryInput
+    connect?: AirportWhereUniqueInput
+  }
+
+  export type FloatFieldUpdateOperationsInput = {
+    set?: number
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
+  }
+
+  export type AirportUpdateOneRequiredWithoutTrafficSummaryNestedInput = {
+    create?: XOR<AirportCreateWithoutTrafficSummaryInput, AirportUncheckedCreateWithoutTrafficSummaryInput>
+    connectOrCreate?: AirportCreateOrConnectWithoutTrafficSummaryInput
+    upsert?: AirportUpsertWithoutTrafficSummaryInput
+    connect?: AirportWhereUniqueInput
+    update?: XOR<XOR<AirportUpdateToOneWithWhereWithoutTrafficSummaryInput, AirportUpdateWithoutTrafficSummaryInput>, AirportUncheckedUpdateWithoutTrafficSummaryInput>
   }
 
   export type NestedIntFilter<$PrismaModel = never> = {
@@ -5616,6 +7365,22 @@ export namespace Prisma {
     _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
 
+  export type NestedFloatWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel>
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatWithAggregatesFilter<$PrismaModel> | number
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedFloatFilter<$PrismaModel>
+    _sum?: NestedFloatFilter<$PrismaModel>
+    _min?: NestedFloatFilter<$PrismaModel>
+    _max?: NestedFloatFilter<$PrismaModel>
+  }
+
   export type ControllerSessionCreateWithoutAirportInput = {
     callsign: string
     positionType: string
@@ -5667,6 +7432,43 @@ export namespace Prisma {
 
   export type TrafficSnapshotCreateManyAirportInputEnvelope = {
     data: TrafficSnapshotCreateManyAirportInput | TrafficSnapshotCreateManyAirportInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type TrafficSummaryCreateWithoutAirportInput = {
+    date: Date | string
+    dayOfWeek: number
+    hour: number
+    avgTrafficScore: number
+    peakTrafficScore: number
+    avgArrivals: number
+    avgDepartures: number
+    totalAircraft: number
+    sampleCount: number
+    createdAt?: Date | string
+  }
+
+  export type TrafficSummaryUncheckedCreateWithoutAirportInput = {
+    id?: number
+    date: Date | string
+    dayOfWeek: number
+    hour: number
+    avgTrafficScore: number
+    peakTrafficScore: number
+    avgArrivals: number
+    avgDepartures: number
+    totalAircraft: number
+    sampleCount: number
+    createdAt?: Date | string
+  }
+
+  export type TrafficSummaryCreateOrConnectWithoutAirportInput = {
+    where: TrafficSummaryWhereUniqueInput
+    create: XOR<TrafficSummaryCreateWithoutAirportInput, TrafficSummaryUncheckedCreateWithoutAirportInput>
+  }
+
+  export type TrafficSummaryCreateManyAirportInputEnvelope = {
+    data: TrafficSummaryCreateManyAirportInput | TrafficSummaryCreateManyAirportInput[]
     skipDuplicates?: boolean
   }
 
@@ -5728,12 +7530,47 @@ export namespace Prisma {
     trafficScore?: IntFilter<"TrafficSnapshot"> | number
   }
 
+  export type TrafficSummaryUpsertWithWhereUniqueWithoutAirportInput = {
+    where: TrafficSummaryWhereUniqueInput
+    update: XOR<TrafficSummaryUpdateWithoutAirportInput, TrafficSummaryUncheckedUpdateWithoutAirportInput>
+    create: XOR<TrafficSummaryCreateWithoutAirportInput, TrafficSummaryUncheckedCreateWithoutAirportInput>
+  }
+
+  export type TrafficSummaryUpdateWithWhereUniqueWithoutAirportInput = {
+    where: TrafficSummaryWhereUniqueInput
+    data: XOR<TrafficSummaryUpdateWithoutAirportInput, TrafficSummaryUncheckedUpdateWithoutAirportInput>
+  }
+
+  export type TrafficSummaryUpdateManyWithWhereWithoutAirportInput = {
+    where: TrafficSummaryScalarWhereInput
+    data: XOR<TrafficSummaryUpdateManyMutationInput, TrafficSummaryUncheckedUpdateManyWithoutAirportInput>
+  }
+
+  export type TrafficSummaryScalarWhereInput = {
+    AND?: TrafficSummaryScalarWhereInput | TrafficSummaryScalarWhereInput[]
+    OR?: TrafficSummaryScalarWhereInput[]
+    NOT?: TrafficSummaryScalarWhereInput | TrafficSummaryScalarWhereInput[]
+    id?: IntFilter<"TrafficSummary"> | number
+    airportId?: IntFilter<"TrafficSummary"> | number
+    date?: DateTimeFilter<"TrafficSummary"> | Date | string
+    dayOfWeek?: IntFilter<"TrafficSummary"> | number
+    hour?: IntFilter<"TrafficSummary"> | number
+    avgTrafficScore?: IntFilter<"TrafficSummary"> | number
+    peakTrafficScore?: IntFilter<"TrafficSummary"> | number
+    avgArrivals?: FloatFilter<"TrafficSummary"> | number
+    avgDepartures?: FloatFilter<"TrafficSummary"> | number
+    totalAircraft?: IntFilter<"TrafficSummary"> | number
+    sampleCount?: IntFilter<"TrafficSummary"> | number
+    createdAt?: DateTimeFilter<"TrafficSummary"> | Date | string
+  }
+
   export type AirportCreateWithoutControllerSessionInput = {
     icao: string
     name?: string | null
     country?: string | null
     fir?: string | null
     TrafficSnapshot?: TrafficSnapshotCreateNestedManyWithoutAirportInput
+    TrafficSummary?: TrafficSummaryCreateNestedManyWithoutAirportInput
   }
 
   export type AirportUncheckedCreateWithoutControllerSessionInput = {
@@ -5743,6 +7580,7 @@ export namespace Prisma {
     country?: string | null
     fir?: string | null
     TrafficSnapshot?: TrafficSnapshotUncheckedCreateNestedManyWithoutAirportInput
+    TrafficSummary?: TrafficSummaryUncheckedCreateNestedManyWithoutAirportInput
   }
 
   export type AirportCreateOrConnectWithoutControllerSessionInput = {
@@ -5767,6 +7605,7 @@ export namespace Prisma {
     country?: NullableStringFieldUpdateOperationsInput | string | null
     fir?: NullableStringFieldUpdateOperationsInput | string | null
     TrafficSnapshot?: TrafficSnapshotUpdateManyWithoutAirportNestedInput
+    TrafficSummary?: TrafficSummaryUpdateManyWithoutAirportNestedInput
   }
 
   export type AirportUncheckedUpdateWithoutControllerSessionInput = {
@@ -5776,6 +7615,7 @@ export namespace Prisma {
     country?: NullableStringFieldUpdateOperationsInput | string | null
     fir?: NullableStringFieldUpdateOperationsInput | string | null
     TrafficSnapshot?: TrafficSnapshotUncheckedUpdateManyWithoutAirportNestedInput
+    TrafficSummary?: TrafficSummaryUncheckedUpdateManyWithoutAirportNestedInput
   }
 
   export type AirportCreateWithoutTrafficSnapshotInput = {
@@ -5784,6 +7624,7 @@ export namespace Prisma {
     country?: string | null
     fir?: string | null
     ControllerSession?: ControllerSessionCreateNestedManyWithoutAirportInput
+    TrafficSummary?: TrafficSummaryCreateNestedManyWithoutAirportInput
   }
 
   export type AirportUncheckedCreateWithoutTrafficSnapshotInput = {
@@ -5793,6 +7634,7 @@ export namespace Prisma {
     country?: string | null
     fir?: string | null
     ControllerSession?: ControllerSessionUncheckedCreateNestedManyWithoutAirportInput
+    TrafficSummary?: TrafficSummaryUncheckedCreateNestedManyWithoutAirportInput
   }
 
   export type AirportCreateOrConnectWithoutTrafficSnapshotInput = {
@@ -5817,6 +7659,7 @@ export namespace Prisma {
     country?: NullableStringFieldUpdateOperationsInput | string | null
     fir?: NullableStringFieldUpdateOperationsInput | string | null
     ControllerSession?: ControllerSessionUpdateManyWithoutAirportNestedInput
+    TrafficSummary?: TrafficSummaryUpdateManyWithoutAirportNestedInput
   }
 
   export type AirportUncheckedUpdateWithoutTrafficSnapshotInput = {
@@ -5826,6 +7669,61 @@ export namespace Prisma {
     country?: NullableStringFieldUpdateOperationsInput | string | null
     fir?: NullableStringFieldUpdateOperationsInput | string | null
     ControllerSession?: ControllerSessionUncheckedUpdateManyWithoutAirportNestedInput
+    TrafficSummary?: TrafficSummaryUncheckedUpdateManyWithoutAirportNestedInput
+  }
+
+  export type AirportCreateWithoutTrafficSummaryInput = {
+    icao: string
+    name?: string | null
+    country?: string | null
+    fir?: string | null
+    ControllerSession?: ControllerSessionCreateNestedManyWithoutAirportInput
+    TrafficSnapshot?: TrafficSnapshotCreateNestedManyWithoutAirportInput
+  }
+
+  export type AirportUncheckedCreateWithoutTrafficSummaryInput = {
+    id?: number
+    icao: string
+    name?: string | null
+    country?: string | null
+    fir?: string | null
+    ControllerSession?: ControllerSessionUncheckedCreateNestedManyWithoutAirportInput
+    TrafficSnapshot?: TrafficSnapshotUncheckedCreateNestedManyWithoutAirportInput
+  }
+
+  export type AirportCreateOrConnectWithoutTrafficSummaryInput = {
+    where: AirportWhereUniqueInput
+    create: XOR<AirportCreateWithoutTrafficSummaryInput, AirportUncheckedCreateWithoutTrafficSummaryInput>
+  }
+
+  export type AirportUpsertWithoutTrafficSummaryInput = {
+    update: XOR<AirportUpdateWithoutTrafficSummaryInput, AirportUncheckedUpdateWithoutTrafficSummaryInput>
+    create: XOR<AirportCreateWithoutTrafficSummaryInput, AirportUncheckedCreateWithoutTrafficSummaryInput>
+    where?: AirportWhereInput
+  }
+
+  export type AirportUpdateToOneWithWhereWithoutTrafficSummaryInput = {
+    where?: AirportWhereInput
+    data: XOR<AirportUpdateWithoutTrafficSummaryInput, AirportUncheckedUpdateWithoutTrafficSummaryInput>
+  }
+
+  export type AirportUpdateWithoutTrafficSummaryInput = {
+    icao?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    fir?: NullableStringFieldUpdateOperationsInput | string | null
+    ControllerSession?: ControllerSessionUpdateManyWithoutAirportNestedInput
+    TrafficSnapshot?: TrafficSnapshotUpdateManyWithoutAirportNestedInput
+  }
+
+  export type AirportUncheckedUpdateWithoutTrafficSummaryInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    icao?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    fir?: NullableStringFieldUpdateOperationsInput | string | null
+    ControllerSession?: ControllerSessionUncheckedUpdateManyWithoutAirportNestedInput
+    TrafficSnapshot?: TrafficSnapshotUncheckedUpdateManyWithoutAirportNestedInput
   }
 
   export type ControllerSessionCreateManyAirportInput = {
@@ -5844,6 +7742,20 @@ export namespace Prisma {
     overflights: number
     totalAircraft: number
     trafficScore: number
+  }
+
+  export type TrafficSummaryCreateManyAirportInput = {
+    id?: number
+    date: Date | string
+    dayOfWeek: number
+    hour: number
+    avgTrafficScore: number
+    peakTrafficScore: number
+    avgArrivals: number
+    avgDepartures: number
+    totalAircraft: number
+    sampleCount: number
+    createdAt?: Date | string
   }
 
   export type ControllerSessionUpdateWithoutAirportInput = {
@@ -5896,6 +7808,47 @@ export namespace Prisma {
     overflights?: IntFieldUpdateOperationsInput | number
     totalAircraft?: IntFieldUpdateOperationsInput | number
     trafficScore?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type TrafficSummaryUpdateWithoutAirportInput = {
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    dayOfWeek?: IntFieldUpdateOperationsInput | number
+    hour?: IntFieldUpdateOperationsInput | number
+    avgTrafficScore?: IntFieldUpdateOperationsInput | number
+    peakTrafficScore?: IntFieldUpdateOperationsInput | number
+    avgArrivals?: FloatFieldUpdateOperationsInput | number
+    avgDepartures?: FloatFieldUpdateOperationsInput | number
+    totalAircraft?: IntFieldUpdateOperationsInput | number
+    sampleCount?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TrafficSummaryUncheckedUpdateWithoutAirportInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    dayOfWeek?: IntFieldUpdateOperationsInput | number
+    hour?: IntFieldUpdateOperationsInput | number
+    avgTrafficScore?: IntFieldUpdateOperationsInput | number
+    peakTrafficScore?: IntFieldUpdateOperationsInput | number
+    avgArrivals?: FloatFieldUpdateOperationsInput | number
+    avgDepartures?: FloatFieldUpdateOperationsInput | number
+    totalAircraft?: IntFieldUpdateOperationsInput | number
+    sampleCount?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TrafficSummaryUncheckedUpdateManyWithoutAirportInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    dayOfWeek?: IntFieldUpdateOperationsInput | number
+    hour?: IntFieldUpdateOperationsInput | number
+    avgTrafficScore?: IntFieldUpdateOperationsInput | number
+    peakTrafficScore?: IntFieldUpdateOperationsInput | number
+    avgArrivals?: FloatFieldUpdateOperationsInput | number
+    avgDepartures?: FloatFieldUpdateOperationsInput | number
+    totalAircraft?: IntFieldUpdateOperationsInput | number
+    sampleCount?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
 

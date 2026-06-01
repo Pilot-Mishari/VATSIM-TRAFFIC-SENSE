@@ -15,6 +15,7 @@ model Airport {
   fir               String?
   ControllerSession ControllerSession[]
   TrafficSnapshot   TrafficSnapshot[]
+  TrafficSummary    TrafficSummary[]
 }
 
 model ControllerSession {
@@ -37,4 +38,22 @@ model TrafficSnapshot {
   totalAircraft Int
   trafficScore  Int
   Airport       Airport  @relation(fields: [airportId], references: [id])
+}
+
+model TrafficSummary {
+  id               Int      @id @default(autoincrement())
+  airportId        Int
+  date             DateTime
+  dayOfWeek        Int
+  hour             Int
+  avgTrafficScore  Int
+  peakTrafficScore Int
+  avgArrivals      Float
+  avgDepartures    Float
+  totalAircraft    Int
+  sampleCount      Int
+  createdAt        DateTime @default(now())
+  Airport          Airport  @relation(fields: [airportId], references: [id])
+
+  @@unique([airportId, date, hour])
 }

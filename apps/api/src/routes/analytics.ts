@@ -2,6 +2,63 @@ import { Router, Request, Response } from 'express';
 import prisma from '../db';
 
 const router: Router = Router();
+const RETENTION_DAYS = 7;
+
+function getWeekKey(date: Date) {
+  const tmp = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
+  const dayNumber = tmp.getUTCDay() || 7;
+  tmp.setUTCDate(tmp.getUTCDate() + 4 - dayNumber);
+  const yearStart = new Date(Date.UTC(tmp.getUTCFullYear(), 0, 1));
+  const weekNumber = Math.ceil((((tmp.getTime() - yearStart.getTime()) / 86400000) + 1) / 7);
+  return `${tmp.getUTCFullYear()}-${String(weekNumber).padStart(2, '0')}`;
+}
+
+async function summarizeTrafficData() {
+  const cutoff = new Date(Date.now() - RETENTION_DAYS * 24 * 60 * 60 * 1000);
+
+  const insertSql = `
+    INSERT INTO "TrafficSummary"
+      ("airportId","date","dayOfWeek","hour","avgTrafficScore","peakTrafficScore","avgArrivals","avgDepartures","totalAircraft","sampleCount","createdAt")
+    SELECT
+      "airportId",
+      date_trunc('day', "timestamp" AT TIME ZONE 'UTC') AS "date",
+      extract(dow FROM "timestamp" AT TIME ZONE 'UTC')::int AS "dayOfWeek",
+      extract(hour FROM "timestamp" AT TIME ZONE 'UTC')::int AS "hour",
+      round(avg("trafficScore"))::int AS "avgTrafficScore",
+      max("trafficScore")::int AS "peakTrafficScore",
+      avg("arrivals")::float AS "avgArrivals",
+      avg("departures")::float AS "avgDepartures",
+      round(avg("totalAircraft"))::int AS "totalAircraft",
+      count(*)::int AS "sampleCount",
+      now() AT TIME ZONE 'UTC' AS "createdAt"
+    FROM "TrafficSnapshot"
+    WHERE "timestamp" < $1
+    GROUP BY 
+      "airportId",
+      date_trunc('day', "timestamp" AT TIME ZONE 'UTC'),
+      extract(dow FROM "timestamp" AT TIME ZONE 'UTC'),
+      extract(hour FROM "timestamp" AT TIME ZONE 'UTC')
+    ON CONFLICT ("airportId","date","hour") DO UPDATE SET
+      "avgTrafficScore" = EXCLUDED."avgTrafficScore",
+      "peakTrafficScore" = EXCLUDED."peakTrafficScore",
+      "avgArrivals" = EXCLUDED."avgArrivals",
+      "avgDepartures" = EXCLUDED."avgDepartures",
+      "totalAircraft" = EXCLUDED."totalAircraft",
+      "sampleCount" = EXCLUDED."sampleCount",
+      "createdAt" = EXCLUDED."createdAt";
+  `;
+
+  const [insertedRows, deletedResult] = await prisma.$transaction([
+    prisma.$executeRawUnsafe(insertSql, cutoff.toISOString()),
+    prisma.trafficSnapshot.deleteMany({ where: { timestamp: { lt: cutoff } } }),
+  ]);
+
+  return {
+    cutoff: cutoff.toISOString(),
+    insertedRows: Number(insertedRows || 0),
+    deletedRows: deletedResult.count,
+  };
+}
 
 // Top airports by traffic score
 router.get('/top-airports', async (req: Request, res: Response) => {
@@ -71,6 +128,53 @@ router.get('/summary', async (req: Request, res: Response) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Failed to fetch summary' });
+  }
+});
+
+router.get('/changelog', async (req: Request, res: Response) => {
+  try {
+    const githubOwner = 'Pilot-Mishari';
+    const githubRepo = 'VATSIM-TRAFFIC-SENSE';
+    const apiUrl = `https://api.github.com/repos/${githubOwner}/${githubRepo}/pulls?state=open&sort=updated&direction=desc&per_page=1`;
+    const response = await fetch(apiUrl, {
+      headers: {
+        'Accept': 'application/vnd.github.v3+json',
+      },
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('GitHub API error', response.status, errorText);
+      return res.status(502).json({ error: 'Failed to fetch changelog from GitHub' });
+    }
+
+    const pulls = await response.json() as Array<any>;
+    const latest = pulls[0];
+
+    if (!latest) {
+      return res.json({ title: 'No recent pull requests', body: 'There are no open pull requests at this time.' });
+    }
+
+    res.json({
+      title: latest.title,
+      body: latest.body ?? 'No description provided.',
+      url: latest.html_url,
+      state: latest.state,
+      updatedAt: latest.updated_at,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to fetch changelog' });
+  }
+});
+
+router.post('/summarize', async (req: Request, res: Response) => {
+  try {
+    const result = await summarizeTrafficData();
+    res.json(result);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to summarize traffic snapshots' });
   }
 });
 
@@ -152,30 +256,42 @@ router.get('/hourly-average/:icao', async (req: Request, res: Response) => {
 
     if (!airport) return res.status(404).json({ error: 'Airport not found' });
 
-    const snapshots = await prisma.trafficSnapshot.findMany({
-      where: { airportId: airport.id },
-      orderBy: { timestamp: 'asc' },
-    });
+    const [snapshots, summaryRows] = await Promise.all([
+      prisma.trafficSnapshot.findMany({
+        where: { airportId: airport.id },
+        orderBy: { timestamp: 'asc' },
+      }),
+      prisma.trafficSummary.findMany({
+        where: { airportId: airport.id },
+        orderBy: [{ date: 'asc' }, { hour: 'asc' }],
+      }),
+    ]);
 
-    // Group by day of week + hour
-    const groups: Record<string, number[]> = {};
+    const groups: Record<string, { totalScore: number; totalCount: number; peak: number }> = {};
+
+    function addGroup(dow: number, hour: number, score: number, count: number, peak: number) {
+      const key = `${dow}-${hour}`;
+      if (!groups[key]) groups[key] = { totalScore: 0, totalCount: 0, peak };
+      groups[key].totalScore += score * count;
+      groups[key].totalCount += count;
+      groups[key].peak = Math.max(groups[key].peak, peak);
+    }
 
     for (const snap of snapshots) {
       const date = new Date(snap.timestamp);
-      const dow = date.getUTCDay(); // 0=Sun, 6=Sat
-      const hour = date.getUTCHours();
-      const key = `${dow}-${hour}`;
-      if (!groups[key]) groups[key] = [];
-      groups[key].push(snap.trafficScore);
+      addGroup(date.getUTCDay(), date.getUTCHours(), snap.trafficScore, 1, snap.trafficScore);
     }
 
-    // Calculate averages and peak per slot
+    for (const summary of summaryRows) {
+      addGroup(summary.dayOfWeek, summary.hour, summary.avgTrafficScore, summary.sampleCount, summary.peakTrafficScore);
+    }
+
     const averages: Record<string, { avg: number; peak: number; samples: number }> = {};
-    for (const [key, scores] of Object.entries(groups)) {
+    for (const [key, stats] of Object.entries(groups)) {
       averages[key] = {
-        avg: Math.round(scores.reduce((a, b) => a + b, 0) / scores.length),
-        peak: Math.max(...scores),
-        samples: scores.length,
+        avg: Math.round(stats.totalScore / Math.max(stats.totalCount, 1)),
+        peak: stats.peak,
+        samples: stats.totalCount,
       };
     }
 
@@ -197,57 +313,104 @@ router.get('/predict/:icao', async (req: Request, res: Response) => {
 
     if (!airport) return res.status(404).json({ error: 'Airport not found' });
 
-    const snapshots = await prisma.trafficSnapshot.findMany({
-      where: { airportId: airport.id },
-      orderBy: { timestamp: 'asc' },
-    });
+    const cutoff = new Date(Date.now() - RETENTION_DAYS * 24 * 60 * 60 * 1000);
+    const [rawSnapshots, summaryRows] = await Promise.all([
+      prisma.trafficSnapshot.findMany({
+        where: {
+          airportId: airport.id,
+          timestamp: { gte: cutoff },
+        },
+        orderBy: { timestamp: 'asc' },
+      }),
+      prisma.trafficSummary.findMany({
+        where: { airportId: airport.id },
+        orderBy: [{ date: 'asc' }, { hour: 'asc' }],
+      }),
+    ]);
 
-    if (snapshots.length === 0) {
+    if (rawSnapshots.length === 0 && summaryRows.length === 0) {
       return res.json({ currentScore: 0, trend: 'STABLE', predictions: [] });
     }
 
-    const latestSnapshot = snapshots[snapshots.length - 1];
-    const currentScore = latestSnapshot.trafficScore;
+    const latestSnapshot = rawSnapshots[rawSnapshots.length - 1];
+    const currentScore = latestSnapshot?.trafficScore ?? 0;
 
-    function getWeekKey(date: Date) {
-      const tmp = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
-      const dayNumber = tmp.getUTCDay() || 7;
-      tmp.setUTCDate(tmp.getUTCDate() + 4 - dayNumber);
-      const yearStart = new Date(Date.UTC(tmp.getUTCFullYear(), 0, 1));
-      const weekNumber = Math.ceil((((tmp.getTime() - yearStart.getTime()) / 86400000) + 1) / 7);
-      return `${tmp.getUTCFullYear()}-${String(weekNumber).padStart(2, '0')}`;
+    const slotMap = new Map<string, {
+      totalScore: number;
+      totalCount: number;
+      peakTrafficScore: number;
+      weekly: Map<string, { totalScore: number; totalCount: number }>;
+    }>();
+
+    function addSlotSample(
+      dow: number,
+      hour: number,
+      weekKey: string,
+      score: number,
+      count: number,
+      peak: number,
+    ) {
+      const slot = `${dow}-${hour}`;
+      if (!slotMap.has(slot)) {
+        slotMap.set(slot, {
+          totalScore: 0,
+          totalCount: 0,
+          peakTrafficScore: peak,
+          weekly: new Map(),
+        });
+      }
+
+      const entry = slotMap.get(slot)!;
+      entry.totalScore += score * count;
+      entry.totalCount += count;
+      entry.peakTrafficScore = Math.max(entry.peakTrafficScore, peak);
+
+      if (!entry.weekly.has(weekKey)) {
+        entry.weekly.set(weekKey, { totalScore: 0, totalCount: 0 });
+      }
+      const weekEntry = entry.weekly.get(weekKey)!;
+      weekEntry.totalScore += score * count;
+      weekEntry.totalCount += count;
     }
 
-    const slotToSamples = new Map<string, number[]>();
-    const slotWeekMap = new Map<string, Map<string, number[]>>();
-
-    for (const snap of snapshots) {
+    for (const snap of rawSnapshots) {
       const date = new Date(snap.timestamp);
-      const dow = date.getUTCDay();
-      const hour = date.getUTCHours();
-      const slot = `${dow}-${hour}`;
-      const weekKey = getWeekKey(date);
+      addSlotSample(
+        date.getUTCDay(),
+        date.getUTCHours(),
+        getWeekKey(date),
+        snap.trafficScore,
+        1,
+        snap.trafficScore,
+      );
+    }
 
-      if (!slotToSamples.has(slot)) slotToSamples.set(slot, []);
-      slotToSamples.get(slot)!.push(snap.trafficScore);
-
-      if (!slotWeekMap.has(slot)) slotWeekMap.set(slot, new Map());
-      const weekMap = slotWeekMap.get(slot)!;
-      if (!weekMap.has(weekKey)) weekMap.set(weekKey, []);
-      weekMap.get(weekKey)!.push(snap.trafficScore);
+    for (const summary of summaryRows) {
+      addSlotSample(
+        summary.dayOfWeek,
+        summary.hour,
+        getWeekKey(new Date(summary.date)),
+        summary.avgTrafficScore,
+        summary.sampleCount,
+        summary.peakTrafficScore,
+      );
     }
 
     const slotAverages = new Map<string, { historicalAvg: number; samples: number; weeklyGrowthRate: number }>();
 
-    for (const [slot, scores] of slotToSamples.entries()) {
-      const historicalAvg = scores.reduce((sum, score) => sum + score, 0) / scores.length;
-      const weekMap = slotWeekMap.get(slot)!;
-      const weekEntries = Array.from(weekMap.entries()).sort((a, b) => a[0].localeCompare(b[0]));
+    for (const [slot, entry] of slotMap.entries()) {
+      const historicalAvg = entry.totalScore / Math.max(entry.totalCount, 1);
+      const weekEntries = Array.from(entry.weekly.entries())
+        .sort((a, b) => a[0].localeCompare(b[0]))
+        .map(([weekKey, stats]) => ({
+          weekKey,
+          average: stats.totalScore / Math.max(stats.totalCount, 1),
+        }));
 
       const changes: { change: number; weight: number }[] = [];
       for (let i = 1; i < weekEntries.length; i += 1) {
-        const prevAvg = weekEntries[i - 1][1].reduce((sum, score) => sum + score, 0) / weekEntries[i - 1][1].length;
-        const currAvg = weekEntries[i][1].reduce((sum, score) => sum + score, 0) / weekEntries[i][1].length;
+        const prevAvg = weekEntries[i - 1].average;
+        const currAvg = weekEntries[i].average;
         if (prevAvg > 0) {
           const change = (currAvg - prevAvg) / prevAvg;
           const isRecent = i >= Math.max(1, weekEntries.length - 4);
@@ -264,18 +427,18 @@ router.get('/predict/:icao', async (req: Request, res: Response) => {
 
       slotAverages.set(slot, {
         historicalAvg,
-        samples: scores.length,
+        samples: entry.totalCount,
         weeklyGrowthRate,
       });
     }
 
-    const currentSlot = `${new Date(latestSnapshot.timestamp).getUTCDay()}-${new Date(latestSnapshot.timestamp).getUTCHours()}`;
+    const currentSlot = `${new Date().getUTCDay()}-${new Date().getUTCHours()}`;
     const currentSlotInfo = slotAverages.get(currentSlot);
     const currentDeviation = currentSlotInfo && currentSlotInfo.historicalAvg > 0
       ? (currentScore - currentSlotInfo.historicalAvg) / currentSlotInfo.historicalAvg
       : 0;
 
-    const recentForTrend = snapshots.slice(-6);
+    const recentForTrend = rawSnapshots.slice(-6);
     const trendDirection = recentForTrend.length >= 2
       ? recentForTrend[recentForTrend.length - 1].trafficScore - recentForTrend[0].trafficScore
       : 0;
