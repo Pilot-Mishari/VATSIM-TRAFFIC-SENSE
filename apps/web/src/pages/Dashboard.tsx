@@ -177,6 +177,9 @@ export default function Dashboard({ onNavigate }: { onNavigate: (page: string) =
             ? `LAST UPDATE: ${new Date(summary.latestTimestamp).toUTCString().toUpperCase()}`
             : 'LOADING...'}
         </div>
+        <div style={{ marginTop: 6, fontSize: 11, color: '#7bc7ff', letterSpacing: 1.2 }}>
+          {'</>'} with love by Pilot-Mishari
+        </div>
       </div>
 
       <div style={{ padding: '32px', maxWidth: 1400, margin: '0 auto' }}>

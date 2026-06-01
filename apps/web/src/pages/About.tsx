@@ -21,6 +21,9 @@ export default function About({ onBack }: { onBack: () => void }) {
           <div style={{ marginTop: 8, fontSize: 12, color: '#4a7aaa', letterSpacing: 2 }}>
             A lightweight VATSIM traffic analytics interface for controllers and pilots.
           </div>
+          <div style={{ marginTop: 8, fontSize: 11, color: '#7bc7ff', letterSpacing: 1.2 }}>
+            {'</>'} with love by Pilot-Mishari
+          </div>
         </div>
         <button
           onClick={onBack}

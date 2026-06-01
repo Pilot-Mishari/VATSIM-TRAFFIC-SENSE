@@ -3,8 +3,75 @@ import prisma from './db';
 
 const VATSIM_API_URL = 'https://data.vatsim.net/v3/vatsim-data.json';
 
+const SUMMARY_AGE_DAYS = 14;
+const MIN_SNAPSHOTS_TO_COMPRESS = 6;
+
 function calculateTrafficScore(arrivals: number, departures: number): number {
   return (arrivals * 3) + (departures * 2);
+}
+
+export async function compressOldSnapshots() {
+  try {
+    const groups = await prisma.$queryRawUnsafe<Array<{
+      airportId: number;
+      day: string;
+      snapshotCount: number;
+      totalArrivals: number;
+      totalDepartures: number;
+      totalOverflights: number;
+      totalTotalAircraft: number;
+      avgTrafficScore: number;
+    }>>(
+      `SELECT airport_id AS "airportId",
+              to_char(date_trunc('day', timestamp), 'YYYY-MM-DD') AS "day",
+              count(*) AS "snapshotCount",
+              sum(arrivals) AS "totalArrivals",
+              sum(departures) AS "totalDepartures",
+              sum(overflights) AS "totalOverflights",
+              sum(total_aircraft) AS "totalTotalAircraft",
+              avg(traffic_score) AS "avgTrafficScore"
+       FROM traffic_snapshot
+       WHERE timestamp < now() - interval '${SUMMARY_AGE_DAYS} days'
+       GROUP BY airport_id, date_trunc('day', timestamp)
+       HAVING count(*) > ${MIN_SNAPSHOTS_TO_COMPRESS}`
+    );
+
+    if (groups.length === 0) {
+      console.log(`No old snapshots found to compress older than ${SUMMARY_AGE_DAYS} days`);
+      return;
+    }
+
+    console.log(`Compressing ${groups.length} old airport/day groups older than ${SUMMARY_AGE_DAYS} days`);
+
+    const summaryRows = groups.map(group => ({
+      airportId: group.airportId,
+      timestamp: new Date(`${group.day}T12:00:00Z`),
+      arrivals: Number(group.totalArrivals),
+      departures: Number(group.totalDepartures),
+      overflights: Number(group.totalOverflights),
+      totalAircraft: Number(group.totalTotalAircraft),
+      trafficScore: Math.round(Number(group.avgTrafficScore)),
+    }));
+
+    const deleteSql = `DELETE FROM traffic_snapshot
+      WHERE timestamp < NOW() - interval '${SUMMARY_AGE_DAYS} days'
+        AND (airport_id, date_trunc('day', timestamp)) IN (
+          SELECT airport_id, date_trunc('day', timestamp)
+          FROM traffic_snapshot
+          WHERE timestamp < NOW() - interval '${SUMMARY_AGE_DAYS} days'
+          GROUP BY airport_id, date_trunc('day', timestamp)
+          HAVING count(*) > ${MIN_SNAPSHOTS_TO_COMPRESS}
+        )`;
+
+    await prisma.$transaction([
+      prisma.$executeRawUnsafe(deleteSql),
+      prisma.trafficSnapshot.createMany({ data: summaryRows }),
+    ]);
+
+    console.log(`Inserted ${summaryRows.length} daily summary snapshot rows`);
+  } catch (error) {
+    console.error('Failed to compress old snapshots:', error);
+  }
 }
 
 export async function fetchVatsimData() {
