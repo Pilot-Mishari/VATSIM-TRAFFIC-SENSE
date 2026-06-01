@@ -8,14 +8,13 @@ datasource db {
 }
 
 model Airport {
-  id              Int                      @id @default(autoincrement())
-  icao            String                   @unique
-  name            String?
-  country         String?
-  fir             String?
-  snapshots       TrafficSnapshot[]
-  sessions        ControllerSession[]
-  summaryArchives TrafficSnapshotArchive[]
+  id        Int                 @id @default(autoincrement())
+  icao      String              @unique
+  name      String?
+  country   String?
+  fir       String?
+  snapshots TrafficSnapshot[]
+  sessions  ControllerSession[]
 }
 
 model TrafficSnapshot {
@@ -28,21 +27,6 @@ model TrafficSnapshot {
   totalAircraft Int
   trafficScore  Int
   airport       Airport  @relation(fields: [airportId], references: [id])
-}
-
-model TrafficSnapshotArchive {
-  id               Int      @id @default(autoincrement())
-  airportId        Int
-  day              DateTime
-  snapshotsCount   Int
-  totalArrivals    Int
-  totalDepartures  Int
-  totalAircraft    Int
-  sumTrafficScore  Int
-  peakTrafficScore Int
-  airport          Airport  @relation(fields: [airportId], references: [id])
-
-  @@unique([airportId, day])
 }
 
 model ControllerSession {
