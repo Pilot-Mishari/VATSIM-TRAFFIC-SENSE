@@ -22,17 +22,17 @@ export async function compressOldSnapshots() {
       totalTotalAircraft: number;
       avgTrafficScore: number;
     }>>(
-      `SELECT airport_id AS "airportId",
-              to_char(date_trunc('day', timestamp), 'YYYY-MM-DD') AS "day",
+      `SELECT "airportId" AS "airportId",
+              to_char(date_trunc('day', "timestamp"), 'YYYY-MM-DD') AS "day",
               count(*) AS "snapshotCount",
-              sum(arrivals) AS "totalArrivals",
-              sum(departures) AS "totalDepartures",
-              sum(overflights) AS "totalOverflights",
-              sum(total_aircraft) AS "totalTotalAircraft",
-              avg(traffic_score) AS "avgTrafficScore"
-       FROM traffic_snapshot
-       WHERE timestamp < now() - interval '${SUMMARY_AGE_DAYS} days'
-       GROUP BY airport_id, date_trunc('day', timestamp)
+              sum("arrivals") AS "totalArrivals",
+              sum("departures") AS "totalDepartures",
+              sum("overflights") AS "totalOverflights",
+              sum("totalAircraft") AS "totalTotalAircraft",
+              avg("trafficScore") AS "avgTrafficScore"
+       FROM "TrafficSnapshot"
+       WHERE "timestamp" < NOW() - interval '${SUMMARY_AGE_DAYS} days'
+       GROUP BY "airportId", date_trunc('day', "timestamp")
        HAVING count(*) > ${MIN_SNAPSHOTS_TO_COMPRESS}`
     );
 
@@ -53,13 +53,13 @@ export async function compressOldSnapshots() {
       trafficScore: Math.round(Number(group.avgTrafficScore)),
     }));
 
-    const deleteSql = `DELETE FROM traffic_snapshot
-      WHERE timestamp < NOW() - interval '${SUMMARY_AGE_DAYS} days'
-        AND (airport_id, date_trunc('day', timestamp)) IN (
-          SELECT airport_id, date_trunc('day', timestamp)
-          FROM traffic_snapshot
-          WHERE timestamp < NOW() - interval '${SUMMARY_AGE_DAYS} days'
-          GROUP BY airport_id, date_trunc('day', timestamp)
+    const deleteSql = `DELETE FROM "TrafficSnapshot"
+      WHERE "timestamp" < NOW() - interval '${SUMMARY_AGE_DAYS} days'
+        AND ("airportId", date_trunc('day', "timestamp")) IN (
+          SELECT "airportId", date_trunc('day', "timestamp")
+          FROM "TrafficSnapshot"
+          WHERE "timestamp" < NOW() - interval '${SUMMARY_AGE_DAYS} days'
+          GROUP BY "airportId", date_trunc('day', "timestamp")
           HAVING count(*) > ${MIN_SNAPSHOTS_TO_COMPRESS}
         )`;
 
