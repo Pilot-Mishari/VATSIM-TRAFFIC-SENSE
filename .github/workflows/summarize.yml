@@ -1,0 +1,28 @@
+name: Daily Traffic Summarization
+
+on:
+  schedule:
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+
+jobs:
+  summarize:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Execute summarize endpoint
+        env:
+          API_URL: ${{ secrets.API_URL }}
+        run: |
+          if [ -z "$API_URL" ]; then
+            echo "API_URL secret is required"
+            exit 1
+          fi
+
+          curl -X POST "$API_URL/analytics/summarize" \
+            -H "Content-Type: application/json" \
+            -d '{}' \
+            -f
