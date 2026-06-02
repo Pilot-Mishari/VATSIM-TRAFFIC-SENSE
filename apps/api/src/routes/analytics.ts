@@ -13,71 +13,33 @@ function getWeekKey(date: Date) {
   return `${tmp.getUTCFullYear()}-${String(weekNumber).padStart(2, '0')}`;
 }
 
-async function summarizeTrafficData() {
-  const cutoff = new Date(Date.now() - RETENTION_DAYS * 24 * 60 * 60 * 1000);
-
-  const insertSql = `
-    INSERT INTO "TrafficSummary"
-      ("airportId","date","dayOfWeek","hour","avgTrafficScore","peakTrafficScore","avgArrivals","avgDepartures","totalAircraft","sampleCount","createdAt")
-    SELECT
-      "airportId",
-      date_trunc('day', "timestamp" AT TIME ZONE 'UTC') AS "date",
-      extract(dow FROM "timestamp" AT TIME ZONE 'UTC')::int AS "dayOfWeek",
-      extract(hour FROM "timestamp" AT TIME ZONE 'UTC')::int AS "hour",
-      round(avg("trafficScore"))::int AS "avgTrafficScore",
-      max("trafficScore")::int AS "peakTrafficScore",
-      avg("arrivals")::float AS "avgArrivals",
-      avg("departures")::float AS "avgDepartures",
-      round(avg("totalAircraft"))::int AS "totalAircraft",
-      count(*)::int AS "sampleCount",
-      now() AT TIME ZONE 'UTC' AS "createdAt"
-    FROM "TrafficSnapshot"
-    WHERE "timestamp" < $1
-    GROUP BY 
-      "airportId",
-      date_trunc('day', "timestamp" AT TIME ZONE 'UTC'),
-      extract(dow FROM "timestamp" AT TIME ZONE 'UTC'),
-      extract(hour FROM "timestamp" AT TIME ZONE 'UTC')
-    ON CONFLICT ("airportId","date","hour") DO UPDATE SET
-      "avgTrafficScore" = EXCLUDED."avgTrafficScore",
-      "peakTrafficScore" = EXCLUDED."peakTrafficScore",
-      "avgArrivals" = EXCLUDED."avgArrivals",
-      "avgDepartures" = EXCLUDED."avgDepartures",
-      "totalAircraft" = EXCLUDED."totalAircraft",
-      "sampleCount" = EXCLUDED."sampleCount",
-      "createdAt" = EXCLUDED."createdAt";
-  `;
-
-  const [insertedRows, deletedResult] = await prisma.$transaction([
-    prisma.$executeRawUnsafe(insertSql, cutoff.toISOString()),
-    prisma.trafficSnapshot.deleteMany({ where: { timestamp: { lt: cutoff } } }),
-  ]);
-
-  return {
-    cutoff: cutoff.toISOString(),
-    insertedRows: Number(insertedRows || 0),
-    deletedRows: deletedResult.count,
-  };
-}
-
 // Top airports by traffic score
 router.get('/top-airports', async (req: Request, res: Response) => {
   try {
-    const airports = await prisma.airport.findMany({
-      include: {
-        TrafficSnapshot: {
-          orderBy: { timestamp: 'desc' },
-          take: 1,
-        },
-      },
-    });
+    // Use raw SQL to get latest snapshot per airport efficiently
+    const results = await prisma.$queryRaw<Array<{ id: number; icao: string; trafficScore: number; timestamp: string }>>`
+      SELECT a.id, a.icao, t."trafficScore", t."timestamp"
+      FROM "Airport" a
+      LEFT JOIN LATERAL (
+        SELECT "trafficScore", "timestamp"
+        FROM "TrafficSnapshot"
+        WHERE "airportId" = a.id
+        ORDER BY "timestamp" DESC
+        LIMIT 1
+      ) t ON true
+      WHERE t."trafficScore" IS NOT NULL
+      ORDER BY t."trafficScore" DESC
+      LIMIT 20
+    `;
 
-    const sorted = airports
-      .filter(a => a.TrafficSnapshot.length > 0)
-      .sort((a, b) => b.TrafficSnapshot[0].trafficScore - a.TrafficSnapshot[0].trafficScore)
-      .slice(0, 20);
+    // Format response with TrafficSnapshot array structure for frontend compatibility
+    const airports = results.map(row => ({
+      id: row.id,
+      icao: row.icao,
+      TrafficSnapshot: [{ trafficScore: row.trafficScore, timestamp: row.timestamp }],
+    }));
 
-    res.json(sorted);
+    res.json(airports);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Failed to fetch top airports' });
@@ -112,18 +74,13 @@ router.get('/history/:icao', async (req: Request, res: Response) => {
 // Global traffic summary
 router.get('/summary', async (req: Request, res: Response) => {
   try {
-    const totalSnapshots = await prisma.trafficSnapshot.count();
-
-    const latest = await prisma.trafficSnapshot.findMany({
+    const latest = await prisma.trafficSnapshot.findFirst({
       orderBy: { timestamp: 'desc' },
-      take: 1,
+      select: { timestamp: true },
     });
 
-    const latestTimestamp = latest[0]?.timestamp ?? null;
-
     res.json({
-      totalSnapshots,
-      latestTimestamp,
+      latestTimestamp: latest?.timestamp ?? null,
     });
   } catch (error) {
     console.error(error);
@@ -165,16 +122,6 @@ router.get('/changelog', async (req: Request, res: Response) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Failed to fetch changelog' });
-  }
-});
-
-router.post('/summarize', async (req: Request, res: Response) => {
-  try {
-    const result = await summarizeTrafficData();
-    res.json(result);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Failed to summarize traffic snapshots' });
   }
 });
 
