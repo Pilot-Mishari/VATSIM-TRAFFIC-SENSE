@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 
-const API = 'https://sectorsenseapi-production.up.railway.app'
+const API = import.meta.env.VITE_API_URL || (window.location.origin + '/api');
 
 interface Snapshot {
   id: number
@@ -15,6 +15,16 @@ interface Airport {
   id: number
   icao: string
   TrafficSnapshot: Snapshot[]
+}
+
+interface SummaryRow {
+  airportId: number
+  icao?: string
+  date: string
+  hour: number
+  avgTrafficScore: number
+  peakTrafficScore: number
+  totalAircraft: number
 }
 
 interface Summary {
@@ -38,7 +48,7 @@ interface Controller {
 export default function Dashboard({ onNavigate }: { onNavigate: (page: string) => void }) {
   const [summary, setSummary] = useState<Summary | null>(null)
   const [changelog, setChangelog] = useState<Changelog | null>(null)
-  const [topAirports, setTopAirports] = useState<Airport[]>([])
+  const [topAirports, setTopAirports] = useState<SummaryRow[]>([])
   const [search, setSearch] = useState('')
   const [loading, setLoading] = useState(true)
   const [searchResult, setSearchResult] = useState<Airport | null>(null)
@@ -136,7 +146,7 @@ export default function Dashboard({ onNavigate }: { onNavigate: (page: string) =
   }
 
   const filtered = search.length > 0
-    ? topAirports.filter(a => a.icao.toLowerCase().includes(search.toLowerCase()))
+    ? topAirports.filter(a => String(a.airportId).includes(search) || (a.icao?.toLowerCase().includes(search.toLowerCase())))
     : topAirports
 
   function trafficLevel(score: number) {
@@ -395,7 +405,7 @@ export default function Dashboard({ onNavigate }: { onNavigate: (page: string) =
           }}>
             <div style={{ fontSize: 12, letterSpacing: 3, color: '#a0b8d0' }}>TOP AIRPORTS BY TRAFFIC</div>
             <input
-              placeholder="SEARCH ICAO..."
+              placeholder="SEARCH..."
               value={search}
               onChange={e => setSearch(e.target.value.toUpperCase())}
               style={{
@@ -415,7 +425,8 @@ export default function Dashboard({ onNavigate }: { onNavigate: (page: string) =
           {/* Table Header */}
           <div style={{
             display: 'grid',
-            gridTemplateColumns: '60px 1fr 100px 100px 100px 120px 100px',
+            minWidth: 760,
+            gridTemplateColumns: '60px 120px 140px 80px 120px 120px 120px',
             padding: '10px 24px',
             fontSize: 10,
             letterSpacing: 2,
@@ -423,14 +434,13 @@ export default function Dashboard({ onNavigate }: { onNavigate: (page: string) =
             borderBottom: '1px solid rgba(59,158,255,0.1)',
           }}>
             <span>#</span>
-            <span>ICAO</span>
-            <span>ARRIVALS</span>
-            <span>DEPARTURES</span>
+            <span>AIRPORT ID</span>
+            <span>DATE</span>
+            <span>HOUR</span>
+            <span>AVG SCORE</span>
+            <span>PEAK SCORE</span>
             <span>AIRCRAFT</span>
-            <span>SCORE</span>
-            <span>TRAFFIC LEVEL</span>
           </div>
-
           {/* Table Rows */}
           {loading ? (
             <div style={{ padding: 40, textAlign: 'center', color: '#4a7aaa', letterSpacing: 2, fontSize: 12 }}>
@@ -480,34 +490,31 @@ export default function Dashboard({ onNavigate }: { onNavigate: (page: string) =
                 )
               })()}
 
-              {filtered.map((airport, i) => {
-                const snap = Array.isArray(airport.TrafficSnapshot) ? airport.TrafficSnapshot[0] : null
-                if (!snap) return null
-                const level = trafficLevel(snap.trafficScore)
-                const selected = selectedAirport?.icao === airport.icao
+              {filtered.map((row, i) => {
+                const selected = row.icao ? selectedAirport?.icao === row.icao : false
                 return (
-                  <div key={airport.id}
-                    onClick={() => selectAirport(airport.icao)}
+                  <div key={`${row.airportId}-${row.date}-${row.hour}`}
                     style={{
                       display: 'grid',
-                      gridTemplateColumns: '60px 1fr 100px 100px 100px 120px 100px',
+                      minWidth: 760,
+                      gridTemplateColumns: '60px 120px 140px 80px 120px 120px 120px',
                       padding: '14px 24px',
                       borderBottom: '1px solid rgba(59,158,255,0.07)',
                       fontSize: 13,
                       transition: 'background 0.15s',
-                      cursor: 'pointer',
+                      cursor: 'default',
                       background: selected ? 'rgba(77,255,145,0.08)' : 'transparent',
                     }}
                     onMouseEnter={e => (e.currentTarget.style.background = selected ? 'rgba(77,255,145,0.12)' : 'rgba(59,158,255,0.05)')}
                     onMouseLeave={e => (e.currentTarget.style.background = selected ? 'rgba(77,255,145,0.08)' : 'transparent')}
                   >
                     <span style={{ color: '#4a7aaa', fontSize: 11 }}>{i + 1}</span>
-                    <span style={{ fontWeight: 700, letterSpacing: 2, color: '#ffffff' }}>{airport.icao}</span>
-                    <span style={{ color: '#4dff91' }}>{snap.arrivals}</span>
-                    <span style={{ color: '#ff9500' }}>{snap.departures}</span>
-                    <span>{snap.totalAircraft}</span>
-                    <span style={{ color: '#3b9eff', fontWeight: 700 }}>{snap.trafficScore}</span>
-                    <span style={{ color: level.color, fontSize: 10, letterSpacing: 1, fontWeight: 700 }}>{level.label}</span>
+                    <span style={{ fontWeight: 700, letterSpacing: 2, color: '#ffffff' }}>{row.airportId}</span>
+                    <span>{new Date(row.date).toLocaleDateString()}</span>
+                    <span>{row.hour}:00</span>
+                    <span style={{ color: '#3b9eff', fontWeight: 700 }}>{row.avgTrafficScore}</span>
+                    <span style={{ color: '#ff9500', fontWeight: 700 }}>{row.peakTrafficScore}</span>
+                    <span>{row.totalAircraft}</span>
                   </div>
                 )
               })}

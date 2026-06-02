@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 
-const API = 'https://sectorsenseapi-production.up.railway.app'
+const API = import.meta.env.VITE_API_URL || (window.location.origin + '/api');
 
 interface Snapshot {
   id: number
