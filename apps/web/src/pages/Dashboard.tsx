@@ -50,16 +50,30 @@ export default function Dashboard({ onNavigate }: { onNavigate: (page: string) =
   const [selectedError, setSelectedError] = useState('')
 
   useEffect(() => {
+    // Fetch summary and changelog first so the page can render quickly.
     Promise.all([
       fetch(`${API}/analytics/summary`).then(r => r.json()),
       fetch(`${API}/analytics/changelog`).then(r => r.json()),
-      fetch(`${API}/analytics/top-airports`).then(r => r.json()),
-    ]).then(([s, c, t]) => {
+    ]).then(([s, c]) => {
       setSummary(s)
       setChangelog(c)
-      setTopAirports(t)
+      setLoading(false)
+    }).catch(err => {
+      console.error('Failed to fetch summary/changelog', err)
       setLoading(false)
     })
+
+    // Load top airports lazily to avoid blocking initial render.
+    (async () => {
+      try {
+        const resp = await fetch(`${API}/analytics/top-airports`)
+        if (!resp.ok) throw new Error('Top airports fetch failed')
+        const t = await resp.json()
+        setTopAirports(t)
+      } catch (err) {
+        console.error('Failed to fetch top airports (lazy)', err)
+      }
+    })()
   }, [])
 
   useEffect(() => {
