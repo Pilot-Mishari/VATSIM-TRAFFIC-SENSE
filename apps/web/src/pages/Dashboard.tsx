@@ -61,7 +61,7 @@ export default function Dashboard({ onNavigate }: { onNavigate: (page: string) =
     }).catch(err => {
       console.error('Failed to fetch summary/changelog', err)
       setLoading(false)
-    })
+    });
 
     // Load top airports lazily to avoid blocking initial render.
     (async () => {
@@ -276,7 +276,7 @@ export default function Dashboard({ onNavigate }: { onNavigate: (page: string) =
           </>
         )}
 
-        {selectedAirport && selectedAirport.TrafficSnapshot[0] && (
+        {selectedAirport && Array.isArray(selectedAirport.TrafficSnapshot) && selectedAirport.TrafficSnapshot[0] && (
           <div style={{
             background: 'rgba(13,15,26,0.95)',
             border: '1px solid rgba(59,158,255,0.25)',
@@ -450,7 +450,7 @@ export default function Dashboard({ onNavigate }: { onNavigate: (page: string) =
                 </div>
               )}
 
-              {searchResult && searchResult.TrafficSnapshot[0] && (() => {
+              {searchResult && Array.isArray(searchResult.TrafficSnapshot) && searchResult.TrafficSnapshot[0] && (() => {
                 const snap = searchResult.TrafficSnapshot[0]
                 const level = trafficLevel(snap.trafficScore)
                 const selected = selectedAirport?.icao === searchResult.icao
@@ -481,7 +481,7 @@ export default function Dashboard({ onNavigate }: { onNavigate: (page: string) =
               })()}
 
               {filtered.map((airport, i) => {
-                const snap = airport.TrafficSnapshot[0]
+                const snap = Array.isArray(airport.TrafficSnapshot) ? airport.TrafficSnapshot[0] : null
                 if (!snap) return null
                 const level = trafficLevel(snap.trafficScore)
                 const selected = selectedAirport?.icao === airport.icao
