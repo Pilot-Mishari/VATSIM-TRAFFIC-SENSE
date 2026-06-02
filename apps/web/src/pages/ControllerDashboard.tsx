@@ -2,7 +2,7 @@
 /* stylelint-disable */
 import { useEffect, useState } from 'react'
 
-const API = import.meta.env.VITE_API_URL || (window.location.origin + '/api');
+const API = 'https://sectorsenseapi-production.up.railway.app'
 
 interface Snapshot {
   id: number

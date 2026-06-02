@@ -13,263 +13,397 @@ function getWeekKey(date: Date) {
   return `${tmp.getUTCFullYear()}-${String(weekNumber).padStart(2, '0')}`;
 }
 
+// Top airports by traffic score
 router.get('/top-airports', async (req: Request, res: Response) => {
   try {
-    const results = await prisma.$queryRaw<any[]>`
-      SELECT 
-        a.id, 
-        a.icao, 
-        t."avgTrafficScore" AS "avgTrafficScore", 
-        t."date" AS "date"
+    // Use raw SQL to get latest snapshot per airport efficiently
+    const results = await prisma.$queryRaw<Array<{ id: number; icao: string; trafficScore: number; timestamp: string }>>`
+      SELECT a.id, a.icao, t."trafficScore", t."timestamp"
       FROM "Airport" a
-      INNER JOIN "TrafficSummary" t ON a.id = t."airportId"
-      WHERE t."date" = (SELECT MAX("date") FROM "TrafficSummary")
-      ORDER BY t."avgTrafficScore" DESC
-      LIMIT 10;
+      LEFT JOIN LATERAL (
+        SELECT "trafficScore", "timestamp"
+        FROM "TrafficSnapshot"
+        WHERE "airportId" = a.id
+        ORDER BY "timestamp" DESC
+        LIMIT 1
+      ) t ON true
+      WHERE t."trafficScore" IS NOT NULL
+      ORDER BY t."trafficScore" DESC
+      LIMIT 20
     `;
-    return res.json(results);
+
+    // Format response with TrafficSnapshot array structure for frontend compatibility
+    const airports = results.map(row => ({
+      id: row.id,
+      icao: row.icao,
+      TrafficSnapshot: [{ trafficScore: row.trafficScore, timestamp: row.timestamp }],
+    }));
+
+    res.json(airports);
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ error: 'Internal Server Error' });
+    res.status(500).json({ error: 'Failed to fetch top airports' });
   }
 });
 
-router.post('/summarize', async (req: Request, res: Response) => {
+// Historical snapshots for a specific airport
+router.get('/history/:icao', async (req: Request, res: Response) => {
   try {
-    const targetDate = new Date();
-    targetDate.setUTCDate(targetDate.getUTCDate() - 1);
-    const dateStr = targetDate.toISOString().split('T')[0];
+    const { icao } = req.params;
+    const { limit = '48' } = req.query;
 
-    const rawSnapshots = await prisma.trafficSnapshot.findMany({
-      where: {
-        timestamp: {
-          gte: new Date(`${dateStr}T00:00:00Z`),
-          lt: new Date(`${dateStr}T23:59:59Z`),
+    const airport = await prisma.airport.findUnique({
+      where: { icao: icao.toUpperCase() },
+      include: {
+        TrafficSnapshot: {
+          orderBy: { timestamp: 'desc' },
+          take: parseInt(limit as string),
         },
       },
     });
 
-    if (rawSnapshots.length === 0) {
-      return res.json({ message: 'No snapshots found to summarize for yesterday' });
-    }
+    if (!airport) return res.status(404).json({ error: 'Airport not found' });
 
-    const groups: Record<string, typeof rawSnapshots> = {};
-    for (const snap of rawSnapshots) {
-      const snapDate = new Date(snap.timestamp);
-      const hour = snapDate.getUTCHours();
-      const key = `${snap.airportId}_${hour}`;
-      if (!groups[key]) groups[key] = [];
-      groups[key].push(snap);
-    }
-
-    for (const [key, snaps] of Object.entries(groups)) {
-      const [airportIdStr, hourStr] = key.split('_');
-      const airportId = parseInt(airportIdStr, 10);
-      const hour = parseInt(hourStr, 10);
-
-      const count = snaps.length;
-      const sumArrivals = snaps.reduce((acc, s) => acc + s.arrivals, 0);
-      const sumDepartures = snaps.reduce((acc, s) => acc + s.departures, 0);
-      const sumTotalAircraft = snaps.reduce((acc, s) => acc + s.totalAircraft, 0);
-      const sumTrafficScore = snaps.reduce((acc, s) => acc + s.trafficScore, 0);
-      const maxTrafficScore = snaps.reduce((acc, s) => Math.max(acc, s.trafficScore), 0);
-
-      const snapDate = new Date(snaps[0].timestamp);
-      const dayOfWeek = snapDate.getUTCDay() || 7;
-      const summaryDate = new Date(Date.UTC(snapDate.getUTCFullYear(), snapDate.getUTCMonth(), snapDate.getUTCDate()));
-
-      await prisma.trafficSummary.upsert({
-        where: {
-          airportId_date_hour: {
-            airportId,
-            date: summaryDate,
-            hour,
-          },
-        },
-        update: {
-          avgTrafficScore: Math.round(sumTrafficScore / count),
-          peakTrafficScore: maxTrafficScore,
-          avgArrivals: sumArrivals / count,
-          avgDepartures: sumDepartures / count,
-          totalAircraft: sumTotalAircraft,
-          sampleCount: count,
-        },
-        create: {
-          airportId,
-          date: summaryDate,
-          dayOfWeek,
-          hour,
-          avgTrafficScore: Math.round(sumTrafficScore / count),
-          peakTrafficScore: maxTrafficScore,
-          avgArrivals: sumArrivals / count,
-          avgDepartures: sumDepartures / count,
-          totalAircraft: sumTotalAircraft,
-          sampleCount: count,
-        },
-      });
-    }
-
-    const cutOffDate = new Date();
-    cutOffDate.setUTCDate(cutOffDate.getUTCDate() - RETENTION_DAYS);
-    await prisma.trafficSnapshot.deleteMany({
-      where: {
-        timestamp: {
-          lt: cutOffDate,
-        },
-      },
-    });
-
-    return res.json({ message: 'Summary completed successfully and retention purged' });
+    res.json(airport);
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ error: 'Internal Server Error' });
+    res.status(500).json({ error: 'Failed to fetch history' });
   }
 });
 
-router.get('/airport/:icao', async (req: Request, res: Response) => {
-  const { icao } = req.params;
+// Global traffic summary
+router.get('/summary', async (req: Request, res: Response) => {
   try {
+    const latest = await prisma.trafficSnapshot.findFirst({
+      orderBy: { timestamp: 'desc' },
+      select: { timestamp: true },
+    });
+
+    res.json({
+      latestTimestamp: latest?.timestamp ?? null,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to fetch summary' });
+  }
+});
+
+router.get('/changelog', async (req: Request, res: Response) => {
+  try {
+    const githubOwner = 'Pilot-Mishari';
+    const githubRepo = 'VATSIM-TRAFFIC-SENSE';
+    const apiUrl = `https://api.github.com/repos/${githubOwner}/${githubRepo}/pulls?state=open&sort=updated&direction=desc&per_page=1`;
+    const response = await fetch(apiUrl, {
+      headers: {
+        'Accept': 'application/vnd.github.v3+json',
+      },
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('GitHub API error', response.status, errorText);
+      return res.status(502).json({ error: 'Failed to fetch changelog from GitHub' });
+    }
+
+    const pulls = await response.json() as Array<any>;
+    const latest = pulls[0];
+
+    if (!latest) {
+      return res.json({ title: 'No recent pull requests', body: 'There are no open pull requests at this time.' });
+    }
+
+    res.json({
+      title: latest.title,
+      body: latest.body ?? 'No description provided.',
+      url: latest.html_url,
+      state: latest.state,
+      updatedAt: latest.updated_at,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to fetch changelog' });
+  }
+});
+
+// Busiest hours today for an airport
+router.get('/today/:icao', async (req: Request, res: Response) => {
+  try {
+    const { icao } = req.params;
+
+    const startOfDay = new Date();
+    startOfDay.setUTCHours(0, 0, 0, 0);
+
     const airport = await prisma.airport.findUnique({
       where: { icao: icao.toUpperCase() },
     });
 
-    if (!airport) {
-      return res.status(404).json({ error: 'Airport not found' });
+    if (!airport) return res.status(404).json({ error: 'Airport not found' });
+
+    const snapshots = await prisma.trafficSnapshot.findMany({
+      where: {
+        airportId: airport.id,
+        timestamp: { gte: startOfDay },
+      },
+      orderBy: { timestamp: 'asc' },
+    });
+
+    res.json(snapshots);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to fetch today data' });
+  }
+});
+
+// Live VATSIM events
+router.get('/events', async (req: Request, res: Response) => {
+  try {
+    const response = await fetch('https://my.vatsim.net/api/v2/events/latest');
+    const data = await response.json() as { data: any[] };
+    res.json(data.data ?? []);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to fetch events' });
+  }
+});
+
+// Traffic prediction - average of last 12 snapshots grouped by hour
+router.get('/trend/:icao', async (req: Request, res: Response) => {
+  try {
+    const { icao } = req.params;
+
+    const airport = await prisma.airport.findUnique({
+      where: { icao: icao.toUpperCase() },
+    });
+
+    if (!airport) return res.status(404).json({ error: 'Airport not found' });
+
+    // Last 48 snapshots for trend
+    const snapshots = await prisma.trafficSnapshot.findMany({
+      where: { airportId: airport.id },
+      orderBy: { timestamp: 'desc' },
+      take: 48,
+    });
+
+    res.json(snapshots.reverse());
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to fetch trend' });
+  }
+});
+
+
+// Historical hourly averages for an airport
+router.get('/hourly-average/:icao', async (req: Request, res: Response) => {
+  try {
+    const { icao } = req.params;
+
+    const airport = await prisma.airport.findUnique({
+      where: { icao: icao.toUpperCase() },
+    });
+
+    if (!airport) return res.status(404).json({ error: 'Airport not found' });
+
+    const [snapshots, summaryRows] = await Promise.all([
+      prisma.trafficSnapshot.findMany({
+        where: { airportId: airport.id },
+        orderBy: { timestamp: 'asc' },
+      }),
+      prisma.trafficSummary.findMany({
+        where: { airportId: airport.id },
+        orderBy: [{ date: 'asc' }, { hour: 'asc' }],
+      }),
+    ]);
+
+    const groups: Record<string, { totalScore: number; totalCount: number; peak: number }> = {};
+
+    function addGroup(dow: number, hour: number, score: number, count: number, peak: number) {
+      const key = `${dow}-${hour}`;
+      if (!groups[key]) groups[key] = { totalScore: 0, totalCount: 0, peak };
+      groups[key].totalScore += score * count;
+      groups[key].totalCount += count;
+      groups[key].peak = Math.max(groups[key].peak, peak);
     }
 
-    const latestSummary = await prisma.trafficSummary.findFirst({
-      where: { airportId: airport.id },
-      orderBy: [
-        { date: 'desc' },
-        { hour: 'desc' },
-      ],
+    for (const snap of snapshots) {
+      const date = new Date(snap.timestamp);
+      addGroup(date.getUTCDay(), date.getUTCHours(), snap.trafficScore, 1, snap.trafficScore);
+    }
+
+    for (const summary of summaryRows) {
+      addGroup(summary.dayOfWeek, summary.hour, summary.avgTrafficScore, summary.sampleCount, summary.peakTrafficScore);
+    }
+
+    const averages: Record<string, { avg: number; peak: number; samples: number }> = {};
+    for (const [key, stats] of Object.entries(groups)) {
+      averages[key] = {
+        avg: Math.round(stats.totalScore / Math.max(stats.totalCount, 1)),
+        peak: stats.peak,
+        samples: stats.totalCount,
+      };
+    }
+
+    res.json(averages);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to fetch hourly averages' });
+  }
+});
+
+// Full prediction for next 3 hours
+router.get('/predict/:icao', async (req: Request, res: Response) => {
+  try {
+    const { icao } = req.params;
+
+    const airport = await prisma.airport.findUnique({
+      where: { icao: icao.toUpperCase() },
     });
 
-    const historicalSummaries = await prisma.trafficSummary.findMany({
-      where: { airportId: airport.id },
-      orderBy: [
-        { date: 'asc' },
-        { hour: 'asc' },
-      ],
-    });
+    if (!airport) return res.status(404).json({ error: 'Airport not found' });
 
-    const currentScore = latestSummary ? latestSummary.avgTrafficScore : 0;
-    const currentLevel = currentScore >= 150
-      ? 'VERY HIGH'
-      : currentScore >= 80
-        ? 'HIGH'
-        : currentScore >= 30
-          ? 'MEDIUM'
-          : 'LOW';
+    const cutoff = new Date(Date.now() - RETENTION_DAYS * 24 * 60 * 60 * 1000);
+    const [rawSnapshots, summaryRows] = await Promise.all([
+      prisma.trafficSnapshot.findMany({
+        where: {
+          airportId: airport.id,
+          timestamp: { gte: cutoff },
+        },
+        orderBy: { timestamp: 'asc' },
+      }),
+      prisma.trafficSummary.findMany({
+        where: { airportId: airport.id },
+        orderBy: [{ date: 'asc' }, { hour: 'asc' }],
+      }),
+    ]);
 
-    const recentForTrend = historicalSummaries.slice(-5);
-    const currentTrend = recentForTrend.length >= 2
-      ? recentForTrend[recentForTrend.length - 1].avgTrafficScore > recentForTrend[0].avgTrafficScore ? 'INCREASING' : 'DECREASING'
-      : 'STABLE';
+    if (rawSnapshots.length === 0 && summaryRows.length === 0) {
+      return res.json({ currentScore: 0, trend: 'STABLE', predictions: [] });
+    }
 
-    const hourDataMap = new Map<number, { scoreSum: number; count: number; maxScore: number }>();
-    const dayDataMap = new Map<number, { scoreSum: number; count: number }>();
-    const weeklyDataMap = new Map<string, { scoreSum: number; count: number }>();
+    const latestSnapshot = rawSnapshots[rawSnapshots.length - 1];
+    const currentScore = latestSnapshot?.trafficScore ?? 0;
+
+    const slotMap = new Map<string, {
+      totalScore: number;
+      totalCount: number;
+      peakTrafficScore: number;
+      weekly: Map<string, { totalScore: number; totalCount: number }>;
+    }>();
+
+    function addSlotSample(
+      dow: number,
+      hour: number,
+      weekKey: string,
+      score: number,
+      count: number,
+      peak: number,
+    ) {
+      const slot = `${dow}-${hour}`;
+      if (!slotMap.has(slot)) {
+        slotMap.set(slot, {
+          totalScore: 0,
+          totalCount: 0,
+          peakTrafficScore: peak,
+          weekly: new Map(),
+        });
+      }
+
+      const entry = slotMap.get(slot)!;
+      entry.totalScore += score * count;
+      entry.totalCount += count;
+      entry.peakTrafficScore = Math.max(entry.peakTrafficScore, peak);
+
+      if (!entry.weekly.has(weekKey)) {
+        entry.weekly.set(weekKey, { totalScore: 0, totalCount: 0 });
+      }
+      const weekEntry = entry.weekly.get(weekKey)!;
+      weekEntry.totalScore += score * count;
+      weekEntry.totalCount += count;
+    }
+
+    for (const snap of rawSnapshots) {
+      const date = new Date(snap.timestamp);
+      addSlotSample(
+        date.getUTCDay(),
+        date.getUTCHours(),
+        getWeekKey(date),
+        snap.trafficScore,
+        1,
+        snap.trafficScore,
+      );
+    }
+
+    for (const summary of summaryRows) {
+      addSlotSample(
+        summary.dayOfWeek,
+        summary.hour,
+        getWeekKey(new Date(summary.date)),
+        summary.avgTrafficScore,
+        summary.sampleCount,
+        summary.peakTrafficScore,
+      );
+    }
+
     const slotAverages = new Map<string, { historicalAvg: number; samples: number; weeklyGrowthRate: number }>();
 
-    for (const entry of historicalSummaries) {
-      const h = entry.hour;
-      if (!hourDataMap.has(h)) hourDataMap.set(h, { scoreSum: 0, count: 0, maxScore: 0 });
-      const hObj = hourDataMap.get(h)!;
-      hObj.scoreSum += entry.avgTrafficScore;
-      hObj.count += 1;
-      hObj.maxScore = Math.max(hObj.maxScore, entry.peakTrafficScore);
+    for (const [slot, entry] of slotMap.entries()) {
+      const historicalAvg = entry.totalScore / Math.max(entry.totalCount, 1);
+      const weekEntries = Array.from(entry.weekly.entries())
+        .sort((a, b) => a[0].localeCompare(b[0]))
+        .map(([weekKey, stats]) => ({
+          weekKey,
+          average: stats.totalScore / Math.max(stats.totalCount, 1),
+        }));
 
-      const d = entry.dayOfWeek;
-      if (!dayDataMap.has(d)) dayDataMap.set(d, { scoreSum: 0, count: 0 });
-      const dObj = dayDataMap.get(d)!;
-      dObj.scoreSum += entry.avgTrafficScore;
-      dObj.count += 1;
-
-      const wKey = getWeekKey(new Date(entry.date));
-      if (!weeklyDataMap.has(wKey)) weeklyDataMap.set(wKey, { scoreSum: 0, count: 0 });
-      const wObj = weeklyDataMap.get(wKey)!;
-      wObj.scoreSum += entry.avgTrafficScore;
-      wObj.count += 1;
-
-      const slotKey = `${d}-${h}`;
-      if (!slotAverages.has(slotKey)) slotAverages.set(slotKey, { historicalAvg: 0, samples: 0, weeklyGrowthRate: 0 });
-      const sObj = slotAverages.get(slotKey)!;
-      sObj.historicalAvg += entry.avgTrafficScore;
-      sObj.samples += 1;
-    }
-
-    for (const [key, val] of slotAverages.entries()) {
-      val.historicalAvg = val.samples > 0 ? val.historicalAvg / val.samples : 0;
-    }
-
-    const hourlyAverages = Array.from({ length: 24 }, (_, i) => {
-      const data = hourDataMap.get(i);
-      return {
-        hour: i,
-        time: `${String(i).padStart(2, '0')}:00z`,
-        avgScore: data && data.count > 0 ? Math.round(data.scoreSum / data.count) : 0,
-        peakScore: data ? data.maxScore : 0,
-      };
-    });
-
-    const dailyAverages = Array.from({ length: 7 }, (_, i) => {
-      const dayNum = i + 1;
-      const data = dayDataMap.get(dayNum);
-      const label = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][i];
-      return {
-        dayOfWeek: dayNum,
-        day: label,
-        avgScore: data && data.count > 0 ? Math.round(data.scoreSum / data.count) : 0,
-      };
-    });
-
-    const formatHour = (h: number) => `${String(h).padStart(2, '0')}:00z`;
-
-    const sortedWeeks = Array.from(weeklyDataMap.entries()).sort((a, b) => a[0].localeCompare(b[0]));
-    for (const [slotKey, slotInfo] of slotAverages.entries()) {
-      const [dStr, hStr] = slotKey.split('-');
-      const d = parseInt(dStr, 10);
-      const h = parseInt(hStr, 10);
-
-      const slotWeekScores: number[] = [];
-      for (const [wKey] of sortedWeeks) {
-        const match = historicalSummaries.find(entry => entry.dayOfWeek === d && entry.hour === h && getWeekKey(new Date(entry.date)) === wKey);
-        if (match) {
-          slotWeekScores.push(match.avgTrafficScore);
+      const changes: { change: number; weight: number }[] = [];
+      for (let i = 1; i < weekEntries.length; i += 1) {
+        const prevAvg = weekEntries[i - 1].average;
+        const currAvg = weekEntries[i].average;
+        if (prevAvg > 0) {
+          const change = (currAvg - prevAvg) / prevAvg;
+          const isRecent = i >= Math.max(1, weekEntries.length - 4);
+          changes.push({ change, weight: isRecent ? 2 : 1 });
         }
       }
 
-      if (slotWeekScores.length >= 2) {
-        let totalGrowth = 0;
-        let intervals = 0;
-        for (let i = 1; i < slotWeekScores.length; i += 1) {
-          const prev = slotWeekScores[i - 1];
-          const curr = slotWeekScores[i];
-          if (prev > 0) {
-            totalGrowth += (curr - prev) / prev;
-            intervals += 1;
-          }
-        }
-        slotInfo.weeklyGrowthRate = intervals > 0 ? totalGrowth / intervals : 0;
+      let weeklyGrowthRate = 0;
+      if (changes.length > 0) {
+        const weightedSum = changes.reduce((sum, item) => sum + item.change * item.weight, 0);
+        const totalWeight = changes.reduce((sum, item) => sum + item.weight, 0);
+        weeklyGrowthRate = weightedSum / totalWeight;
       }
+
+      slotAverages.set(slot, {
+        historicalAvg,
+        samples: entry.totalCount,
+        weeklyGrowthRate,
+      });
     }
 
-    const currentDeviation = latestSummary && slotAverages.has(`${latestSummary.dayOfWeek}-${latestSummary.hour}`)
-      ? slotAverages.get(`${latestSummary.dayOfWeek}-${latestSummary.hour}`)!.historicalAvg > 0
-        ? (latestSummary.avgTrafficScore - slotAverages.get(`${latestSummary.dayOfWeek}-${latestSummary.hour}`)!.historicalAvg) / slotAverages.get(`${latestSummary.dayOfWeek}-${latestSummary.hour}`)!.historicalAvg
-        : 0
+    const currentSlot = `${new Date().getUTCDay()}-${new Date().getUTCHours()}`;
+    const currentSlotInfo = slotAverages.get(currentSlot);
+    const currentDeviation = currentSlotInfo && currentSlotInfo.historicalAvg > 0
+      ? (currentScore - currentSlotInfo.historicalAvg) / currentSlotInfo.historicalAvg
       : 0;
 
-    const predictions = [];
-    const fallbackTrendDeltaPerSnapshot = recentForTrend.length >= 2
-      ? (recentForTrend[recentForTrend.length - 1].avgTrafficScore - recentForTrend[0].avgTrafficScore) / (recentForTrend.length - 1)
+    const recentForTrend = rawSnapshots.slice(-6);
+    const trendDirection = recentForTrend.length >= 2
+      ? recentForTrend[recentForTrend.length - 1].trafficScore - recentForTrend[0].trafficScore
+      : 0;
+    const trend = trendDirection > 10 ? 'INCREASING' : trendDirection < -10 ? 'DECREASING' : 'STABLE';
+
+    function formatHour(hour: number) {
+      return `${String(hour).padStart(2, '0')}:00Z`;
+    }
+
+    const predictions: any[] = [];
+    const fallbackTrendDeltaPerSnapshot = recentForTrend.length > 1
+      ? (recentForTrend[recentForTrend.length - 1].trafficScore - recentForTrend[0].trafficScore) / (recentForTrend.length - 1)
       : 0;
 
     const now = new Date();
     for (let h = 1; h <= 3; h += 1) {
       const futureTime = new Date(now.getTime() + h * 60 * 60 * 1000);
-      const slot = `${futureTime.getUTCDay() || 7}-${futureTime.getUTCHours()}`;
+      const slot = `${futureTime.getUTCDay()}-${futureTime.getUTCHours()}`;
       const slotInfo = slotAverages.get(slot);
 
       let predicted: number;
@@ -304,32 +438,14 @@ router.get('/airport/:icao', async (req: Request, res: Response) => {
       });
     }
 
-    let recommendedStaffing = 'TOWER';
-    if (currentScore >= 120) {
-      recommendedStaffing = 'DELIVERY + GROUND + TOWER + APPROACH';
-    } else if (currentScore >= 60) {
-      recommendedStaffing = 'GROUND + TOWER + APPROACH';
-    } else if (currentScore >= 20) {
-      recommendedStaffing = 'TOWER + APPROACH';
-    }
-
-    return res.json({
-      icao: icao.toUpperCase(),
-      name: airport.name,
-      currentMetrics: {
-        trafficScore: currentScore,
-        activityLevel: currentLevel,
-        trend: currentTrend,
-        recommendedStaffing,
-      },
-      hourlyAverages,
-      dailyAverages,
+    res.json({
+      currentScore,
+      trend,
       predictions,
     });
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ error: 'Internal Server Error' });
+    res.status(500).json({ error: 'Failed to generate prediction' });
   }
 });
-
 export default router;
